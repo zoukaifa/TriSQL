@@ -4,6 +4,6 @@ API/TriSQL/TriSQL/TriSQL/bin/*
 API/TriSQL/TriSQL/TriSQLApp/TriSQLApp.csproj
 API/TriSQL/TriSQL/TriSQLApp/Properties/*
 API/TriSQL/TriSQL/TriSQLApp/obj/*
-API/TriSQL/TriSQL/TriSQLApp/GraphEngine.lib/*
+API/TriSQL/TriSQL/TriSQLApp/GraphEngine.Lib/*
 API/TriSQL/TriSQL/TriSQLApp/bin/*
 API/TriSQL/TriSQL/TriSQL/.vs/*
