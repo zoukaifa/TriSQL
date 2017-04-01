@@ -1,0 +1,4 @@
+Graph
+node1:int node2:int
+Label
+node:int label:varchar(10)

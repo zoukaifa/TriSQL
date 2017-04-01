@@ -1,0 +1,6 @@
+﻿  源.cpp
+c:\users\lining\documents\visual studio 2015\projects\fortry\fortry\源.cpp(85): warning C4101: “res”: 未引用的局部变量
+c:\users\lining\documents\visual studio 2015\projects\fortry\fortry\源.cpp(86): warning C4101: “pstmt”: 未引用的局部变量
+源.obj : error LNK2019: 无法解析的外部符号 _get_driver_instance，该符号在函数 _main 中被引用
+C:\Program Files\MySQL\Connector.C++ 1.1\lib\opt\mysqlcppconn-static.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“X86”冲突
+C:\Users\lining\documents\visual studio 2015\Projects\ForTry\Debug\ForTry.exe : fatal error LNK1120: 1 个无法解析的外部命令
