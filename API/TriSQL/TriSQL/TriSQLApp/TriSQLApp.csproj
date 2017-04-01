@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5266E8CE-D5A2-4B72-9837-C978E4DFC52E}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TriSQLApp</RootNamespace>
+    <AssemblyName>TriSQLApp</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Trinity.Core">
+      <HintPath>GraphEngine.Lib\Trinity.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FieldType.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TriSQL\TriSQL.tproj">
+      <Project>{E4074A4F-5F25-4F42-B105-05BB475081D8}</Project>
+      <Name>TriSQL</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <UsingTask TaskName="Trinity.TSL.GenerateGraphEngineAssemblyInfo" AssemblyFile="$(TrinityPath)\Trinity.TSL.CompilerTask.dll" />
+  <Target Name="BeforeBuild" DependsOnTargets="ResolveProjectReferences;ResolveAssemblyReferences">
+    <GenerateGraphEngineAssemblyInfo ReferencedAssemblies="@(_ResolveAssemblyReferenceResolvedFiles)" Output="Properties\GraphEngine.AssemblyInfo.cs" />
+    <ItemGroup>
+      <Compile Include="Properties\GraphEngine.AssemblyInfo.cs" />
+    </ItemGroup>
+    <Copy SourceFiles="$(TrinityPath)\Trinity.Core.dll" DestinationFolder="$(MSBuildProjectDirectory)\GraphEngine.Lib" ContinueOnError="true" />
+    <Copy SourceFiles="$(TrinityPath)\Trinity.Core.xml" DestinationFolder="$(MSBuildProjectDirectory)\GraphEngine.Lib" ContinueOnError="true" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
