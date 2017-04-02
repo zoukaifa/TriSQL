@@ -8,15 +8,20 @@ using TriSQL;
 
 namespace TriSQLApp
 {
-    
+
     internal class Program
     {
-        
-        static void Tes(int a = 1, int b = 2, int c =3) { }
+        static void Tes(string[] pairs = null) { }
+        static void Tes(string[][] pairs = null) { }
+        public static Program isIn(Program A, Program B) {
+            return null;
+        }
         static void Main(string[] args)
         {
-            bool a = true;
-            Tes(a: 1, c: 3);
+            Tes(pairs:new string[] { "aaa", "bbb" });
+            Tes();
+            object tt = "sss";
+            TableHead th = new TableHead(tableName:(string)tt);
         }
     }
 }
