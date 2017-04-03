@@ -6,6 +6,7 @@ cell struct Database {
 //表头
 cell struct TableHead {		
 	string tableName;  //表名
+	List<int> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
 	List<CellId> rowList;  //行的cellid的集合
 }
@@ -22,4 +23,101 @@ struct Element {
 //行
 cell struct Row {
 	List<Element> values;  //该行属性集合
+}
+
+
+//数据库
+struct GetDatabaseMessage {  //查询数据库是否存在
+	string name;  //数据库名字
+}
+struct GetDatabaseResponse {
+	bool exists;  //是否存在
+	List<CellId> tableList;  //所包含的table列表
+}
+protocol GetDatabase {
+	Type: Syn;
+	Request: GetDatabaseMessage;
+	Response: GetDatabaseResponse;
+}
+
+//表
+struct GetTableMessage {  //查询表是否存在
+	string databaseName;	
+	string tableName;  //表名
+	bool getAllValue;  //是否需要获取表的全部内容
+}
+struct GetTableResponse {  //返回表信息
+	bool exists;  //是否存在
+	List<int> columnNameList;  //列名
+	List<int> columnTypeList;  //列类型
+	List<CellId> rowList;  //行的cellid的集合
+	List<List<Element>> values;  //内容
+}
+protocol GetTable {
+	Type: Syn;
+	Request: GetTableMessage;
+	Response: GetTableResponse;	
+}
+
+
+//建表
+struct CreateTableMessage {
+	string databaseName;	
+	string tableName;
+	List<int> columnNameList;  //列名
+	List<int> columnTypeList;  //列类型
+}
+protocol CreateTable {
+	Type: Syn;
+	Request: CreateTableMessage;
+	Response: void;	
+}
+
+//更新表
+struct UpdateTableMessage {  //可以用于insert，update等与表内容有关的操作
+	string databaseName;
+	string tableName;
+	List<CellId> rowList;  //行的cellid的集合
+}
+protocol UpdateTable {
+	Type: Syn;
+	Request: UpdateTableMessage;
+	Response: void;	
+}
+
+//表的更名
+struct RenameTableMessage {
+	string databaseName;
+	string tableName;
+	string newTableName;
+}
+struct RenameTableResponse {
+	bool success;	
+}
+protocol RenameTable {
+	Type: Syn;
+	Request: RenameTableMessage;
+	Response: RenameTableResponse;	
+}
+
+//行
+struct GetRowMessage {
+	CellId cellId;	
+}
+struct GetRowResponse {
+	List<Element> value;
+}
+protocol GetRow {
+	Type: Syn;
+	Request: GetRowMessage;
+	Response: GetRowResponse;
+}
+
+server DatabaseServer {
+	protocol: GetDatabase;
+	protocol: GetTable;
+	protocol: CreateTable;
+	protocol: UpdateTable;
+	protocol: RenameTable;
+	protocol: GetRow;
 }
