@@ -8,6 +8,8 @@ cell struct TableHead {
 	string tableName;  //表名
 	List<int> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
+	List<int> primaryIndex;  //主键索引
+	List<Element> defaultValue;  //默认值
 	List<CellId> rowList;  //行的cellid的集合
 }
 
@@ -51,6 +53,8 @@ struct GetTableResponse {  //返回表信息
 	List<int> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
 	List<CellId> rowList;  //行的cellid的集合
+	List<Element> defaultValue;  //默认值
+	List<int> primaryIndex;  //主键索引
 	List<List<Element>> values;  //内容
 }
 protocol GetTable {
@@ -66,6 +70,8 @@ struct CreateTableMessage {
 	string tableName;
 	List<int> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
+	List<Element> defaultValue;  //默认值
+	List<int> primaryIndex;  //主键索引
 }
 protocol CreateTable {
 	Type: Syn;
