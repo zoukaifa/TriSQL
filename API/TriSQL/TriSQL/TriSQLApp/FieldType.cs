@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TriSQL;
 
 namespace TriSQLApp {
     /// <summary>
@@ -38,5 +39,15 @@ namespace TriSQLApp {
         /// CellId类型
         /// </summary>
         public static int CELLID = 6;
+
+        /// <summary>
+        /// 根据Element对象以及其类型，提取其值
+        /// </summary>
+        /// <param name="ele">Element对象</param>
+        /// <param name="type">所存数据类型</param>
+        /// <returns>所存的值</returns>
+        public static object getValue(Element ele, int type) {
+            return null;
+        }
     }
 }

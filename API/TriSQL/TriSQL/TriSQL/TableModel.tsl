@@ -1,10 +1,11 @@
 //数据库
-cell struct Database {
+cell struct DatabaseCell {
 	string name;  //库名
+	List<string> tableNameList;
 	List<CellId> tableList;  //所属的表
 }
 //表头
-cell struct TableHead {		
+cell struct TableHeadCell {		
 	string tableName;  //表名
 	List<int> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
@@ -23,7 +24,7 @@ struct Element {
 }
 
 //行
-cell struct Row {
+cell struct RowCell {
 	List<Element> values;  //该行属性集合
 }
 
@@ -34,6 +35,7 @@ struct GetDatabaseMessage {  //查询数据库是否存在
 }
 struct GetDatabaseResponse {
 	bool exists;  //是否存在
+	CellId databaseId;
 	List<CellId> tableList;  //所包含的table列表
 }
 protocol GetDatabase {
@@ -43,19 +45,17 @@ protocol GetDatabase {
 }
 
 //表
-struct GetTableMessage {  //查询表是否存在
-	string databaseName;	
-	string tableName;  //表名
-	bool getAllValue;  //是否需要获取表的全部内容
+struct GetTableMessage {  //查询表的信息
+	string databaseName;
+	CellId tableId;
 }
 struct GetTableResponse {  //返回表信息
-	bool exists;  //是否存在
+	string tableName;  //表名
 	List<int> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
-	List<CellId> rowList;  //行的cellid的集合
-	List<Element> defaultValue;  //默认值
 	List<int> primaryIndex;  //主键索引
-	List<List<Element>> values;  //内容
+	List<Element> defaultValue;  //默认值
+	List<CellId> rowList;  //行的cellid的集合
 }
 protocol GetTable {
 	Type: Syn;
@@ -66,7 +66,7 @@ protocol GetTable {
 
 //建表
 struct CreateTableMessage {
-	string databaseName;	
+	CellId databaseId;
 	string tableName;
 	List<int> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
@@ -79,51 +79,8 @@ protocol CreateTable {
 	Response: void;	
 }
 
-//更新表
-struct UpdateTableMessage {  //可以用于insert，update等与表内容有关的操作
-	string databaseName;
-	string tableName;
-	List<CellId> rowList;  //行的cellid的集合
-}
-protocol UpdateTable {
-	Type: Syn;
-	Request: UpdateTableMessage;
-	Response: void;	
-}
-
-//表的更名
-struct RenameTableMessage {
-	string databaseName;
-	string tableName;
-	string newTableName;
-}
-struct RenameTableResponse {
-	bool success;	
-}
-protocol RenameTable {
-	Type: Syn;
-	Request: RenameTableMessage;
-	Response: RenameTableResponse;	
-}
-
-//行
-struct GetRowMessage {
-	CellId cellId;	
-}
-struct GetRowResponse {
-	List<Element> value;
-}
-protocol GetRow {
-	Type: Syn;
-	Request: GetRowMessage;
-	Response: GetRowResponse;
-}
-
 server DatabaseServer {
-	protocol: GetDatabase;
-	protocol: GetTable;
-	protocol: CreateTable;
-	protocol: UpdateTable;
-	protocol: RenameTable;
-	protocol: GetRow;
+	protocol GetDatabase;
+	protocol GetTable;
+	protocol CreateTable;
 }

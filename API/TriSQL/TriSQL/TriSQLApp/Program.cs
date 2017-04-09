@@ -8,10 +8,10 @@ using TriSQL;
 
 namespace TriSQLApp
 {
-
+    //以下全是测试代码
     internal class Program
     {
-        static void Tes(string[] pairs = null) { }
+        static void Tes(params string[] pairs) { }
         static void Tes(string[][] pairs = null) { }
         public static Program isIn(Program A, Program B) {
             return null;
@@ -21,7 +21,6 @@ namespace TriSQLApp
             Tes(pairs:new string[] { "aaa", "bbb" });
             Tes();
             object tt = "sss";
-            TableHead th = new TableHead(tableName:(string)tt);
         }
     }
 }
