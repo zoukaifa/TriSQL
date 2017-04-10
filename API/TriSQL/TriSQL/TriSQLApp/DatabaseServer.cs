@@ -37,7 +37,12 @@ namespace TriSQLApp
 
         public override void UpdateDatabaseHandler(UpdateDatabaseMessageReader request)
         {
-            
+            long cellId = HashHelper.HashString2Int64(request.name);
+            using (var db = Global.LocalStorage.UseDatabaseCell(cellId))
+            {
+                db.tableIdList = request.tableIdList;
+                db.tableNameList = request.tableNameList;
+            }
         }
     }
 }

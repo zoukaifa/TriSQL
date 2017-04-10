@@ -122,8 +122,8 @@ namespace TriSQLApp
             UpdateDatabaseMessageWriter udmw = new UpdateDatabaseMessageWriter(
                 name:this.name, tableNameList:this.tableNameList, tableIdList:this.tableIdList);
             int serverId = Global.CloudStorage.GetServerIdByCellId(HashHelper.HashString2Int64(this.name));
-            //Global.CloudStorage.UpdateDatabaseToDatabaseServer(serverId, udmw);
-            DatabaseCell dbc = new DatabaseCell(name: this.name, tableIdList: this.tableIdList, tableNameList: this.tableNameList);
+            Global.CloudStorage.UpdateDatabaseToDatabaseServer(serverId, udmw);
+            Global.CloudStorage.SaveStorage();
             return new Table(name);
         }
 
