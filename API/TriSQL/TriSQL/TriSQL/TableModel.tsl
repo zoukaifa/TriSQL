@@ -7,7 +7,7 @@ cell struct DatabaseCell {
 //表头
 cell struct TableHeadCell {		
 	string tableName;  //表名
-	List<int> columnNameList;  //列名
+	List<string> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
 	List<int> primaryIndex;  //主键索引
 	List<Element> defaultValue;  //默认值
@@ -20,7 +20,7 @@ struct Element {
 	int intField;
 	double doubleField;
 	DateTime dateField;
-	CellId idField;
+	long longField;
 }
 
 //行

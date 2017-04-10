@@ -10,6 +10,7 @@ using Trinity.Core.Lib;
 namespace TriSQLApp
 {
     class Database {
+        private static Database currentDatabase;  //指示当前的数据库
         private string name = null;
         private List<long> tableIdList = null;
         private List<string> tableNameList = null;
@@ -38,7 +39,7 @@ namespace TriSQLApp
                     }
                 }
             }
-            
+            currentDatabase = this;
         }
         /// <summary>
         /// 仅用于createDatabase的构造函数
@@ -50,6 +51,7 @@ namespace TriSQLApp
             this.name = name;
             this.tableIdList = tableIdList;
             this.tableNameList = tableNameList;
+           
         }
 
         /// <summary>
@@ -69,22 +71,57 @@ namespace TriSQLApp
             Global.CloudStorage.SaveDatabaseCell(HashHelper.HashString2Int64(name), dbc);
             Global.CloudStorage.SaveStorage();
             Database database = new Database(name, dbc.tableList, dbc.tableNameList);
+            currentDatabase = database;
             return database;
         }
 
         public Table createTable(string name, string[] primaryKeyList, params Tuple<int, string, object>[] fields)
         {
+            if (tableExists(name))  //表已存在
+            {
+                throw new Exception(String.Format("表{0}已经存在!", name));
+            }
+            TableHeadCell thc = new TableHeadCell(tableName: name, columnNameList: new List<string>(),
+                columnTypeList: new List<int>(), rowList: new List<long>(), defaultValue: new List<Element>(),
+                primaryIndex: new List<int>());
+            if (fields == null || fields.Length == 0)
+            {
+                throw new Exception("建立表至少要有一个字段");
+            }
+            for (int i = 0; i < fields.Length; i++)
+            {
+                int type = fields[i].Item1;
+                string fieldName = fields[i].Item2;
+                object defaultValue = fields[i].Item3;
+                thc.columnNameList.Add(fieldName);
+                thc.columnTypeList.Add(type);
+                thc.defaultValue.Add(FieldType.setValue(defaultValue, type));
+            }
             return null;
         }
 
-        public bool exists(string name)
+        /// <summary>
+        /// 判断给出的表是否存在于当前数据库中
+        /// </summary>
+        /// <param name="name">表名</param>
+        /// <returns>是否存在</returns>
+        public bool tableExists(string name)
         {
-            return true;
+            return this.tableNameList.Contains(name);
         }
 
-        public void drop(string name)
+        public void dropTable(string name)
         {
 
+        }
+
+        /// <summary>
+        /// 获得当前使用的数据库
+        /// </summary>
+        /// <returns>当前使用的数据库对象</returns>
+        public static Database getCurrentDatabase()
+        {
+            return currentDatabase;
         }
     }
 }
