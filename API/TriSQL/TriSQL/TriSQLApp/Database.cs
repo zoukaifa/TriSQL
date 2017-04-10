@@ -33,7 +33,7 @@ namespace TriSQLApp
                     if (resp.exists)  //找到了该数据库
                     {
                         this.name = name;
-                        this.tableIdList = resp.tableList;
+                        this.tableIdList = resp.tableIdList;
                         this.tableNameList = resp.tableNameList;
                         break;
                     }
@@ -65,12 +65,12 @@ namespace TriSQLApp
                 throw new Exception(String.Format("数据库{0}已经存在!", name));
             }
 
-            DatabaseCell dbc = new DatabaseCell(name: name, tableList: new List<long>(),
+            DatabaseCell dbc = new DatabaseCell(name: name, tableIdList: new List<long>(),
                 tableNameList: new List<string>());
             //以数据库名的hash为cellId，存入云端
             Global.CloudStorage.SaveDatabaseCell(HashHelper.HashString2Int64(name), dbc);
             Global.CloudStorage.SaveStorage();
-            Database database = new Database(name, dbc.tableList, dbc.tableNameList);
+            Database database = new Database(name, dbc.tableIdList, dbc.tableNameList);
             currentDatabase = database;
             return database;
         }
@@ -93,11 +93,40 @@ namespace TriSQLApp
                 int type = fields[i].Item1;
                 string fieldName = fields[i].Item2;
                 object defaultValue = fields[i].Item3;
+                if (thc.columnNameList.Contains(fieldName))
+                {
+                    throw new Exception(String.Format("重复声明的字段:{0}.", fieldName));
+                }
                 thc.columnNameList.Add(fieldName);
                 thc.columnTypeList.Add(type);
                 thc.defaultValue.Add(FieldType.setValue(defaultValue, type));
             }
-            return null;
+            if (primaryKeyList != null && primaryKeyList.Length > 0)
+            {
+                for (int i = 0; i < primaryKeyList.Length; i++)
+                {
+                    string key = primaryKeyList[i];
+                    if (! thc.columnNameList.Contains(key))
+                    {
+                        throw new Exception(String.Format("字段{0}不在字段列表中，不能作为主键.", key));
+                    }
+                    thc.primaryIndex.Add(thc.columnNameList.IndexOf(key));
+                }
+            }
+            //cell已经建好，存储于云端
+            Global.CloudStorage.SaveTableHeadCell(thc);
+            //向数据库写入表的信息，并更新到云
+            tableIdList.Add(thc.CellID);
+            tableNameList.Add(thc.tableName);
+            //将cell的数据发送到服务器
+            UpdateDatabaseMessageWriter udmw = new UpdateDatabaseMessageWriter(
+                name:this.name, tableNameList:this.tableNameList, tableIdList:this.tableIdList);
+            int serverId = Global.CloudStorage.GetServerIdByCellId(HashHelper.HashString2Int64(this.name));
+            //Global.CloudStorage.UpdateDatabaseToDatabaseServer(serverId, udmw);
+            DatabaseCell dbc = new DatabaseCell(name: this.name, tableIdList: this.tableIdList, tableNameList: this.tableNameList);
+            byte[] by = dbc.Byte
+            Global.CloudStorage.UpdateCell(HashHelper.HashString2Int64(this.name), dbc.byte)
+            return new Table(name);
         }
 
         /// <summary>

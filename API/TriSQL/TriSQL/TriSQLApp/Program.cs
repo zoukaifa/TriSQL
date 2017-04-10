@@ -15,12 +15,12 @@ namespace TriSQLApp
         static void Main(string[] args)
         {
             TrinityConfig.AddServer(new Trinity.Network.ServerInfo("127.0.0.1", 5304, Global.MyAssemblyPath, Trinity.Diagnostics.LogLevel.Error));
-            //DatabaseServer ds = new DatabaseServer();
-            //ds.Start();
-            TrinityConfig.CurrentRunningMode = RunningMode.Client;
-            Global.CloudStorage.LoadStorage();
+            DatabaseServer ds = new DatabaseServer();
+            ds.Start();
+            //TrinityConfig.CurrentRunningMode = RunningMode.Client;
+            //Global.CloudStorage.LoadStorage();
             //Database.createDatabase("test");
-            Database database = new Database("test");
+            //Database database = new Database("test");
         }
     }
 }

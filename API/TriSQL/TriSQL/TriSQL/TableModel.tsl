@@ -2,7 +2,7 @@
 cell struct DatabaseCell {
 	string name;  //库名
 	List<string> tableNameList;
-	List<CellId> tableList;  //所属的表
+	List<CellId> tableIdList;  //所属的表
 }
 //表头
 cell struct TableHeadCell {		
@@ -35,13 +35,25 @@ struct GetDatabaseMessage {  //查询数据库是否存在
 }
 struct GetDatabaseResponse {
 	bool exists;  //是否存在
-	List<CellId> tableList;  //所包含的table列表
+	List<CellId> tableIdList;  //所包含的table列表
 	List<string> tableNameList;
 }
 protocol GetDatabase {
 	Type: Syn;
 	Request: GetDatabaseMessage;
 	Response: GetDatabaseResponse;
+}
+
+//更新数据库
+struct UpdateDatabaseMessage {
+	string name;
+	List<string> tableNameList;
+	List<long> tableIdList;
+}
+protocol UpdateDatabase {
+	Type: Syn;
+	Request: UpdateDatabaseMessage;
+	Response: void;	
 }
 
 //表
@@ -64,23 +76,9 @@ protocol GetTable {
 }
 
 
-//建表
-struct CreateTableMessage {
-	CellId databaseId;
-	string tableName;
-	List<int> columnNameList;  //列名
-	List<int> columnTypeList;  //列类型
-	List<Element> defaultValue;  //默认值
-	List<int> primaryIndex;  //主键索引
-}
-protocol CreateTable {
-	Type: Syn;
-	Request: CreateTableMessage;
-	Response: void;	
-}
 
 server DatabaseServer {
 	protocol GetDatabase;
+	protocol UpdateDatabase;
 	protocol GetTable;
-	protocol CreateTable;
 }

@@ -11,12 +11,6 @@ namespace TriSQLApp
 {
     class DatabaseServer : DatabaseServerBase
     {
-        public override void CreateTableHandler(CreateTableMessageReader request)
-        {
-            
-        }
-
-
         /// <summary>
         /// 查询数据库信息
         /// </summary>
@@ -29,7 +23,7 @@ namespace TriSQLApp
             if (Global.CloudStorage.IsLocalCell(cellId)) {  //在本服务器上
                 response.exists = true;
                 using (var db = Global.LocalStorage.UseDatabaseCell(cellId)) {
-                    response.tableList = db.tableList;
+                    response.tableIdList = db.tableIdList;
                     response.tableNameList = db.tableNameList;
                 }
             }
@@ -39,6 +33,11 @@ namespace TriSQLApp
         public override void GetTableHandler(GetTableMessageReader request, GetTableResponseWriter response)
         {
             throw new NotImplementedException();
+        }
+
+        public override void UpdateDatabaseHandler(UpdateDatabaseMessageReader request)
+        {
+            
         }
     }
 }
