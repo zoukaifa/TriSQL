@@ -123,5 +123,20 @@ namespace TriSQLApp
         {
             return currentDatabase;
         }
+
+        public List<long> getTableIdList()
+        {
+            return this.tableIdList;
+        }
+
+        public List<string> getTableNameList()
+        {
+            return this.tableNameList;
+        }
+
+        public string getName()
+        {
+            return this.name;
+        }
     }
 }
