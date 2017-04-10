@@ -10,9 +10,21 @@ using Trinity.Core.Lib;
 namespace TriSQLApp
 {
     class Database {
-        private static Database currentDatabase;  //指示当前的数据库
+        /// <summary>
+        /// 指示当前的数据库
+        /// </summary>
+        private static Database currentDatabase;
+        /// <summary>
+        /// 数据库名字
+        /// </summary>
         private string name = null;
+        /// <summary>
+        /// 表的id集合
+        /// </summary>
         private List<long> tableIdList = null;
+        /// <summary>
+        /// 表的名字集合
+        /// </summary>
         private List<string> tableNameList = null;
 
         /// <summary>
