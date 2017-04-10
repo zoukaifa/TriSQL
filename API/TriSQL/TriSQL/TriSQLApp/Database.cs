@@ -124,8 +124,6 @@ namespace TriSQLApp
             int serverId = Global.CloudStorage.GetServerIdByCellId(HashHelper.HashString2Int64(this.name));
             //Global.CloudStorage.UpdateDatabaseToDatabaseServer(serverId, udmw);
             DatabaseCell dbc = new DatabaseCell(name: this.name, tableIdList: this.tableIdList, tableNameList: this.tableNameList);
-            byte[] by = dbc.Byte
-            Global.CloudStorage.UpdateCell(HashHelper.HashString2Int64(this.name), dbc.byte)
             return new Table(name);
         }
 
