@@ -137,9 +137,28 @@ namespace TriSQLApp
             return this.tableNameList.Contains(name);
         }
 
+        /// <summary>
+        /// 删除一个已经存在的表
+        /// </summary>
+        /// <param name="name">要删除的表名</param>
         public void dropTable(string name)
         {
-
+            if (! tableExists(name))
+            {
+                throw new Exception(String.Format("表{0}不存在.", name));
+            }
+            //先移除cell
+            long cellId = tableIdList.ElementAt(tableNameList.IndexOf(name));
+            Global.CloudStorage.RemoveCell(cellId);
+            //再移除数据库内信息
+            tableNameList.Remove(name);
+            tableIdList.Remove(cellId);
+            //再同步云端的数据库
+            UpdateDatabaseMessageWriter udmw = new UpdateDatabaseMessageWriter(
+                name: this.name, tableNameList: this.tableNameList, tableIdList: this.tableIdList);
+            int serverId = Global.CloudStorage.GetServerIdByCellId(HashHelper.HashString2Int64(this.name));
+            Global.CloudStorage.UpdateDatabaseToDatabaseServer(serverId, udmw);
+            Global.CloudStorage.SaveStorage();
         }
 
         /// <summary>

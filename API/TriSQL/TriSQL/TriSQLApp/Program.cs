@@ -27,6 +27,7 @@ namespace TriSQLApp
             //Table tableB = database.createTable("tableB", new string[] {"class"}, 
             //new Tuple<int, string, object>(FieldType.INTEGER, "class", 2),
             //new Tuple<int, string, object>(FieldType.STRING, "name", "hhh"));
+            //database.dropTable("tableB");
             for (int i = 0; i < database.getTableNameList().Count; i++)
             {
                 Console.WriteLine("{0}, {1}", database.getTableNameList().ElementAt(i),
