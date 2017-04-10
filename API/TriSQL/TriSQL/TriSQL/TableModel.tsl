@@ -35,8 +35,8 @@ struct GetDatabaseMessage {  //查询数据库是否存在
 }
 struct GetDatabaseResponse {
 	bool exists;  //是否存在
-	CellId databaseId;
 	List<CellId> tableList;  //所包含的table列表
+	List<string> tableNameList;
 }
 protocol GetDatabase {
 	Type: Syn;

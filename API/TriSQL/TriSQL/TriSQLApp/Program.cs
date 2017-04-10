@@ -11,16 +11,16 @@ namespace TriSQLApp
     //以下全是测试代码
     internal class Program
     {
-        static void Tes(params string[] pairs) { }
-        static void Tes(string[][] pairs = null) { }
-        public static Program isIn(Program A, Program B) {
-            return null;
-        }
+
         static void Main(string[] args)
         {
-            Tes(pairs:new string[] { "aaa", "bbb" });
-            Tes();
-            object tt = "sss";
+            TrinityConfig.AddServer(new Trinity.Network.ServerInfo("127.0.0.1", 5304, Global.MyAssemblyPath, Trinity.Diagnostics.LogLevel.Error));
+            //DatabaseServer ds = new DatabaseServer();
+            //ds.Start();
+            TrinityConfig.CurrentRunningMode = RunningMode.Client;
+            Global.CloudStorage.LoadStorage();
+            //Database.createDatabase("test");
+            Database database = new Database("test");
         }
     }
 }
