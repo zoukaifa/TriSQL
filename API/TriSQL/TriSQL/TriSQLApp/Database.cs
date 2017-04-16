@@ -159,6 +159,7 @@ namespace TriSQLApp
             {
                 throw new Exception(String.Format("表{0}不存在.", name));
             }
+            new Table(name).truncate();  //先清空
             //先移除cell
             long cellId = tableIdList.ElementAt(tableNameList.IndexOf(name));
             Global.CloudStorage.RemoveCell(cellId);
@@ -170,6 +171,25 @@ namespace TriSQLApp
                 name: this.name, tableNameList: this.tableNameList, tableIdList: this.tableIdList);
             int serverId = Global.CloudStorage.GetServerIdByCellId(HashHelper.HashString2Int64(this.name));
             Global.CloudStorage.UpdateDatabaseToDatabaseServer(serverId, udmw);
+            Global.CloudStorage.SaveStorage();
+        }
+
+
+        /// <summary>
+        /// 清除一个数据库
+        /// </summary>
+        /// <param name="name">要清除的数据库名字</param>
+        public static void dropDatabase(string name)
+        {
+            Database db = new Database(name);
+            //先清空数据库
+            List<string> tableNames = db.getTableNameList();
+            for (int i = 0; i < tableNames.Count; i++)
+            {
+                db.dropTable(tableNames.ElementAt(i));
+            }
+            long cellId = HashHelper.HashString2Int64(name);
+            Global.CloudStorage.RemoveCell(cellId);  //再清除数据库
             Global.CloudStorage.SaveStorage();
         }
 
