@@ -1,0 +1,114 @@
+//数据库
+cell struct DatabaseCell {
+	string name;  //库名
+	List<string> tableNameList;
+	List<CellId> tableIdList;  //所属的表
+}
+//表头
+cell struct TableHeadCell {		
+	string tableName;  //表名
+	List<string> columnNameList;  //列名
+	List<int> columnTypeList;  //列类型
+	List<int> primaryIndex;  //主键索引
+	List<Element> defaultValue;  //默认值
+	List<CellId> rowList;  //行的cellid的集合
+}
+
+//每个元素
+struct Element {
+	string stringField;	
+	int intField;
+	double doubleField;
+	DateTime dateField;
+	long longField;
+}
+
+//行
+cell struct RowCell {
+	List<Element> values;  //该行属性集合
+}
+
+
+//数据库
+struct GetDatabaseMessage {  //查询数据库是否存在
+	string name;  //数据库名字
+}
+struct GetDatabaseResponse {
+	bool exists;  //是否存在
+	List<CellId> tableIdList;  //所包含的table列表
+	List<string> tableNameList;
+}
+protocol GetDatabase {
+	Type: Syn;
+	Request: GetDatabaseMessage;
+	Response: GetDatabaseResponse;
+}
+
+//更新数据库
+struct UpdateDatabaseMessage {
+	string name;
+	List<string> tableNameList;
+	List<long> tableIdList;
+}
+protocol UpdateDatabase {
+	Type: Syn;
+	Request: UpdateDatabaseMessage;
+	Response: void;	
+}
+
+//表
+/*1*/
+struct GetTableMessage {  //查询表的信息
+	List<CellId> tableIds;
+}
+/*2*/
+struct CellIdMessage{
+	CellId cellid;	
+}
+/*3*/
+struct GetTableResponse {  //返回表信息
+	string tableName;  //表名
+	List<string> columnNameList;  //列名
+	List<int> columnTypeList;  //列类型
+	List<int> primaryIndex;  //主键索引
+	List<Element> defaultValue;  //默认值
+	List<CellId> rowList;  //行的cellid的集合
+}
+/*4*/
+struct TableResponse{
+	List<GetTableResponse> tables;	
+}
+/*1,4*/
+protocol GetTable {
+	Type: Asyn;
+	Request: GetTableMessage;
+	Response: void;
+}
+/*2*/
+protocol RequireTable{
+	Type: Asyn;
+	Request: CellIdMessage;
+	Response: void;	
+}
+/*3*/
+protocol ResponseTable{
+	Type: Asyn;
+	Request: GetTableResponse;
+	Response: void;	
+}
+protocol ResponseTables{
+	Type: Syn;
+	Request: void;
+	Response: TableResponse;
+}
+proxy GetTableProxy{
+	protocol GetTable;//client to proxy
+	protocol ResponseTables;
+	protocol ResponseTable;	//server to proxy
+}
+
+server DatabaseServer {
+	protocol RequireTable;//proxy to serve
+	protocol GetDatabase;
+	protocol UpdateDatabase;
+}

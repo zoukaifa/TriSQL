@@ -1,0 +1,44 @@
+1.最少找两台电脑
+2.生成
+2.修改\TriSQL\TriSQLApp\bin\x64\Debug\trinity.xml
+<entry name="Server" WorkingDirectory="C:\Users\lining\Desktop\Debug\" LoggingLevel="Info">192.168.1.160:5304</entry>
+注意服务器数量。
+3.拷贝 \TriSQL\TriSQLApp\bin\x64\Debug 到相应位置。
+4.一台电脑运行proxy
+一台运行server和client 这俩不同目录
+5.至少出现servercount 和 proxycount说明建立连接
+
+client -c输出
+4469592526908057674
+0
+database finished
+1
+1	//server编号
+1
+0
+0
+0
+1
+table finished
+tableA, 1513006402418956041
+tableB, 408468777377880024
+tableC, -5093819079116423191
+tableD, 2107984202825156121
+tableE, -3416238993032618487
+tableF, 2880593350087415483
+tableG, -1546285322285537932
+client -q输出
+tableB:
+class   name
+tableD:
+class   name
+tableF:
+class   name
+tableG:
+class   name
+
+proxy 输出
+tableB
+tableG	//乱序到达
+tableF
+tableD

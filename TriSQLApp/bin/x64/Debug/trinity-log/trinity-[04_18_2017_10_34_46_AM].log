@@ -1,0 +1,18 @@
+[04/18/2017 10:34:46 AM][ INFO    ] Trinity Assembly Path: C:\Users\lining\Desktop\Debug
+[04/18/2017 10:34:46 AM][ INFO    ] LogLevel set to [ INFO    ] 
+[04/18/2017 10:34:46 AM][ INFO    ] Scanning for TSL storage extension.
+[04/18/2017 10:34:46 AM][ INFO    ] TSL storage extension loaded.
+[04/18/2017 10:34:46 AM][ INFO    ] Listening endpoint :5304
+[04/18/2017 10:34:46 AM][ INFO    ] Waiting for client connection ...
+[04/18/2017 10:34:46 AM][ INFO    ] My IPEndPoint: 192.168.1.160:5304
+[04/18/2017 10:34:46 AM][ INFO    ] LocalMemoryStorage is initialized in read-write mode
+[04/18/2017 10:34:46 AM][ INFO    ] Initializing logging facility
+[04/18/2017 10:34:46 AM][ INFO    ] Loading write-ahead log file C:\Users\lining\Desktop\Debug\storage\write_ahead_log\primary_storage_log_0.dat
+[04/18/2017 10:34:46 AM][ INFO    ] Reading log file.
+[04/18/2017 10:34:46 AM][ INFO    ] Write-ahead-log successfully loaded. Recovered 0 records.
+[04/18/2017 10:34:46 AM][ INFO    ] Creating write-ahead log file C:\Users\lining\Desktop\Debug\storage\write_ahead_log\primary_storage_log_0.dat
+[04/18/2017 10:34:46 AM][ INFO    ] Checking Server-Server protocol signatures...
+[04/18/2017 10:34:46 AM][ INFO    ] Server 0 is successfully started.
+[04/18/2017 10:35:46 AM][ INFO    ] Checking Server-Proxy protocol signatures...
+[04/18/2017 02:39:32 PM][ FATAL   ] Errors occur during network recv. Error code = 0x0000000000002745
+[04/18/2017 02:39:35 PM][ FATAL   ] Errors occur during network send: 8 bytes to send. Error code = 0x0000000000002746
