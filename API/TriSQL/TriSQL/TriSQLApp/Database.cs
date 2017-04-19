@@ -33,14 +33,15 @@ namespace TriSQLApp
         /// <param name="name">数据库名，必须已存在</param>
         public Database(string name) {
             //如果该数据库不存在，抛出异常
-            if (! Global.CloudStorage.Contains(HashHelper.HashString2Int64(name)))
+            long databaseId = HashHelper.HashString2Int64(name);
+            if (!Global.CloudStorage.Contains(databaseId))
             {
                 throw new Exception(String.Format("数据库{0}不存在!", name));
             }
 
-            GetDatabaseMessageWriter messageWriter = new GetDatabaseMessageWriter(name);
+            GetDatabaseMessageWriter messageWriter = new GetDatabaseMessageWriter(databaseId);
             using (var resp = Global.CloudStorage.GetDatabaseToDatabaseServer(
-                Global.CloudStorage.GetServerIdByCellId(HashHelper.HashString2Int64(name)), messageWriter))
+                Global.CloudStorage.GetServerIdByCellId(databaseId), messageWriter))
             {
                 this.name = name;
                 this.tableIdList = resp.tableIdList;
@@ -58,7 +59,6 @@ namespace TriSQLApp
             this.name = name;
             this.tableIdList = tableIdList;
             this.tableNameList = tableNameList;
-           
         }
 
         /// <summary>
@@ -67,15 +67,16 @@ namespace TriSQLApp
         /// <param name="name">数据库的名字</param>
         /// <returns>对应于该数据库的Database的实例化对象</returns>
         public static Database createDatabase(string name) {
+            long databaseId = HashHelper.HashString2Int64(name);
             //先确认该数据库并不存在
-            if (Global.CloudStorage.Contains(HashHelper.HashString2Int64(name))) {
+            if (Global.CloudStorage.Contains(databaseId)) {
                 throw new Exception(String.Format("数据库{0}已经存在!", name));
             }
 
             DatabaseCell dbc = new DatabaseCell(name: name, tableIdList: new List<long>(),
                 tableNameList: new List<string>());
             //以数据库名的hash为cellId，存入云端
-            Global.CloudStorage.SaveDatabaseCell(HashHelper.HashString2Int64(name), dbc);
+            Global.CloudStorage.SaveDatabaseCell(databaseId, dbc);
             Database database = new Database(name, dbc.tableIdList, dbc.tableNameList);
             currentDatabase = database;
             return database;
@@ -88,7 +89,7 @@ namespace TriSQLApp
                 throw new Exception(String.Format("表{0}已经存在!", name));
             }
             TableHeadCell thc = new TableHeadCell(tableName: name, columnNameList: new List<string>(),
-                columnTypeList: new List<int>(), rowList: new List<long>(), defaultValue: new List<Element>(),
+                columnTypeList: new List<int>(), cellIds: new List<List<long>>(), defaultValue: new List<Element>(),
                 primaryIndex: new List<int>());
             if (fields == null || fields.Length == 0)
             {
@@ -124,11 +125,10 @@ namespace TriSQLApp
             //向数据库写入表的信息，并更新到云
             tableIdList.Add(thc.CellID);
             tableNameList.Add(thc.tableName);
-            //将cell的数据发送到服务器
-            UpdateDatabaseMessageWriter udmw = new UpdateDatabaseMessageWriter(
-                name:this.name, tableNameList:this.tableNameList, tableIdList:this.tableIdList);
-            int serverId = Global.CloudStorage.GetServerIdByCellId(HashHelper.HashString2Int64(this.name));
-            Global.CloudStorage.UpdateDatabaseToDatabaseServer(serverId, udmw);
+            //更新databasecell
+            DatabaseCell dc = new DatabaseCell(this.name, tableNameList, tableIdList);
+            long databaseId = HashHelper.HashString2Int64(this.name);
+            Global.CloudStorage.SaveDatabaseCell(databaseId, dc);
             return new Table(name);
         }
 
@@ -160,10 +160,9 @@ namespace TriSQLApp
             tableNameList.Remove(name);
             tableIdList.Remove(cellId);
             //再同步云端的数据库
-            UpdateDatabaseMessageWriter udmw = new UpdateDatabaseMessageWriter(
-                name: this.name, tableNameList: this.tableNameList, tableIdList: this.tableIdList);
-            int serverId = Global.CloudStorage.GetServerIdByCellId(HashHelper.HashString2Int64(this.name));
-            Global.CloudStorage.UpdateDatabaseToDatabaseServer(serverId, udmw);
+            DatabaseCell dc = new DatabaseCell(this.name, tableNameList, tableIdList);
+            long databaseId = HashHelper.HashString2Int64(this.name);
+            Global.CloudStorage.SaveDatabaseCell(databaseId, dc);
         }
 
 

@@ -19,63 +19,6 @@ namespace TriSQLApp
         private List<int> primaryIndexs;  //主键索引
         private List<Element> defaultValues;  //默认值
 
-
-        public List<List<string>> ColumnNames
-        {
-            get
-            {
-                return columnNames;
-            }
-        }
-
-        public List<List<int>> Indexes
-        {
-            get
-            {
-                return indexes;
-            }
-        }
-
-        public List<string> TableNames
-        {
-            get
-            {
-                return tableNames;
-            }
-        }
-
-        public List<long> TableIds
-        {
-            get
-            {
-                return tableIds;
-            }
-        }
-
-        public List<List<long>> CellIds
-        {
-            get
-            {
-                return cellIds;
-            }
-        }
-
-        public List<List<int>> PrimaryIndexs
-        {
-            get
-            {
-                return primaryIndexs;
-            }
-        }
-
-        public List<List<Element>> DefaultValues
-        {
-            get
-            {
-                return defaultValues;
-            }
-        }
-
         public Table(params string[] tableNames)
         {
             //判断当前database是不是存在的
