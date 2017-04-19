@@ -11,15 +11,13 @@ namespace TriSQLApp
 {
     class Table
     {
-        private string databaseName;
-        private List<List<long>> cellIds = new List<List<long>>();
-        private List<string> tableNames = new List<string>();
-        private List<long> tableIds = new List<long>();
-        private List<List<int>> indexes = new List<List<int>>();
-        private List<List<int>> columnTypes = new List<List<int>>();
-        private List<List<string>> columnNames = new List<List<string>>();
-        private List<List<int>> primaryIndexs = new List<List<int>>();  //主键索引
-        private List<List<Element>> defaultValues = new List<List<Element>>();  //默认值
+        //类成员的初始化在构造方法里进行
+        private bool isSingle;  //是否是直接由构造函数生成的完整单表（即使是select的也是false）
+        private List<List<long>> cellIds;
+        private List<int> columnTypes;
+        private List<string> columnNames;
+        private List<int> primaryIndexs;  //主键索引
+        private List<Element> defaultValues;  //默认值
 
 
         public List<List<string>> ColumnNames
