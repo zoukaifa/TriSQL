@@ -126,5 +126,16 @@ namespace TriSQLApp {
             }
             return ele;
         }
+        /// <summary>
+        /// 把ec的内容拷贝到element
+        /// </summary>
+        /// <param name="ec"></param>
+        /// <returns></returns>
+        public static Element getElement(ElementCell ec)
+        {
+            Element ele = new Element(ec.stringField, ec.intField, ec.doubleField,
+                ec.dateField, ec.longField);
+            return ele;
+        }
     }
 }

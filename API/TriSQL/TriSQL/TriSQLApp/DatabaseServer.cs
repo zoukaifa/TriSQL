@@ -18,22 +18,35 @@ namespace TriSQLApp
         /// <param name="response"></param>
         public override void GetDatabaseHandler(GetDatabaseMessageReader request, GetDatabaseResponseWriter response)
         {
-            long cellId = HashHelper.HashString2Int64(request.name);
+            long cellId = request.databaseId;
             using (var db = Global.LocalStorage.UseDatabaseCell(cellId)) {
                 response.tableIdList = db.tableIdList;
                 response.tableNameList = db.tableNameList;
             }
-            
+        }
+
+        public override void GetElementHandler(GetElementMessageReader request, GetElementResponseWriter response)
+        {
+            throw new NotImplementedException();
         }
 
         public override void GetRowHandler(GetRowMessageReader request, GetRowResponseWriter response)
         {
-            Console.WriteLine("GetRow:{0}", request.cellId);
-            Console.WriteLine(Global.LocalStorage.UseRowCell(request.cellId));
-            Console.WriteLine("1111");
-            using (var rowCell = Global.LocalStorage.UseRowCell(request.cellId))
+            List<long> eleIds = request.cellIds;
+            response.row = new List<Element>();
+            foreach (long eleId in eleIds)
             {
-                response.row = rowCell.values;
+                int serverId = Global.CloudStorage.GetServerIdByCellId(eleId);
+                if (serverId == Global.MyServerId)  //在本服务器上
+                {
+                    ElementCell ec = Global.LocalStorage.UseElementCell(eleId);
+                    response.row.Add(FieldType.getElement(ec));
+                } else
+                {
+                    Element ec = Global.CloudStorage.GetElementToDatabaseServer(
+                        serverId, new GetElementMessageWriter(eleId)).ele;
+                    response.row.Add(ec);
+                }
             }
         }
 
@@ -41,12 +54,12 @@ namespace TriSQLApp
         {
             using (var thcell = Global.LocalStorage.UseTableHeadCell(request.tableId))
             {
-                response.tableName = thcell.tableName;
                 response.columnNameList = thcell.columnNameList;
                 response.columnTypeList = thcell.columnTypeList;
-                response.primaryIndex = thcell.primaryIndex;
                 response.defaultValue = thcell.defaultValue;
-                response.rowList = thcell.rowList;
+                response.primaryIndex = thcell.primaryIndex;
+                response.cellIds = thcell.cellIds;
+                response.tableName = thcell.tableName;
             }
         }
 
@@ -97,24 +110,11 @@ namespace TriSQLApp
 
         public override void UpdateDatabaseHandler(UpdateDatabaseMessageReader request)
         {
-            long cellId = HashHelper.HashString2Int64(request.name);
+            long cellId = request.databaseId;
             using (var db = Global.LocalStorage.UseDatabaseCell(cellId))
             {
                 db.tableIdList = request.tableIdList;
                 db.tableNameList = request.tableNameList;
-            }
-        }
-
-        public override void UpdateTableHandler(UpdateTableMessageReader request)
-        {
-            using (var thcell = Global.LocalStorage.UseTableHeadCell(request.tableId))
-            {
-                thcell.tableName = request.tableName;
-                thcell.columnNameList = request.columnNameList;
-                thcell.columnTypeList = request.columnTypeList;
-                thcell.primaryIndex = request.primaryIndex;
-                thcell.defaultValue = request.defaultValue;
-                thcell.rowList = request.rowList;
             }
         }
     }

@@ -11,7 +11,7 @@ cell struct TableHeadCell {
 	List<int> columnTypeList;  //列类型
 	List<int> primaryIndex;  //主键索引
 	List<Element> defaultValue;  //默认值
-	List<List<CellId>> rowList;  //单元格的cellid的集合
+	List<List<CellId>> cellIds;  //单元格的cellid的集合
 }
 
 //每个元素,用于存储
@@ -34,7 +34,7 @@ struct Element {
 
 //数据库
 struct GetDatabaseMessage {  //查询数据库是否存在
-	string name;  //数据库名字
+	long databaseId;  //数据库名字
 }
 struct GetDatabaseResponse {
 	List<CellId> tableIdList;  //所包含的table列表
@@ -68,7 +68,7 @@ struct GetTableResponse {  //返回表信息
 	List<int> columnTypeList;  //列类型
 	List<int> primaryIndex;  //主键索引
 	List<Element> defaultValue;  //默认值
-	List<List<long>> rowList;  //单元格的cellid的集合
+	List<List<long>> cellIds;  //单元格的cellid的集合
 }
 protocol GetTable {
 	Type: Syn;
@@ -82,7 +82,7 @@ struct SelectMessage {
 	//为了在server端构造Table，将Table的信息发送到服务器
 	List<string> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
-	List<List<long>> rowList;  //单元格的cellid的集合
+	List<List<long>> cellIds;  //单元格的cellid的集合
 	string condition;
 }
 //proxy向client回复结果
@@ -111,7 +111,7 @@ protocol SelectFromServer {  //server向proxy发送
 }
 //获取某一行的信息
 struct GetRowMessage {
-	long cellId;
+	List<long> cellIds;
 }
 struct GetRowResponse {
 	List<Element> row;
