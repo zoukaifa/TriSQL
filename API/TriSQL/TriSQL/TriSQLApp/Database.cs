@@ -39,17 +39,12 @@ namespace TriSQLApp
             }
 
             GetDatabaseMessageWriter messageWriter = new GetDatabaseMessageWriter(name);
-            for (int i = 0; i < Global.CloudStorage.ServerCount; i++) {
-                using (var resp = Global.CloudStorage.GetDatabaseToDatabaseServer(i, messageWriter))
-                {
-                    if (resp.exists)  //找到了该数据库
-                    {
-                        this.name = name;
-                        this.tableIdList = resp.tableIdList;
-                        this.tableNameList = resp.tableNameList;
-                        break;
-                    }
-                }
+            using (var resp = Global.CloudStorage.GetDatabaseToDatabaseServer(
+                Global.CloudStorage.GetServerIdByCellId(HashHelper.HashString2Int64(name)), messageWriter))
+            {
+                this.name = name;
+                this.tableIdList = resp.tableIdList;
+                this.tableNameList = resp.tableNameList;
             }
             currentDatabase = this;
         }
@@ -81,7 +76,6 @@ namespace TriSQLApp
                 tableNameList: new List<string>());
             //以数据库名的hash为cellId，存入云端
             Global.CloudStorage.SaveDatabaseCell(HashHelper.HashString2Int64(name), dbc);
-            Global.CloudStorage.SaveStorage();
             Database database = new Database(name, dbc.tableIdList, dbc.tableNameList);
             currentDatabase = database;
             return database;
@@ -135,7 +129,6 @@ namespace TriSQLApp
                 name:this.name, tableNameList:this.tableNameList, tableIdList:this.tableIdList);
             int serverId = Global.CloudStorage.GetServerIdByCellId(HashHelper.HashString2Int64(this.name));
             Global.CloudStorage.UpdateDatabaseToDatabaseServer(serverId, udmw);
-            Global.CloudStorage.SaveStorage();
             return new Table(name);
         }
 
@@ -171,7 +164,6 @@ namespace TriSQLApp
                 name: this.name, tableNameList: this.tableNameList, tableIdList: this.tableIdList);
             int serverId = Global.CloudStorage.GetServerIdByCellId(HashHelper.HashString2Int64(this.name));
             Global.CloudStorage.UpdateDatabaseToDatabaseServer(serverId, udmw);
-            Global.CloudStorage.SaveStorage();
         }
 
 
@@ -190,7 +182,6 @@ namespace TriSQLApp
             }
             long cellId = HashHelper.HashString2Int64(name);
             Global.CloudStorage.RemoveCell(cellId);  //再清除数据库
-            Global.CloudStorage.SaveStorage();
         }
 
         /// <summary>

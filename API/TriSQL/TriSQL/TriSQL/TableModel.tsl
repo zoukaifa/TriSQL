@@ -63,7 +63,7 @@ struct GetTableMessage {  //查询表的信息
 }
 struct GetTableResponse {  //返回表信息
 	string tableName;  //表名
-	List<int> columnNameList;  //列名
+	List<string> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
 	List<int> primaryIndex;  //主键索引
 	List<Element> defaultValue;  //默认值
@@ -74,11 +74,82 @@ protocol GetTable {
 	Request: GetTableMessage;
 	Response: GetTableResponse;	
 }
+//该信息可以由client向proxy发送，也可以由proxy向server发送
+struct SelectMessage {
+	//为了在server端构造Table，将Table的信息完全发送	
+	List<List<long>> rowIds;
+    List<string> tableNames;
+    List<long> tableIds;
+    List<List<int>> indexes;
+    List<List<int>> columnTypes;
+    List<List<string>> columnNames;
+	List<List<int>> primaryIndexes;
+	List<List<Element>> defaultValues;
+	string condition;
+}
+//proxy向client回复结果
+struct SelectResponse {
+	List<List<long>> rowIds;
+}
+//server向proxy回复结果
+struct SelectResultResponse {
+	int serverId;	
+	List<List<long>> rowIds;
+}
+protocol SelectFromClient {  //client向proxy发送
+	Type: Syn;
+	Request: SelectMessage;
+	Response: SelectResponse;	
+}
+protocol SelectFromProxy {  //proxy向server发送
+	Type: Asyn;
+	Request: SelectMessage;
+	Response: void;
+}
+protocol SelectFromServer {  //server向proxy发送
+	Type: Asyn;
+	Request: SelectResultResponse;
+	Response: void;
+}
+//获取某一行的信息
+struct GetRowMessage {
+	long cellId;
+}
+struct GetRowResponse {
+	List<Element> row;
+}
+protocol GetRow {
+	Type:Syn;
+	Request:GetRowMessage;
+	Response:GetRowResponse;
+}
+
+struct UpdateTableMessage{
+	string tableName;  //表名
+	CellId tableId;//表的ID
+	List<string> columnNameList;  //列名
+	List<int> columnTypeList;  //列类型
+	List<int> primaryIndex;  //主键索引
+	List<Element> defaultValue;  //默认值
+	List<CellId> rowList;  //行的cellid的集合
+}
+protocol UpdateTable {
+	Type: Syn;
+	Request: UpdateTableMessage;
+	Response: void;	
+}
 
 
+proxy DatabaseProxy {
+	protocol SelectFromClient;
+	protocol SelectFromServer;	
+}
 
 server DatabaseServer {
+	protocol SelectFromProxy;	
 	protocol GetDatabase;
 	protocol UpdateDatabase;
 	protocol GetTable;
+	protocol GetRow;
+	protocol UpdateTable;
 }

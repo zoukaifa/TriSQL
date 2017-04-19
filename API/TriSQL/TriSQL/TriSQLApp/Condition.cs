@@ -18,7 +18,7 @@ namespace TriSQLApp
         private Condition parent; //父节点，如果实现时没有必要，可以去掉这个属性
         private string op; //运算符（如果这个节点存在子节点的话），可以是"&","|","!","+","-","*","/","in"
 
-        public Condition(Table table, object content, int contentType)
+        public Condition(Table table, string con)
         {
 
         }
@@ -93,7 +93,11 @@ namespace TriSQLApp
             return null;
         }
 
-        public object getResult(List<List<object>> rows)
+        public bool getResult(List<List<object>> rows)
+        {
+            return true;
+        }
+        public List<long> getResult(List<string> s, Condition con)
         {
             return null;
         }

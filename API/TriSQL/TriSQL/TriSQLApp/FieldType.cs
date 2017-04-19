@@ -42,7 +42,49 @@ namespace TriSQLApp {
         /// <param name="type">所存数据类型</param>
         /// <returns>所存的值</returns>
         public static object getValue(Element ele, int type) {
-            return null;
+            Object value = null;
+            if (ele.Equals(null))
+            {
+                throw new NullReferenceException("Element不可为空");
+            }
+            if (type < STRING || type > LONG)
+            {
+                throw new Exception(String.Format("不存在的字段类型:{0}", type));
+            }
+            else
+            {
+                switch (type)
+                {
+                    case INTEGER:
+                        value = Convert.ToInt32(ele.intField);
+                        break;
+                    case STRING:
+                        value = Convert.ToString(ele.stringField);
+                        break;
+                    case LONG:
+                        value = Convert.ToInt64(ele.longField);
+                        break;
+                    case DATETIME:
+                        value = Convert.ToDateTime(ele.dateField);
+                        break;
+                    case DOUBLE:
+                        value = Convert.ToDouble(ele.doubleField);
+                        break;
+                    default:
+                        throw new Exception(String.Format("不存在的字段类型:{0}", type));
+                }
+            }
+            return value;
+        }
+
+        public static List<Object> getValues(List<Element> eles, List<int> types)
+        {
+            List<Object> values = new List<object>();
+            foreach(Element ele in eles)
+            {
+                values.Add(getValue(ele, types[eles.IndexOf(ele)]));
+            }
+            return values;
         }
 
         /// <summary>
@@ -64,19 +106,19 @@ namespace TriSQLApp {
                 switch (type)
                 {
                     case INTEGER:
-                        ele.intField = (int)value;
+                        ele.intField = Convert.ToInt32(value);
                         break;
                     case STRING:
-                        ele.stringField = (string)value;
+                        ele.stringField = Convert.ToString(value);
                         break;
                     case LONG:
-                        ele.longField = (long)value;
+                        ele.longField = Convert.ToInt64(value);
                         break;
                     case DATETIME:
-                        ele.dateField = (DateTime)value;
+                        ele.dateField = Convert.ToDateTime(value);
                         break;
                     case DOUBLE:
-                        ele.doubleField = (double)value;
+                        ele.doubleField = Convert.ToDouble(value);
                         break;
                     default:
                         throw new Exception(String.Format("不存在的字段类型:{0}", type));
