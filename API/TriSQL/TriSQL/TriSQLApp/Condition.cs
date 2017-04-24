@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,8 +33,6 @@ namespace TriSQLApp
         TABLE
     }
 
-
-
     class ConditionPair
     {
         public string left;
@@ -43,7 +42,6 @@ namespace TriSQLApp
         public List<object> rightValueList;
         public List<Table> rightTableList;
 
-      
         public ConditionPair()
         {
             Console.WriteLine("无参数初始化构造函数构造成功");
@@ -77,64 +75,38 @@ namespace TriSQLApp
             this.rightTableList = nestedTable;
         }
     }
-    
+
+
     class Condition
     {
         private Table table;
-        public List<ConditionPair> conditions;
-        public Stack<LogicalOperand> logicOptStack;
+        private List<ConditionPair> conditions;
+        private Dictionary<string, int> columnName;
+        private string[] strs;
 
-        //初始构造函数
-        public Condition(Table table, string condition)
+        //初始构造函数（不含嵌套）
+        public Condition(Table table, string condition, List<Table> nestedTable = null)
         {
             this.conditions = new List<ConditionPair>();
-            this.logicOptStack = new Stack<LogicalOperand>();
+            this.columnName = new Dictionary<string, int>();
 
             this.table = table;
-            string[] strs = condition.Split(' ');
-
-            for (int i = 0; i < strs.Length; i = i + 4)
-            {
-                Console.WriteLine(strs[i] + " " + strs[i + 1] + " " + strs[i + 2] + " " + strs[i + 3]);
-                string param1 = strs[i];
-                string param2 = strs[i + 1];
-                string param3 = strs[i + 2].TrimStart('\"').TrimEnd('\"');
-                string param4 = strs[i + 3];
-                Operand opt = Condition.getOperand(param2);
-                RightOptType type =  Condition.getType(param3, opt);
-
-                this.conditions.Add(new ConditionPair(param1, opt, type, type==RightOptType.CONSTANT?convertType(param1,param3):param3));
-                
-                if (!param4.Equals("#"))
-                {
-                    this.logicOptStack.Push(Condition.getLogicOpt(param4));
-                }
-            }
-
-            this.logicOptStack.Reverse();
-        }
-
-        public Condition(Table table, string condition, List<Table> nestedTable)
-        {
-            this.conditions = new List<ConditionPair>();
-            this.logicOptStack = new Stack<LogicalOperand>();
-
-            this.table = table;
-            string[] strs = condition.Split(' ');
+            this.strs = condition.Split(' ');
+            int columnIndex = 0;
             int nestedIndex = 0;
 
-            for (int i = 0; i < strs.Length; i = i + 4)
+            for (int i = 0; i < strs.Length; i++)
             {
-                Console.WriteLine(strs[i] + " " + strs[i + 1] + " " + strs[i + 2] + " " + strs[i + 3]);
-                string param1 = strs[i];
-                string param2 = strs[i + 1];
-                string param3 = strs[i + 2].TrimStart('\"').TrimEnd('\"');
-                string param4 = strs[i + 3];
-                Operand opt = Condition.getOperand(param2);
-                RightOptType type = Condition.getType(param3, opt);
-
-                if (opt == Operand.IN)
+                if (strs[i].Equals("in"))
                 {
+                    Console.WriteLine(strs[i - 1] + " " + strs[i] + " " + strs[i + 1]);
+                    string param1 = strs[i - 1];
+                    string param2 = strs[i];
+                    string param3 = strs[i + 1].TrimStart('\"').TrimEnd('\"');
+
+                    Operand opt = Condition.getOperand(param2);
+                    RightOptType type = Condition.getType(param3, opt);
+
                     if (nestedIndex < nestedTable.Count)
                     {
                         this.conditions.Add(new ConditionPair(param1, opt, type, nestedTable[nestedIndex]));
@@ -145,37 +117,51 @@ namespace TriSQLApp
                         throw new Exception("嵌套Table数量不正确");
                     }
                 }
-                else
+                else if (strs[i].Equals("==") || strs[i].Equals("!=") || strs[i].Equals(">") || strs[i].Equals(">=") || strs[i].Equals("<")
+                    || strs[i].Equals("<="))
                 {
+                    Console.WriteLine(strs[i - 1] + " " + strs[i] + " " + strs[i + 1]);
+                    string param1 = strs[i - 1];
+                    string param2 = strs[i];
+                    string param3 = strs[i + 1].TrimStart('\"').TrimEnd('\"');
+
+                    Operand opt = Condition.getOperand(param2);
+                    RightOptType type = Condition.getType(param3, opt);
+
                     this.conditions.Add(new ConditionPair(param1, opt, type, type == RightOptType.CONSTANT ? convertType(param1, param3) : param3));
+                    if (!this.columnName.ContainsKey(param1))
+                    {
+                        this.columnName.Add(param1, columnIndex++);
+                    }
+
+                    Console.WriteLine(type);
+                    if (type.Equals(RightOptType.FIELD))
+                    {
+                        this.columnName.Add(param3, columnIndex++);
+                    }
+
+                    strs[i - 1] = " ";
+                    strs[i] = "?";
+                    strs[i + 1] = " ";
                 }
-                
-                if (!param4.Equals("#"))
+                else if (strs[i].Equals("or"))
                 {
-                    this.logicOptStack.Push(Condition.getLogicOpt(param4));
+                    strs[i] = "+";
+                }
+                else if (strs[i].Equals("and"))
+                {
+                    strs[i] = "*";
                 }
             }
-
-            this.logicOptStack.Reverse();
         }
 
-        public Condition(Table table, List<ConditionPair> conditions, Stack<LogicalOperand> logicOptStack)
-        {
-            this.table = table;
-            this.conditions = conditions;
-            this.logicOptStack = logicOptStack;
-            if (conditions.Count != logicOptStack.Count + 1)
-            {
-                throw new Exception("逻辑操作符数量与条件式数量不匹配");
-            }
-        }
-
+        //where子句判断接口
         public bool getResult(List<object> rowData)
         {
             List<ConditionPair> curConditon = this.conditions;
             ConditionPair cp;
-            Stack<bool> cmpResultStack = new Stack<bool>();
-            int rowIndex = 0;
+            List<bool> cmpResult = new List<bool>();
+            //int rowIndex = 0;
             bool isMatch = false;
 
             //先遍历where条件对
@@ -183,7 +169,7 @@ namespace TriSQLApp
             {
                 isMatch = false;
                 cp = curConditon[i];
-                object leftValue = rowData[rowIndex++];
+                object leftValue = rowData[this.columnName[cp.left]];
 
                 //处理嵌套的情况
                 if (cp.operand == Operand.IN && cp.rightValType == RightOptType.TABLE)
@@ -197,8 +183,8 @@ namespace TriSQLApp
                             break;
                         }
                     }
-                    cmpResultStack.Push(isMatch);
-                        break;
+                    cmpResult.Add(isMatch);
+                    break;
                 }
 
                 object rightValue = null;
@@ -206,9 +192,9 @@ namespace TriSQLApp
                 {
                     rightValue = cp.rightValue;
                 }
-                else if (cp.rightValType == RightOptType.FIELD) 
+                else if (cp.rightValType == RightOptType.FIELD)
                 {
-                    rightValue = rowData[rowIndex++];
+                    rightValue = rowData[this.columnName[cp.rightValue.ToString()]];
                 }
                 else
                 {
@@ -336,43 +322,29 @@ namespace TriSQLApp
                         throw new Exception("无效操作符" + cp.operand);
                 }
                 Console.WriteLine(isMatch + ", " + leftValue.GetType() + ", " + rightValue.GetType());
-                cmpResultStack.Push(isMatch);
+                cmpResult.Add(isMatch);
             }
-            cmpResultStack.Reverse();
 
-            if (logicOptStack.Count + 1 != cmpResultStack.Count)
+            int count = 0;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < this.strs.Length; i++)
             {
-                throw new Exception("逻辑操作符数量与条件式数量不匹配");
+                if (this.strs[i].Equals("?"))
+                {
+                    this.strs[i] = cmpResult[count++] == true ? "1" : "0";
+                }
+                sb.Append(strs[i]);
             }
 
-            // 逻辑运算
-            while (logicOptStack.Count > 0)
-            {
-                bool cmpResult1 = cmpResultStack.Peek();
-                cmpResultStack.Pop();
-                bool cmpResult2 = cmpResultStack.Peek();
-                cmpResultStack.Pop();
+            Console.WriteLine(sb.ToString());
+            DataTable dt = new DataTable();
+            int result = (int)dt.Compute(sb.ToString(), "");
 
-                if (logicOptStack.Peek() == LogicalOperand.AND)
-                {
-                    cmpResultStack.Push(cmpResult1 && cmpResult2);
-                }
-                else if (logicOptStack.Peek() == LogicalOperand.OR)
-                {
-                    cmpResultStack.Push(cmpResult1 || cmpResult2);
-                }
-                else
-                {
-                    cmpResultStack.Push(false);
-                    throw new Exception("暂不支持此逻辑运算");
-                }
-                logicOptStack.Pop();  
-            }
-
-            return cmpResultStack.Peek();
+            return result > 0 ? true : false;
         }
 
-        public object convertType(string fieldName, string param)
+        //类的其它内部方法
+        private object convertType(string fieldName, string param)
         {
             int index = table.columnNames.IndexOf(fieldName);
             int type = table.columnTypes[index];
@@ -400,7 +372,8 @@ namespace TriSQLApp
             return result;
         }
 
-        public static Operand getOperand(string opt)
+
+        private static Operand getOperand(string opt)
         {
             if (opt.Equals("=="))
             {
@@ -432,14 +405,14 @@ namespace TriSQLApp
             }
         }
 
-        public static RightOptType getType(string type, Operand opt)
+        private static RightOptType getType(string type, Operand opt)
         {
             string[] strs = type.Split('.');
             if (strs.Length > 1)
             {
                 return RightOptType.FIELD;
             }
-            else if (strs.Length ==1 && opt == Operand.IN)
+            else if (strs.Length == 1 && opt == Operand.IN)
             {
                 return RightOptType.TABLE;
             }
@@ -449,7 +422,7 @@ namespace TriSQLApp
             }
         }
 
-        public static LogicalOperand getLogicOpt(string opt)
+        private static LogicalOperand getLogicOpt(string opt)
         {
             if (opt.Equals("and"))
             {
@@ -464,7 +437,7 @@ namespace TriSQLApp
                 return LogicalOperand.NOT;
             }
         }
-    
-        
+
+
     }
 }
