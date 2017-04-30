@@ -11,10 +11,18 @@ cell struct TableHeadCell {
 	List<int> columnTypeList;  //列类型
 	List<int> primaryIndex;  //主键索引
 	List<Element> defaultValue;  //默认值
-	List<CellId> rowList;  //行的cellid的集合
+	List<List<CellId>> cellIds;  //单元格的cellid的集合
 }
 
-//每个元素
+//每个元素,用于存储
+cell struct ElementCell {
+	string stringField;	
+	int intField;
+	double doubleField;
+	DateTime dateField;
+	long longField;
+}
+//用于传输
 struct Element {
 	string stringField;	
 	int intField;
@@ -23,18 +31,12 @@ struct Element {
 	long longField;
 }
 
-//行
-cell struct RowCell {
-	List<Element> values;  //该行属性集合
-}
-
 
 //数据库
 struct GetDatabaseMessage {  //查询数据库是否存在
-	string name;  //数据库名字
+	long databaseId;  //数据库名字
 }
 struct GetDatabaseResponse {
-	bool exists;  //是否存在
 	List<CellId> tableIdList;  //所包含的table列表
 	List<string> tableNameList;
 }
@@ -46,7 +48,7 @@ protocol GetDatabase {
 
 //更新数据库
 struct UpdateDatabaseMessage {
-	string name;
+	long databaseId;
 	List<string> tableNameList;
 	List<long> tableIdList;
 }
@@ -57,58 +59,186 @@ protocol UpdateDatabase {
 }
 
 //表
-/*1*/
 struct GetTableMessage {  //查询表的信息
-	List<CellId> tableIds;
+	CellId tableId;
 }
-/*2*/
-struct CellIdMessage{
-	CellId cellid;	
-}
-/*3*/
 struct GetTableResponse {  //返回表信息
 	string tableName;  //表名
 	List<string> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
 	List<int> primaryIndex;  //主键索引
 	List<Element> defaultValue;  //默认值
-	List<CellId> rowList;  //行的cellid的集合
+	List<List<long>> cellIds;  //单元格的cellid的集合
 }
-/*4*/
-struct TableResponse{
-	List<GetTableResponse> tables;	
-}
-/*1,4*/
 protocol GetTable {
-	Type: Asyn;
+	Type: Syn;
 	Request: GetTableMessage;
+	Response: GetTableResponse;	
+}
+
+
+//该信息可以由client向proxy发送，也可以由proxy向server发送
+struct SelectMessage {
+	//为了在server端构造Table，将Table的信息发送到服务器
+	List<string> columnNameList;  //列名
+	List<int> columnTypeList;  //列类型
+	List<List<long>> cellIds;  //单元格的cellid的集合
+	string condition;
+}
+//proxy向client回复结果
+struct SelectResponse {
+	List<List<long>> rowIds;
+}
+//server向proxy回复结果
+struct SelectResultResponse {
+	int serverId;	
+	List<List<long>> cellIds;
+}
+protocol SelectFromClient {  //client向proxy发送
+	Type: Syn;
+	Request: SelectMessage;
+	Response: SelectResponse;	
+}
+protocol SelectFromProxy {  //proxy向server发送
+	Type: Asyn;
+	Request: SelectMessage;
 	Response: void;
 }
-/*2*/
-protocol RequireTable{
+protocol SelectFromServer {  //server向proxy发送
 	Type: Asyn;
-	Request: CellIdMessage;
-	Response: void;	
+	Request: SelectResultResponse;
+	Response: void;
 }
-/*3*/
-protocol ResponseTable{
-	Type: Asyn;
-	Request: GetTableResponse;
-	Response: void;	
+//获取某一行的信息
+struct GetRowMessage {
+	List<long> cellIds;
 }
-protocol ResponseTables{
+struct GetRowResponse {
+	List<Element> row;
+}
+protocol GetRow {
+	Type:Syn;
+	Request:GetRowMessage;
+	Response:GetRowResponse;
+}
+//获取某一单元格
+struct GetElementMessage{
+	long cellId;	
+}
+struct GetElementResponse {
+	Element ele;
+}
+
+protocol GetElement{
+	Type: Syn;	
+	Request: GetElementMessage;
+	Response: GetElementResponse;
+}
+struct UpdateTableMessage{
+	string tableName;  //表名
+	CellId tableId;
+	List<string> columnNameList;  //列名
+	List<int> columnTypeList;  //列类型
+	List<int> primaryIndex;  //主键索引
+	List<Element> defaultValue;  //默认值
+	List<List<CellId>> cellIds;  //单元格的cellid的集合
+}
+
+protocol UpdateTable {
 	Type: Syn;
-	Request: void;
-	Response: TableResponse;
+	Request: UpdateTableMessage;
+	Response: void;	
 }
-proxy GetTableProxy{
-	protocol GetTable;//client to proxy
-	protocol ResponseTables;
-	protocol ResponseTable;	//server to proxy
+struct UpdateElementMessage{
+	CellId eleId;
+	Element ele;
+}
+protocol UpdateElement{
+	Type:Syn;
+	Request:UpdateElementMessage;
+	Response:void;
+}
+struct  DeleteMessage{
+	List<List<long>>cellIds;
+	List<int> columnTypeList;
+	string con;
+}
+struct DeleteResponce{
+    List<List<long>>cellIds;
+}
+struct DeleteResultResponce{
+	int serverId;
+	List<List<long>>cellIds;
+}
+protocol DeleteFromClient{
+	Type:Syn;
+	Request:DeleteMessage;
+	Response:DeleteResponce;
+}
+protocol DeleteFromProxy{
+	Type:Asyn;
+	Request:DeleteMessage;
+	Response:void;
+}
+protocol DeleteFromServer{
+	Type:Asyn;
+	Request:DeleteResultResponce;
+	Response:void;
+}
+
+struct  TruncateMessage{
+	List<List<long>>cellIds;
+}
+struct TruncateResponce{
+	int serverId;	
+}
+protocol TruncateFromClient{
+	Type:Syn;
+	Request:TruncateMessage;
+	Response:void;
+}
+protocol TruncateFromProxy{
+	Type:Asyn;
+	Request:TruncateMessage;
+	Response:void;
+}
+protocol TruncateFromServer{
+	Type:Asyn;
+	Request:TruncateResponce;
+	Response:void;
+}
+
+struct InsertMessage{
+	List<Element>ele;
+}
+struct InsertResponce{
+	int serverId;	
+	List<CellId>cellIds;	
+}
+protocol InsertElement{
+	Type:Syn;
+	Request:InsertMessage;
+	Response:InsertResponce;
+}
+proxy DatabaseProxy {
+	protocol SelectFromClient;
+	protocol SelectFromServer;	
+	protocol DeleteFromClient;
+	protocol DeleteFromServer;
+	protocol TruncateFromClient;
+	protocol TruncateFromServer;
 }
 
 server DatabaseServer {
-	protocol RequireTable;//proxy to serve
+	protocol SelectFromProxy;
+	protocol DeleteFromProxy;
+	protocol TruncateFromProxy;
+	protocol InsertElement;
 	protocol GetDatabase;
 	protocol UpdateDatabase;
+	protocol GetTable;
+	protocol GetRow;
+	protocol GetElement;
+	protocol UpdateTable;
+	protocol UpdateElement;
 }

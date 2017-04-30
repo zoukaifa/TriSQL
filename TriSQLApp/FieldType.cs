@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using TriSQL;
 
-namespace TriSQLApp {
+namespace TriSQLApp
+{
     /// <summary>
     /// 定义了各个类型的宏
     /// </summary>
-    class FieldType {
+    class FieldType
+    {
         /// <summary>
         /// 字符串
         /// </summary>
@@ -41,8 +43,51 @@ namespace TriSQLApp {
         /// <param name="ele">Element对象</param>
         /// <param name="type">所存数据类型</param>
         /// <returns>所存的值</returns>
-        public static object getValue(Element ele, int type) {
-            return null;
+        public static object getValue(Element ele, int type)
+        {
+            Object value = null;
+            if (ele.Equals(null))
+            {
+                throw new NullReferenceException("Element不可为空");
+            }
+            if (type < STRING || type > LONG)
+            {
+                throw new Exception(String.Format("不存在的字段类型:{0}", type));
+            }
+            else
+            {
+                switch (type)
+                {
+                    case INTEGER:
+                        value = Convert.ToInt32(ele.intField);
+                        break;
+                    case STRING:
+                        value = Convert.ToString(ele.stringField);
+                        break;
+                    case LONG:
+                        value = Convert.ToInt64(ele.longField);
+                        break;
+                    case DATETIME:
+                        value = Convert.ToDateTime(ele.dateField);
+                        break;
+                    case DOUBLE:
+                        value = Convert.ToDouble(ele.doubleField);
+                        break;
+                    default:
+                        throw new Exception(String.Format("不存在的字段类型:{0}", type));
+                }
+            }
+            return value;
+        }
+
+        public static List<Object> getValues(List<Element> eles, List<int> types)
+        {
+            List<Object> values = new List<object>();
+            foreach (Element ele in eles)
+            {
+                values.Add(getValue(ele, types[eles.IndexOf(ele)]));
+            }
+            return values;
         }
 
         /// <summary>
@@ -56,32 +101,123 @@ namespace TriSQLApp {
             Element ele = new Element();
             if (value == null)  //无默认值
             {
-                if (type < STRING || type > LONG) {
+                if (type < STRING || type > LONG)
+                {
                     throw new Exception(String.Format("不存在的字段类型:{0}", type));
                 }
                 return null;
-            } else {
+            }
+            else
+            {
                 switch (type)
                 {
                     case INTEGER:
-                        ele.intField = (int)value;
+                        ele.intField = Convert.ToInt32(value);
                         break;
                     case STRING:
-                        ele.stringField = (string)value;
+                        ele.stringField = Convert.ToString(value);
                         break;
                     case LONG:
-                        ele.longField = (long)value;
+                        ele.longField = Convert.ToInt64(value);
                         break;
                     case DATETIME:
-                        ele.dateField = (DateTime)value;
+                        ele.dateField = Convert.ToDateTime(value);
                         break;
                     case DOUBLE:
-                        ele.doubleField = (double)value;
+                        ele.doubleField = Convert.ToDouble(value);
                         break;
                     default:
                         throw new Exception(String.Format("不存在的字段类型:{0}", type));
                 }
             }
+            return ele;
+        }
+        public static void setValueCell(ref ElementCell ele, object value, int type)
+        {
+            //ElementCell ele = new ElementCell();
+            if (value == null)  //无默认值
+            {
+                if (type < STRING || type > LONG)
+                {
+                    throw new Exception(String.Format("不存在的字段类型:{0}", type));
+                }
+
+            }
+            else
+            {
+                switch (type)
+                {
+                    case INTEGER:
+                        ele.intField = Convert.ToInt32(value);
+                        break;
+                    case STRING:
+                        ele.stringField = Convert.ToString(value);
+                        break;
+                    case LONG:
+                        ele.longField = Convert.ToInt64(value);
+                        break;
+                    case DATETIME:
+                        ele.dateField = Convert.ToDateTime(value);
+                        break;
+                    case DOUBLE:
+                        ele.doubleField = Convert.ToDouble(value);
+                        break;
+                    default:
+                        throw new Exception(String.Format("不存在的字段类型:{0}", type));
+                }
+            }
+            //return ele;
+        }
+        public static ElementCell setValueCell(object value, int type)
+        {
+            ElementCell ele = new ElementCell(stringField: null);
+            if (value == null)  //无默认值
+            {
+                if (type < STRING || type > LONG)
+                {
+                    throw new Exception(String.Format("不存在的字段类型:{0}", type));
+                }
+
+            }
+            else
+            {
+                switch (type)
+                {
+                    case INTEGER:
+                        ele.intField = Convert.ToInt32(value);
+                        break;
+                    case STRING:
+                        ele.stringField = Convert.ToString(value);
+                        break;
+                    case LONG:
+                        ele.longField = Convert.ToInt64(value);
+                        break;
+                    case DATETIME:
+                        ele.dateField = Convert.ToDateTime(value);
+                        break;
+                    case DOUBLE:
+                        ele.doubleField = Convert.ToDouble(value);
+                        break;
+                    default:
+                        throw new Exception(String.Format("不存在的字段类型:{0}", type));
+                }
+            }
+            return ele;
+        }
+        /// <summary>
+        /// 把ec的内容拷贝到element
+        /// </summary>
+        /// <param name="ec"></param>
+        /// <returns></returns>
+        public static Element getElement(ElementCell ec)
+        {
+            Element ele = new Element(ec.stringField, ec.intField, ec.doubleField,
+                ec.dateField, ec.longField);
+            return ele;
+        }
+        public static ElementCell getElementCell(Element ec)
+        {
+            ElementCell ele = new ElementCell(ec.stringField, ec.intField, ec.doubleField, ec.dateField, ec.longField);
             return ele;
         }
     }

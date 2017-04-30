@@ -4,12 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Collections;
 namespace ConsoleApplication1
 {
     class Program
     {
         static void Main(string[] args)
+        {
+            Hashtable H = new Hashtable();
+            H.Add(1, 1);
+            //H.Add(1, 2);
+            Console.WriteLine(H[1]);
+            H.Add(new List<int> { 1, 2 }, 1);
+            H.Add(new List<int> { 1, 2 }, 1);
+            Console.ReadLine();
+        }
+        static void Main1(string[] args)
         {
             Calculate calculate = new Calculate();
             Console.ForegroundColor = ConsoleColor.White;

@@ -1,0 +1,6 @@
+C:\Users\lining\documents\visual studio 2015\Projects\TriSQL\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe.config
+C:\Users\lining\documents\visual studio 2015\Projects\TriSQL\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe
+C:\Users\lining\documents\visual studio 2015\Projects\TriSQL\ConsoleApplication1\bin\Debug\ConsoleApplication1.pdb
+C:\Users\lining\documents\visual studio 2015\Projects\TriSQL\ConsoleApplication1\obj\Debug\ConsoleApplication1.csprojResolveAssemblyReference.cache
+C:\Users\lining\documents\visual studio 2015\Projects\TriSQL\ConsoleApplication1\obj\Debug\ConsoleApplication1.exe
+C:\Users\lining\documents\visual studio 2015\Projects\TriSQL\ConsoleApplication1\obj\Debug\ConsoleApplication1.pdb

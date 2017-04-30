@@ -47,9 +47,9 @@
   <ItemGroup>
     <Compile Include="Condition.cs" />
     <Compile Include="Database.cs" />
+    <Compile Include="DatabaseProxy.cs" />
     <Compile Include="DatabaseServer.cs" />
     <Compile Include="FieldType.cs" />
-    <Compile Include="GetTableProxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Table.cs" />
