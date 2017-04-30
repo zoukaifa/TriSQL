@@ -83,81 +83,102 @@ namespace TriSQLApp
         private List<ConditionPair> conditions;
         private Dictionary<string, int> columnName;
         private string[] strs;
+        private int isDefault = -1;
 
         //初始构造函数（不含嵌套）
         public Condition(Table table, string condition, List<Table> nestedTable = null)
         {
-            this.conditions = new List<ConditionPair>();
-            this.columnName = new Dictionary<string, int>();
-
-            this.table = table;
-            this.strs = condition.Split(' ');
-            int columnIndex = 0;
-            int nestedIndex = 0;
-
-            for (int i = 0; i < strs.Length; i++)
+            if (condition == null || condition.Equals(""))
             {
-                if (strs[i].Equals("in"))
+                this.isDefault = 0;
+            }
+            else
+            {
+                this.isDefault = 1;
+                this.conditions = new List<ConditionPair>();
+                this.columnName = new Dictionary<string, int>();
+
+                this.table = table;
+                this.strs = condition.Split(' ');
+                int columnIndex = 0;
+                int nestedIndex = 0;
+
+                for (int i = 0; i < strs.Length; i++)
                 {
-                    Console.WriteLine(strs[i - 1] + " " + strs[i] + " " + strs[i + 1]);
-                    string param1 = strs[i - 1];
-                    string param2 = strs[i];
-                    string param3 = strs[i + 1].TrimStart('\"').TrimEnd('\"');
-
-                    Operand opt = Condition.getOperand(param2);
-                    RightOptType type = Condition.getType(param3, opt);
-
-                    if (nestedIndex < nestedTable.Count)
+                    if (strs[i].Equals("in"))
                     {
-                        this.conditions.Add(new ConditionPair(param1, opt, type, nestedTable[nestedIndex]));
-                        nestedIndex++;
+                        Console.WriteLine(strs[i - 1] + " " + strs[i] + " " + strs[i + 1]);
+                        string param1 = strs[i - 1];
+                        string param2 = strs[i];
+                        string param3 = strs[i + 1].TrimStart('\"').TrimEnd('\"');
+
+                        Operand opt = Condition.getOperand(param2);
+                        RightOptType type = Condition.getType(param3, opt);
+
+                        if (nestedIndex < nestedTable.Count)
+                        {
+                            this.conditions.Add(new ConditionPair(param1, opt, type, nestedTable[nestedIndex]));
+                            nestedIndex++;
+                        }
+                        else
+                        {
+                            throw new Exception("嵌套Table数量不正确");
+                        }
                     }
-                    else
+                    else if (strs[i].Equals("==") || strs[i].Equals("!=") || strs[i].Equals(">") || strs[i].Equals(">=") || strs[i].Equals("<")
+                        || strs[i].Equals("<="))
                     {
-                        throw new Exception("嵌套Table数量不正确");
+                        Console.WriteLine(strs[i - 1] + " " + strs[i] + " " + strs[i + 1]);
+                        string param1 = strs[i - 1];
+                        string param2 = strs[i];
+                        string param3 = strs[i + 1].TrimStart('\"').TrimEnd('\"');
+
+                        Operand opt = Condition.getOperand(param2);
+                        RightOptType type = Condition.getType(param3, opt);
+
+                        this.conditions.Add(new ConditionPair(param1, opt, type, type == RightOptType.CONSTANT ? convertType(param1, param3) : param3));
+                        if (!this.columnName.ContainsKey(param1))
+                        {
+                            this.columnName.Add(param1, columnIndex++);
+                        }
+
+                        Console.WriteLine(type);
+                        if (type.Equals(RightOptType.FIELD))
+                        {
+                            this.columnName.Add(param3, columnIndex++);
+                        }
+
+                        strs[i - 1] = " ";
+                        strs[i] = "?";
+                        strs[i + 1] = " ";
                     }
-                }
-                else if (strs[i].Equals("==") || strs[i].Equals("!=") || strs[i].Equals(">") || strs[i].Equals(">=") || strs[i].Equals("<")
-                    || strs[i].Equals("<="))
-                {
-                    Console.WriteLine(strs[i - 1] + " " + strs[i] + " " + strs[i + 1]);
-                    string param1 = strs[i - 1];
-                    string param2 = strs[i];
-                    string param3 = strs[i + 1].TrimStart('\"').TrimEnd('\"');
-
-                    Operand opt = Condition.getOperand(param2);
-                    RightOptType type = Condition.getType(param3, opt);
-
-                    this.conditions.Add(new ConditionPair(param1, opt, type, type == RightOptType.CONSTANT ? convertType(param1, param3) : param3));
-                    if (!this.columnName.ContainsKey(param1))
+                    else if (strs[i].Equals("or"))
                     {
-                        this.columnName.Add(param1, columnIndex++);
+                        strs[i] = "+";
                     }
-
-                    Console.WriteLine(type);
-                    if (type.Equals(RightOptType.FIELD))
+                    else if (strs[i].Equals("and"))
                     {
-                        this.columnName.Add(param3, columnIndex++);
+                        strs[i] = "*";
                     }
-
-                    strs[i - 1] = " ";
-                    strs[i] = "?";
-                    strs[i + 1] = " ";
-                }
-                else if (strs[i].Equals("or"))
-                {
-                    strs[i] = "+";
-                }
-                else if (strs[i].Equals("and"))
-                {
-                    strs[i] = "*";
                 }
             }
+
         }
 
         //where子句判断接口
         public bool getResult(List<object> rowData)
         {
+            if (this.isDefault == -1)
+            {
+                Console.WriteLine("尚未初始化条件");
+                return true;
+            }
+            else if (this.isDefault == 0)
+            {
+                Console.WriteLine("默认查询表全部内容");
+                return true;
+            }
+
             List<ConditionPair> curConditon = this.conditions;
             ConditionPair cp;
             List<bool> cmpResult = new List<bool>();
