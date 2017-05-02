@@ -39,10 +39,8 @@ namespace TriSQLApp
             this.columnNames = columnNameList;
             this.columnTypes = columnTypeList;
         }
-        /*
-         * 田超--------------------------------------------------------------------------------------------------------
-         * 
-         */
+        #region 田超--------------------------------------------------------------------------------------------------------
+
         public struct UpdateMessage
         {
             public List<long> cellId;
@@ -383,28 +381,14 @@ namespace TriSQLApp
             DatabaseCell dbc = new DatabaseCell(Database.getCurrentDatabase().getName(), tbName, tbID);
             Global.CloudStorage.SaveDatabaseCell(dbId, dbc);
         }
+#endregion
+        #region 李宁  --------------------------------------------------------------------------------------------------------------
 
-
-
-
-/*
- 
-             李宁 
-             --------------------------------------------------------------------------------------------------------------
-             */
-
-
-
-
-
-
-
-
-    /// <summary>
-    /// distinct 多线程可行
-    /// </summary>
-    /// <param name="correspond">排序后的,count必须大于等于2</param>
-    private List<dint> distinct(List<List<Element>> correspond)
+        /// <summary>
+        /// distinct 多线程可行
+        /// </summary>
+        /// <param name="correspond">排序后的,count必须大于等于2</param>
+        private List<dint> distinct(List<List<Element>> correspond)
         {
             if (correspond.Count < 2) throw new Exception("count必须大于等于2");
             List<dint> res = new List<dint>();
@@ -759,58 +743,6 @@ namespace TriSQLApp
                 }
             }
         }
-        struct ClassifyObject
-        {
-            public int threadCount;
-            public int threadIndex;
-            public List<List<List<long>>> classify;
-            public List<List<long>> cellids;
-            public List<int> pos;
-            public ClassifyObject(int threadCount, int threadIndex, List<List<long>> cellids, List<List<List<long>>> classify, List<int> pos)
-            {
-                this.threadCount = threadCount;
-                this.threadIndex = threadIndex;
-                this.cellids = cellids;
-                this.classify = classify;
-                this.pos = pos;
-            }
-        }
-        void ClassifyThreadProc(object par)
-        {
-            ClassifyObject p = (ClassifyObject)par;
-           /* List<List<long>> cellids = new List<List<long>>();
-            foreach(var a in p.cellids)
-            {
-                List<long> temp = new List<long>();
-                foreach(var b in p.pos)
-                {
-                    temp.Add(a[b]);
-                }
-                cellids.Add(temp);
-            }*/
-            int start = -1;
-            int end = -1;
-            int c = p.cellids.Count;
-            int ele = c / p.threadCount;
-            if (p.threadCount != p.threadIndex + 1)
-            {
-                start = p.threadIndex * ele;
-                end = start + ele - 1;
-            }
-            else
-            {
-                start = p.threadIndex * ele;
-                end = c - 1;
-            }
-            int temp = 0;
-            if (p.pos != null)
-                temp = p.pos[0];
-            for (int i = start; i<=end; i++)
-            {
-                int serverid = Global.CloudStorage.GetServerIdByCellId(p.cellids[i][temp]);
-                p.classify[serverid].Add(p.cellids[i]);
-            }
-        }
         public Table innerJoin(Table anotherTable, List<dint> cond = null, bool isLocal = true)
         {
             //first 
@@ -875,31 +807,6 @@ namespace TriSQLApp
             return newtable;
         }
         /// <summary>
-        /// 分类器 把行按照服务器分类 
-        /// </summary>
-        /// <param name="CELLIDS"></param>
-        /// <param name="cond">条件表达式表示用到的行</param>
-        /// <returns></returns>
-        private List<List<List<long>>> Classify(List<List<long>> CELLIDS, List<int> cond)
-        {
-            List<List<List<long>>> classify = new List<List<List<long>>>(Global.CloudStorage.ServerCount);
-            for (int i = 0; i < Global.CloudStorage.ServerCount; i++)
-            {
-                classify.Add(new List<List<long>>());
-            }
-            int threadCount = Environment.ProcessorCount;
-            Thread[] threadNum = new Thread[threadCount];
-            for (int threadIndex = 0; threadIndex < threadCount; threadIndex++)
-            {
-                ClassifyObject p = new ClassifyObject(threadCount, threadIndex, CELLIDS, classify, cond);
-                threadNum[threadIndex] = new Thread(ClassifyThreadProc);
-                threadNum[threadIndex].Start(p);
-            }
-            for (int inde = 0; inde < threadCount; inde++)
-                threadNum[inde].Join();
-            return classify;
-        }
-        /// <summary>
         /// 按照another第一个元素进行分类 another尽可能是单表, this 最好尺寸小
         /// </summary>
         /// <param name="anotherTable"></param>
@@ -922,62 +829,22 @@ namespace TriSQLApp
             //process
             if (cond == null)//使用默认条件，名字相同
                 cond = calcond(anotherTable.columnNames);
-            if (cond.Count != 0)//使用自定义条件
-            {
-                List<int> conda = new List<int>();
-                List<int> condb = new List<int>();
-                foreach (var a in cond)
-                {
-                    conda.Add(a.a);
-                    condb.Add(a.b);
-                }
 
-                List<List<List<long>>> classify = Classify(anotherTable.cellIds,condb);
-
-                for (int i = 0; i < Global.CloudStorage.ServerCount; i++)
-                {
-                    
-                    JoinMessageWriter msg = new JoinMessageWriter(this.cellIds, classify[i], conda, condb);
-                    var result = Global.CloudStorage.DoJoinToDatabaseServer(i, msg).celllids;
-                    foreach (var a in result)
-                    {
-                        newtable.cellIds.Add(a);
-                    }
-                    /*
-                    Table Ta = new Table(this.cellIds);
-                    Table Tb = new Table(classify[i]);
-                    newtable.cellIds = Ta.innerJoin(Tb, cond, false).cellIds;
-                    */
-                }
-            }
-            else//使用恒true条件
+            List<int> conda = new List<int>();
+            List<int> condb = new List<int>();
+            foreach (var a in cond)
             {
-                List<List<List<long>>> classify = new List<List<List<long>>>(Global.ServerCount);
-                int threadCount = Environment.ProcessorCount;
-                Thread[] threadNum = new Thread[threadCount];
-                for (int threadIndex = 0; threadIndex < threadCount; threadIndex++)
-                {
-                    ClassifyObject p = new ClassifyObject(threadCount, threadIndex, anotherTable.cellIds, classify, null);
-                    threadNum[threadIndex] = new Thread(ClassifyThreadProc);
-                    threadNum[threadIndex].Start(p);
-                }
-                for (int inde = 0; inde < threadCount; inde++)
-                    threadNum[inde].Join();
-                for (int i = 0; i < Global.CloudStorage.ServerCount; i++)
-                {
-                    JoinMessageWriter msg = new JoinMessageWriter(this.cellIds, classify[i], null, null);
-                    var cellids = Global.CloudStorage.DoJoinToDatabaseServer(i, msg).celllids;
-                    foreach (var a in cellIds)
-                    {
-                        newtable.cellIds.Add(a);
-                    }
-                }
+                conda.Add(a.a);
+                condb.Add(a.b);
             }
+            JoinMessageWriter msg = new JoinMessageWriter(this.cellIds, anotherTable.cellIds, conda, condb);
+            newtable.cellIds = Global.CloudStorage.JoinFromClientToDatabaseProxy(0, msg).celllids;
+
             return newtable;
         }
-        /*
-         *邹开发-------------------------------------------------------------------------------------------------------------------------------------------------------------
-             */
+#endregion
+        #region *邹开发-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
         /// <summary>
         /// 无into的select语句
         /// </summary>
@@ -1084,5 +951,6 @@ namespace TriSQLApp
                 Console.WriteLine();
             }
         }
+        #endregion
     }
 }

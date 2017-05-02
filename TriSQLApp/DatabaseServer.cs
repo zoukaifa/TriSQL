@@ -251,7 +251,7 @@ namespace TriSQLApp
             Console.WriteLine("存储完毕");
         }
 
-        public override void DoJoinHandler(JoinMessageReader request, JoinResponceWriter response)
+        public override void DoJoinFromProxyHandler(JoinMessageReader request)
         {
             Table Ta = new Table(request.cellidsA);
             Table Tb = new Table(request.cellidsB);
@@ -260,7 +260,13 @@ namespace TriSQLApp
             {
                 cond.Add(new dint(request.conda[i], request.condb[i]));
             }
-            response.celllids = (Ta.innerJoin(Tb, cond, false)).getCellIds();
+            JoinResponceWriter msg = new JoinResponceWriter(Global.MyServerId,(Ta.innerJoin(Tb, cond, false)).getCellIds());
+            Global.CloudStorage.REdoJoinFromServerToDatabaseProxy(0, msg);
+        }
+
+        public override void TopKFromProxyHandler(TopKMessageReader request)
+        {
+            throw new NotImplementedException();
         }
     }
 }

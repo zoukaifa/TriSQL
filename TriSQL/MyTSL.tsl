@@ -207,10 +207,7 @@ protocol SaveStorage {
 	Request:void;
 	Response:void;	
 }
-struct dint{
-	int a;
-	int b;	
-}
+//join
 struct JoinMessage{
 	List<List<long>> cellidsA;
 	List<List<long>> cellidsB;
@@ -218,14 +215,47 @@ struct JoinMessage{
 	List<int> condb;
 }
 struct JoinResponce{
+	int serverid;	
 	List<List<long>> celllids;
 }
-protocol DoJoin {
+protocol DoJoinFromProxy{
+	Type:Asyn;
+	Request:JoinMessage;
+	Response:void;	
+}
+protocol REdoJoinFromServer{
+	Type:Asyn;
+	Request:JoinResponce;
+	Response:void;	
+}
+protocol JoinFromClient{
 	Type:Syn;
 	Request:JoinMessage;
 	Response:JoinResponce;	
 }
-
+//topK
+struct TopKMessage{
+	List<int> cond;	
+	List<List<long>> celllids;
+}
+struct TopKResponce{
+	List<List<long>> celllids;
+}
+protocol TopKFromClient{
+	Type:Syn;
+	Request:TopKMessage;
+	Response:TopKResponce;
+}
+protocol TopKFromProxy{
+	Type:Asyn;
+	Request:TopKMessage;
+	Response:void;	
+}
+protocol TopKFromServer{
+	Type:Asyn;
+	Request:TopKResponce;
+	Response:void;	
+}
 proxy DatabaseProxy {
 	protocol SelectFromClient;
 	protocol SelectFromServer;	
@@ -233,6 +263,10 @@ proxy DatabaseProxy {
 	protocol DeleteFromServer;
 	protocol TruncateFromClient;
 	protocol TruncateFromServer;
+	protocol REdoJoinFromServer;
+	protocol JoinFromClient;
+	protocol TopKFromClient;
+	protocol TopKFromServer;
 }
 
 server DatabaseServer {
@@ -246,5 +280,7 @@ server DatabaseServer {
 	protocol GetElement;
 	protocol UpdateTable;
 	protocol SaveStorage;
-	protocol DoJoin;
+	protocol DoJoinFromProxy;
+	protocol TopKFromProxy;
+
 }

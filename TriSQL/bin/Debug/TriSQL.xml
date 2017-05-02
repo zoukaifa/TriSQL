@@ -2443,107 +2443,6 @@
             Provides in-place access to the object field cellIds.
             </summary>
         </member>
-        <member name="T:TriSQL.dint">
-            <summary>
-            A .NET runtime object representation of dint defined in TSL.
-            </summary>
-        </member>
-        <member name="M:TriSQL.dint.#ctor(System.Int32,System.Int32)">
-            <summary>
-            Initializes a new instance of the dint class with the specified parameters.
-            </summary>
-        </member>
-        <member name="M:TriSQL.dint.TryParse(System.String,TriSQL.dint@)">
-            <summary>
-            Converts the string representation of a dint to its
-            struct equivalent. A return value indicates whether the 
-            operation succeeded.
-            </summary>
-            <param name="input">A string to convert.</param>
-            <param name="value">
-            When this method returns, contains the struct equivalent of the value contained 
-            in input, if the conversion succeeded, or default(dint) if the conversion
-            failed. The conversion fails if the input parameter is null or String.Empty, or is 
-            not of the correct format. This parameter is passed uninitialized. 
-            </param>
-            <returns>True if input was converted successfully; otherwise, false.</returns>
-        </member>
-        <member name="M:TriSQL.dint.ToString">
-            <summary>
-            Serializes this object to a Json string.
-            </summary>
-            <returns>The Json string serialized.</returns>
-        </member>
-        <member name="T:TriSQL.dint_Accessor">
-            <summary>
-            Provides in-place operations of dint defined in TSL.
-            </summary>
-        </member>
-        <member name="F:TriSQL.dint_Accessor.CellPtr">
-            <summary>
-            The pointer to the content of the object.
-            </summary>
-        </member>
-        <member name="M:TriSQL.dint_Accessor.GetOptionalFieldNames">
-            <summary>
-            Get an array of the names of all optional fields for object type dint.
-            </summary>
-        </member>
-        <member name="M:TriSQL.dint_Accessor.GetNotNullOptionalFields">
-            <summary>
-            Get a list of the names of available optional fields in the object being operated by this accessor.
-            </summary>
-        </member>
-        <member name="M:TriSQL.dint_Accessor.ToByteArray">
-            <summary>
-            Copies the struct content into a byte array.
-            </summary>
-        </member>
-        <member name="P:TriSQL.dint_Accessor.a">
-            <summary>
-            Provides in-place access to the object field a.
-            </summary>
-        </member>
-        <member name="P:TriSQL.dint_Accessor.b">
-            <summary>
-            Provides in-place access to the object field b.
-            </summary>
-        </member>
-        <member name="T:TriSQL.dint_Accessor_ReadOnly">
-            <summary>
-            Provides in-place operations of dint defined in TSL.
-            </summary>
-        </member>
-        <member name="F:TriSQL.dint_Accessor_ReadOnly.CellPtr">
-            <summary>
-            The pointer to the content of the object.
-            </summary>
-        </member>
-        <member name="M:TriSQL.dint_Accessor_ReadOnly.GetOptionalFieldNames">
-            <summary>
-            Get an array of the names of all optional fields for object type dint.
-            </summary>
-        </member>
-        <member name="M:TriSQL.dint_Accessor_ReadOnly.GetNotNullOptionalFields">
-            <summary>
-            Get a list of the names of available optional fields in the object being operated by this accessor.
-            </summary>
-        </member>
-        <member name="M:TriSQL.dint_Accessor_ReadOnly.ToByteArray">
-            <summary>
-            Copies the struct content into a byte array.
-            </summary>
-        </member>
-        <member name="P:TriSQL.dint_Accessor_ReadOnly.a">
-            <summary>
-            Provides in-place access to the object field a.
-            </summary>
-        </member>
-        <member name="P:TriSQL.dint_Accessor_ReadOnly.b">
-            <summary>
-            Provides in-place access to the object field b.
-            </summary>
-        </member>
         <member name="T:TriSQL.JoinMessage">
             <summary>
             A .NET runtime object representation of JoinMessage defined in TSL.
@@ -2670,7 +2569,7 @@
             A .NET runtime object representation of JoinResponce defined in TSL.
             </summary>
         </member>
-        <member name="M:TriSQL.JoinResponce.#ctor(System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}})">
+        <member name="M:TriSQL.JoinResponce.#ctor(System.Int32,System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}})">
             <summary>
             Initializes a new instance of the JoinResponce class with the specified parameters.
             </summary>
@@ -2721,6 +2620,11 @@
             Copies the struct content into a byte array.
             </summary>
         </member>
+        <member name="P:TriSQL.JoinResponce_Accessor.serverid">
+            <summary>
+            Provides in-place access to the object field serverid.
+            </summary>
+        </member>
         <member name="P:TriSQL.JoinResponce_Accessor.celllids">
             <summary>
             Provides in-place access to the object field celllids.
@@ -2751,7 +2655,204 @@
             Copies the struct content into a byte array.
             </summary>
         </member>
+        <member name="P:TriSQL.JoinResponce_Accessor_ReadOnly.serverid">
+            <summary>
+            Provides in-place access to the object field serverid.
+            </summary>
+        </member>
         <member name="P:TriSQL.JoinResponce_Accessor_ReadOnly.celllids">
+            <summary>
+            Provides in-place access to the object field celllids.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TopKMessage">
+            <summary>
+            A .NET runtime object representation of TopKMessage defined in TSL.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKMessage.#ctor(System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}})">
+            <summary>
+            Initializes a new instance of the TopKMessage class with the specified parameters.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKMessage.TryParse(System.String,TriSQL.TopKMessage@)">
+            <summary>
+            Converts the string representation of a TopKMessage to its
+            struct equivalent. A return value indicates whether the 
+            operation succeeded.
+            </summary>
+            <param name="input">A string to convert.</param>
+            <param name="value">
+            When this method returns, contains the struct equivalent of the value contained 
+            in input, if the conversion succeeded, or default(TopKMessage) if the conversion
+            failed. The conversion fails if the input parameter is null or String.Empty, or is 
+            not of the correct format. This parameter is passed uninitialized. 
+            </param>
+            <returns>True if input was converted successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:TriSQL.TopKMessage.ToString">
+            <summary>
+            Serializes this object to a Json string.
+            </summary>
+            <returns>The Json string serialized.</returns>
+        </member>
+        <member name="T:TriSQL.TopKMessage_Accessor">
+            <summary>
+            Provides in-place operations of TopKMessage defined in TSL.
+            </summary>
+        </member>
+        <member name="F:TriSQL.TopKMessage_Accessor.CellPtr">
+            <summary>
+            The pointer to the content of the object.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKMessage_Accessor.GetOptionalFieldNames">
+            <summary>
+            Get an array of the names of all optional fields for object type TopKMessage.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKMessage_Accessor.GetNotNullOptionalFields">
+            <summary>
+            Get a list of the names of available optional fields in the object being operated by this accessor.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKMessage_Accessor.ToByteArray">
+            <summary>
+            Copies the struct content into a byte array.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKMessage_Accessor.cond">
+            <summary>
+            Provides in-place access to the object field cond.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKMessage_Accessor.celllids">
+            <summary>
+            Provides in-place access to the object field celllids.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TopKMessage_Accessor_ReadOnly">
+            <summary>
+            Provides in-place operations of TopKMessage defined in TSL.
+            </summary>
+        </member>
+        <member name="F:TriSQL.TopKMessage_Accessor_ReadOnly.CellPtr">
+            <summary>
+            The pointer to the content of the object.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKMessage_Accessor_ReadOnly.GetOptionalFieldNames">
+            <summary>
+            Get an array of the names of all optional fields for object type TopKMessage.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKMessage_Accessor_ReadOnly.GetNotNullOptionalFields">
+            <summary>
+            Get a list of the names of available optional fields in the object being operated by this accessor.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKMessage_Accessor_ReadOnly.ToByteArray">
+            <summary>
+            Copies the struct content into a byte array.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKMessage_Accessor_ReadOnly.cond">
+            <summary>
+            Provides in-place access to the object field cond.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKMessage_Accessor_ReadOnly.celllids">
+            <summary>
+            Provides in-place access to the object field celllids.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TopKResponce">
+            <summary>
+            A .NET runtime object representation of TopKResponce defined in TSL.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKResponce.#ctor(System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}})">
+            <summary>
+            Initializes a new instance of the TopKResponce class with the specified parameters.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKResponce.TryParse(System.String,TriSQL.TopKResponce@)">
+            <summary>
+            Converts the string representation of a TopKResponce to its
+            struct equivalent. A return value indicates whether the 
+            operation succeeded.
+            </summary>
+            <param name="input">A string to convert.</param>
+            <param name="value">
+            When this method returns, contains the struct equivalent of the value contained 
+            in input, if the conversion succeeded, or default(TopKResponce) if the conversion
+            failed. The conversion fails if the input parameter is null or String.Empty, or is 
+            not of the correct format. This parameter is passed uninitialized. 
+            </param>
+            <returns>True if input was converted successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:TriSQL.TopKResponce.ToString">
+            <summary>
+            Serializes this object to a Json string.
+            </summary>
+            <returns>The Json string serialized.</returns>
+        </member>
+        <member name="T:TriSQL.TopKResponce_Accessor">
+            <summary>
+            Provides in-place operations of TopKResponce defined in TSL.
+            </summary>
+        </member>
+        <member name="F:TriSQL.TopKResponce_Accessor.CellPtr">
+            <summary>
+            The pointer to the content of the object.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKResponce_Accessor.GetOptionalFieldNames">
+            <summary>
+            Get an array of the names of all optional fields for object type TopKResponce.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKResponce_Accessor.GetNotNullOptionalFields">
+            <summary>
+            Get a list of the names of available optional fields in the object being operated by this accessor.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKResponce_Accessor.ToByteArray">
+            <summary>
+            Copies the struct content into a byte array.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKResponce_Accessor.celllids">
+            <summary>
+            Provides in-place access to the object field celllids.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TopKResponce_Accessor_ReadOnly">
+            <summary>
+            Provides in-place operations of TopKResponce defined in TSL.
+            </summary>
+        </member>
+        <member name="F:TriSQL.TopKResponce_Accessor_ReadOnly.CellPtr">
+            <summary>
+            The pointer to the content of the object.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKResponce_Accessor_ReadOnly.GetOptionalFieldNames">
+            <summary>
+            Get an array of the names of all optional fields for object type TopKResponce.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKResponce_Accessor_ReadOnly.GetNotNullOptionalFields">
+            <summary>
+            Get a list of the names of available optional fields in the object being operated by this accessor.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKResponce_Accessor_ReadOnly.ToByteArray">
+            <summary>
+            Copies the struct content into a byte array.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKResponce_Accessor_ReadOnly.celllids">
             <summary>
             Provides in-place access to the object field celllids.
             </summary>
@@ -2776,7 +2877,7 @@
             Initializes a new instance of the DatabaseCell class with the specified parameters.
             </summary>
         </member>
-        <!-- 对于成员“M:TriSQL.DatabaseCell.TryParse(System.String,TriSQL.DatabaseCell@)”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.DatabaseCell.TryParse(System.String,TriSQL.DatabaseCell@)" -->
         <member name="M:TriSQL.DatabaseCell.ToString">
             <summary>Converts a DatabaseCell to its string representation, in JSON format.</summary>
             <returns>A string representation of the DatabaseCell.</returns>
@@ -2926,7 +3027,7 @@
             Initializes a new instance of the TableHeadCell class with the specified parameters.
             </summary>
         </member>
-        <!-- 对于成员“M:TriSQL.TableHeadCell.TryParse(System.String,TriSQL.TableHeadCell@)”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.TableHeadCell.TryParse(System.String,TriSQL.TableHeadCell@)" -->
         <member name="M:TriSQL.TableHeadCell.ToString">
             <summary>Converts a TableHeadCell to its string representation, in JSON format.</summary>
             <returns>A string representation of the TableHeadCell.</returns>
@@ -3091,7 +3192,7 @@
             Initializes a new instance of the ElementCell class with the specified parameters.
             </summary>
         </member>
-        <!-- 对于成员“M:TriSQL.ElementCell.TryParse(System.String,TriSQL.ElementCell@)”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.ElementCell.TryParse(System.String,TriSQL.ElementCell@)" -->
         <member name="M:TriSQL.ElementCell.ToString">
             <summary>Converts a ElementCell to its string representation, in JSON format.</summary>
             <returns>A string representation of the ElementCell.</returns>
@@ -3259,24 +3360,24 @@
             </summary>
             <param name="ctx">A <see cref="T:System.Net.HttpListenerContext"/> object.</param>
         </member>
-        <member name="T:TriSQL.TruncateMessageReader">
+        <member name="T:TriSQL.GetDatabaseMessageReader">
             <summary>
-            Represents a read-only accessor on the message of type TruncateMessage defined in the TSL protocols.
+            Represents a read-only accessor on the message of type GetDatabaseMessage defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.TruncateMessageReader.Dispose">
+        <member name="M:TriSQL.GetDatabaseMessageReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.TruncateMessageWriter">
+        <member name="T:TriSQL.GetDatabaseMessageWriter">
             <summary>
-            Represents a writer accessor on the message of type TruncateMessage defined in the TSL protocols.
+            Represents a writer accessor on the message of type GetDatabaseMessage defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3284,30 +3385,30 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.TruncateMessageWriter.Dispose">
+        <member name="M:TriSQL.GetDatabaseMessageWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.DeleteMessageReader">
+        <member name="T:TriSQL.GetDatabaseResponseReader">
             <summary>
-            Represents a read-only accessor on the message of type DeleteMessage defined in the TSL protocols.
+            Represents a read-only accessor on the message of type GetDatabaseResponse defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.DeleteMessageReader.Dispose">
+        <member name="M:TriSQL.GetDatabaseResponseReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.DeleteMessageWriter">
+        <member name="T:TriSQL.GetDatabaseResponseWriter">
             <summary>
-            Represents a writer accessor on the message of type DeleteMessage defined in the TSL protocols.
+            Represents a writer accessor on the message of type GetDatabaseResponse defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3315,30 +3416,30 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.DeleteMessageWriter.Dispose">
+        <member name="M:TriSQL.GetDatabaseResponseWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.DeleteResponceReader">
+        <member name="T:TriSQL.TopKMessageReader">
             <summary>
-            Represents a read-only accessor on the message of type DeleteResponce defined in the TSL protocols.
+            Represents a read-only accessor on the message of type TopKMessage defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.DeleteResponceReader.Dispose">
+        <member name="M:TriSQL.TopKMessageReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.DeleteResponceWriter">
+        <member name="T:TriSQL.TopKMessageWriter">
             <summary>
-            Represents a writer accessor on the message of type DeleteResponce defined in the TSL protocols.
+            Represents a writer accessor on the message of type TopKMessage defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3346,7 +3447,69 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.DeleteResponceWriter.Dispose">
+        <member name="M:TriSQL.TopKMessageWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TopKResponceReader">
+            <summary>
+            Represents a read-only accessor on the message of type TopKResponce defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKResponceReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TopKResponceWriter">
+            <summary>
+            Represents a writer accessor on the message of type TopKResponce defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.TopKResponceWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.SelectResultResponseReader">
+            <summary>
+            Represents a read-only accessor on the message of type SelectResultResponse defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.SelectResultResponseReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.SelectResultResponseWriter">
+            <summary>
+            Represents a writer accessor on the message of type SelectResultResponse defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.SelectResultResponseWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
@@ -3414,24 +3577,24 @@
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.TruncateResponceReader">
+        <member name="T:TriSQL.DeleteMessageReader">
             <summary>
-            Represents a read-only accessor on the message of type TruncateResponce defined in the TSL protocols.
+            Represents a read-only accessor on the message of type DeleteMessage defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.TruncateResponceReader.Dispose">
+        <member name="M:TriSQL.DeleteMessageReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.TruncateResponceWriter">
+        <member name="T:TriSQL.DeleteMessageWriter">
             <summary>
-            Represents a writer accessor on the message of type TruncateResponce defined in the TSL protocols.
+            Represents a writer accessor on the message of type DeleteMessage defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3439,30 +3602,30 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.TruncateResponceWriter.Dispose">
+        <member name="M:TriSQL.DeleteMessageWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.SelectResultResponseReader">
+        <member name="T:TriSQL.DeleteResponceReader">
             <summary>
-            Represents a read-only accessor on the message of type SelectResultResponse defined in the TSL protocols.
+            Represents a read-only accessor on the message of type DeleteResponce defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.SelectResultResponseReader.Dispose">
+        <member name="M:TriSQL.DeleteResponceReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.SelectResultResponseWriter">
+        <member name="T:TriSQL.DeleteResponceWriter">
             <summary>
-            Represents a writer accessor on the message of type SelectResultResponse defined in the TSL protocols.
+            Represents a writer accessor on the message of type DeleteResponce defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3470,7 +3633,7 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.SelectResultResponseWriter.Dispose">
+        <member name="M:TriSQL.DeleteResponceWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
@@ -3502,6 +3665,161 @@
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
         <member name="M:TriSQL.DeleteResultResponceWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.JoinMessageReader">
+            <summary>
+            Represents a read-only accessor on the message of type JoinMessage defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.JoinMessageReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.JoinMessageWriter">
+            <summary>
+            Represents a writer accessor on the message of type JoinMessage defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.JoinMessageWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.JoinResponceReader">
+            <summary>
+            Represents a read-only accessor on the message of type JoinResponce defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.JoinResponceReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.JoinResponceWriter">
+            <summary>
+            Represents a writer accessor on the message of type JoinResponce defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.JoinResponceWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TruncateMessageReader">
+            <summary>
+            Represents a read-only accessor on the message of type TruncateMessage defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.TruncateMessageReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TruncateMessageWriter">
+            <summary>
+            Represents a writer accessor on the message of type TruncateMessage defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.TruncateMessageWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TruncateResponceReader">
+            <summary>
+            Represents a read-only accessor on the message of type TruncateResponce defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.TruncateResponceReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TruncateResponceWriter">
+            <summary>
+            Represents a writer accessor on the message of type TruncateResponce defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.TruncateResponceWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.UpdateTableMessageReader">
+            <summary>
+            Represents a read-only accessor on the message of type UpdateTableMessage defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.UpdateTableMessageReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.UpdateTableMessageWriter">
+            <summary>
+            Represents a writer accessor on the message of type UpdateTableMessage defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.UpdateTableMessageWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
@@ -3569,24 +3887,24 @@
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.GetDatabaseMessageReader">
+        <member name="T:TriSQL.InsertMessageReader">
             <summary>
-            Represents a read-only accessor on the message of type GetDatabaseMessage defined in the TSL protocols.
+            Represents a read-only accessor on the message of type InsertMessage defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.GetDatabaseMessageReader.Dispose">
+        <member name="M:TriSQL.InsertMessageReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.GetDatabaseMessageWriter">
+        <member name="T:TriSQL.InsertMessageWriter">
             <summary>
-            Represents a writer accessor on the message of type GetDatabaseMessage defined in the TSL protocols.
+            Represents a writer accessor on the message of type InsertMessage defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3594,30 +3912,30 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.GetDatabaseMessageWriter.Dispose">
+        <member name="M:TriSQL.InsertMessageWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.GetDatabaseResponseReader">
+        <member name="T:TriSQL.InsertResponceReader">
             <summary>
-            Represents a read-only accessor on the message of type GetDatabaseResponse defined in the TSL protocols.
+            Represents a read-only accessor on the message of type InsertResponce defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.GetDatabaseResponseReader.Dispose">
+        <member name="M:TriSQL.InsertResponceReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.GetDatabaseResponseWriter">
+        <member name="T:TriSQL.InsertResponceWriter">
             <summary>
-            Represents a writer accessor on the message of type GetDatabaseResponse defined in the TSL protocols.
+            Represents a writer accessor on the message of type InsertResponce defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3625,7 +3943,7 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.GetDatabaseResponseWriter.Dispose">
+        <member name="M:TriSQL.InsertResponceWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
@@ -3755,165 +4073,10 @@
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.UpdateTableMessageReader">
-            <summary>
-            Represents a read-only accessor on the message of type UpdateTableMessage defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.UpdateTableMessageReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.UpdateTableMessageWriter">
-            <summary>
-            Represents a writer accessor on the message of type UpdateTableMessage defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.UpdateTableMessageWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.InsertMessageReader">
-            <summary>
-            Represents a read-only accessor on the message of type InsertMessage defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.InsertMessageReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.InsertMessageWriter">
-            <summary>
-            Represents a writer accessor on the message of type InsertMessage defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.InsertMessageWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.InsertResponceReader">
-            <summary>
-            Represents a read-only accessor on the message of type InsertResponce defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.InsertResponceReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.InsertResponceWriter">
-            <summary>
-            Represents a writer accessor on the message of type InsertResponce defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.InsertResponceWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.JoinMessageReader">
-            <summary>
-            Represents a read-only accessor on the message of type JoinMessage defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.JoinMessageReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.JoinMessageWriter">
-            <summary>
-            Represents a writer accessor on the message of type JoinMessage defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.JoinMessageWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.JoinResponceReader">
-            <summary>
-            Represents a read-only accessor on the message of type JoinResponce defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.JoinResponceReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.JoinResponceWriter">
-            <summary>
-            Represents a writer accessor on the message of type JoinResponce defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.JoinResponceWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <!-- 对于成员“T:TriSQL.StorageExtension_DatabaseCell”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.LocalMemoryStorage,System.Int64,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int64})”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.LocalMemoryStorage,System.Int64,TriSQL.DatabaseCell)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.LocalMemoryStorage,TriSQL.DatabaseCell)”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "T:TriSQL.StorageExtension_DatabaseCell" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.LocalMemoryStorage,System.Int64,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int64})" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.LocalMemoryStorage,System.Int64,TriSQL.DatabaseCell)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.LocalMemoryStorage,TriSQL.DatabaseCell)" -->
         <member name="M:TriSQL.StorageExtension_DatabaseCell.UseDatabaseCell(Trinity.Storage.LocalMemoryStorage,System.Int64,Trinity.TSL.Lib.CellAccessOptions)">
             <summary>
             Allocate a cell accessor on the specified cell, which inteprets
@@ -3947,22 +4110,22 @@
             the content object is saved back into the storage.
             </summary>
         </member>
-        <!-- 对于成员“M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,System.Int64,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int64})”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,System.Int64,TriSQL.DatabaseCell)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,TriSQL.DatabaseCell)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.MemoryCloud,System.Int64,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int64})”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.MemoryCloud,System.Int64,TriSQL.DatabaseCell)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.MemoryCloud,TriSQL.DatabaseCell)”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,System.Int64,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int64})" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,System.Int64,TriSQL.DatabaseCell)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,TriSQL.DatabaseCell)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.MemoryCloud,System.Int64,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int64})" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.MemoryCloud,System.Int64,TriSQL.DatabaseCell)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_DatabaseCell.SaveDatabaseCell(Trinity.Storage.MemoryCloud,TriSQL.DatabaseCell)" -->
         <member name="M:TriSQL.StorageExtension_DatabaseCell.LoadDatabaseCell(Trinity.Storage.MemoryCloud,System.Int64)">
             <summary>
             Loads the content of the specified cell. Any changes done to this object are not written to the store, unless
             the content object is saved back into the storage.
             </summary>
         </member>
-        <!-- 对于成员“T:TriSQL.StorageExtension_TableHeadCell”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.LocalMemoryStorage,System.Int64,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{TriSQL.Element},System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}})”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.LocalMemoryStorage,System.Int64,TriSQL.TableHeadCell)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.LocalMemoryStorage,TriSQL.TableHeadCell)”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "T:TriSQL.StorageExtension_TableHeadCell" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.LocalMemoryStorage,System.Int64,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{TriSQL.Element},System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}})" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.LocalMemoryStorage,System.Int64,TriSQL.TableHeadCell)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.LocalMemoryStorage,TriSQL.TableHeadCell)" -->
         <member name="M:TriSQL.StorageExtension_TableHeadCell.UseTableHeadCell(Trinity.Storage.LocalMemoryStorage,System.Int64,Trinity.TSL.Lib.CellAccessOptions)">
             <summary>
             Allocate a cell accessor on the specified cell, which inteprets
@@ -3996,22 +4159,22 @@
             the content object is saved back into the storage.
             </summary>
         </member>
-        <!-- 对于成员“M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,System.Int64,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{TriSQL.Element},System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}})”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,System.Int64,TriSQL.TableHeadCell)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,TriSQL.TableHeadCell)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.MemoryCloud,System.Int64,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{TriSQL.Element},System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}})”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.MemoryCloud,System.Int64,TriSQL.TableHeadCell)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.MemoryCloud,TriSQL.TableHeadCell)”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,System.Int64,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{TriSQL.Element},System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}})" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,System.Int64,TriSQL.TableHeadCell)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,TriSQL.TableHeadCell)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.MemoryCloud,System.Int64,System.String,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{TriSQL.Element},System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}})" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.MemoryCloud,System.Int64,TriSQL.TableHeadCell)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_TableHeadCell.SaveTableHeadCell(Trinity.Storage.MemoryCloud,TriSQL.TableHeadCell)" -->
         <member name="M:TriSQL.StorageExtension_TableHeadCell.LoadTableHeadCell(Trinity.Storage.MemoryCloud,System.Int64)">
             <summary>
             Loads the content of the specified cell. Any changes done to this object are not written to the store, unless
             the content object is saved back into the storage.
             </summary>
         </member>
-        <!-- 对于成员“T:TriSQL.StorageExtension_ElementCell”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.LocalMemoryStorage,System.Int64,System.String,System.Int32,System.Double,System.DateTime,System.Int64)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.LocalMemoryStorage,System.Int64,TriSQL.ElementCell)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.LocalMemoryStorage,TriSQL.ElementCell)”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "T:TriSQL.StorageExtension_ElementCell" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.LocalMemoryStorage,System.Int64,System.String,System.Int32,System.Double,System.DateTime,System.Int64)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.LocalMemoryStorage,System.Int64,TriSQL.ElementCell)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.LocalMemoryStorage,TriSQL.ElementCell)" -->
         <member name="M:TriSQL.StorageExtension_ElementCell.UseElementCell(Trinity.Storage.LocalMemoryStorage,System.Int64,Trinity.TSL.Lib.CellAccessOptions)">
             <summary>
             Allocate a cell accessor on the specified cell, which inteprets
@@ -4045,12 +4208,12 @@
             the content object is saved back into the storage.
             </summary>
         </member>
-        <!-- 对于成员“M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,System.Int64,System.String,System.Int32,System.Double,System.DateTime,System.Int64)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,System.Int64,TriSQL.ElementCell)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,TriSQL.ElementCell)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.MemoryCloud,System.Int64,System.String,System.Int32,System.Double,System.DateTime,System.Int64)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.MemoryCloud,System.Int64,TriSQL.ElementCell)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.MemoryCloud,TriSQL.ElementCell)”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,System.Int64,System.String,System.Int32,System.Double,System.DateTime,System.Int64)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,System.Int64,TriSQL.ElementCell)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.LocalMemoryStorage,Trinity.TSL.Lib.CellAccessOptions,TriSQL.ElementCell)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.MemoryCloud,System.Int64,System.String,System.Int32,System.Double,System.DateTime,System.Int64)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.MemoryCloud,System.Int64,TriSQL.ElementCell)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.StorageExtension_ElementCell.SaveElementCell(Trinity.Storage.MemoryCloud,TriSQL.ElementCell)" -->
         <member name="M:TriSQL.StorageExtension_ElementCell.LoadElementCell(Trinity.Storage.MemoryCloud,System.Int64)">
             <summary>
             Loads the content of the specified cell. Any changes done to this object are not written to the store, unless
@@ -4062,10 +4225,10 @@
             Provides cell type interfaces on <see cref="T:Trinity.Storage.LocalMemoryStorage"/>.
             </summary>
         </member>
-        <!-- 对于成员“M:TriSQL.Storage_CellType_Extension.IsDatabaseCell(Trinity.Storage.LocalMemoryStorage,System.Int64)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.Storage_CellType_Extension.IsTableHeadCell(Trinity.Storage.LocalMemoryStorage,System.Int64)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.Storage_CellType_Extension.IsElementCell(Trinity.Storage.LocalMemoryStorage,System.Int64)”忽略有格式错误的 XML 注释 -->
-        <!-- 对于成员“M:TriSQL.Storage_CellType_Extension.GetCellType(Trinity.Storage.LocalMemoryStorage,System.Int64)”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.Storage_CellType_Extension.IsDatabaseCell(Trinity.Storage.LocalMemoryStorage,System.Int64)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.Storage_CellType_Extension.IsTableHeadCell(Trinity.Storage.LocalMemoryStorage,System.Int64)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.Storage_CellType_Extension.IsElementCell(Trinity.Storage.LocalMemoryStorage,System.Int64)" -->
+        <!-- Badly formed XML comment ignored for member "M:TriSQL.Storage_CellType_Extension.GetCellType(Trinity.Storage.LocalMemoryStorage,System.Int64)" -->
         <member name="T:TriSQL.GenericCellOperations">
             <summary>
             Exposes Load/Save/New operations of <see cref="T:Trinity.Storage.ICell"/> and Use operation on <see cref="T:Trinity.Storage.ICellAccessor"/> on <see cref="T:Trinity.Storage.LocalMemoryStorage"/> and <see cref="T:Trinity.Storage.MemoryCloud"/>.
