@@ -13,15 +13,28 @@ namespace TriSQLApp
     {
         static void Main1(string[] args)
         {
-            List<int> a = new List<int> { 43, 23, 80, 15, 789, 27, 90, 69, 66, 158, 45, 32, 1, 22, 77, 66, 44 };
+            
+            //List<int> a = new List<int> { 43, 90, 80, 15, 789, 27, 90, 69, 90, 158, 45, 32, 90, 22, 77, 66, 90 };
+            List<int> a = new List<int> { 13, 12, 11, 19, 10 };
+            List<int> p = new List<int> { 20, 21, 20, 20, 22 };
             List<List<Element>> b = new List<List<Element>>();
             int c = 0;
-            foreach (int aa in a)
+            Table T = new Table();
+            for (int aa = 0; aa<a.Count; aa++)
             {
-                Element e = new Element(intField: aa);
+                Element e = new Element(intField: a[aa]);
+                Element ep = new Element(intField: p[aa]);
                 List<Element> ee = new List<Element>();
                 ee.Add(e);
+                ee.Add(ep);
                 b.Add(ee);
+                List<long> l = new List<long>();
+                l.Add(c++);
+                T.getCellIds().Add(l);
+            }
+            foreach(var pppp in b)
+            {
+                Console.WriteLine(b[0][0].intField.ToString() + " " + b[0][1].intField.ToString() +" "+ Table.CopTo(b[0], pppp) +" "+ pppp[0].intField+" "+ pppp[1].intField);
             }
             foreach (var oo in b)
             {
@@ -29,94 +42,121 @@ namespace TriSQLApp
                 {
                     Console.Write(pp.intField+" ");
                 }
+                Console.WriteLine();
             }
-            Console.WriteLine();
-            //Table.QuickSort(b, 0, b.Count - 1,);
+
+            Console.WriteLine("------------");
+            Table.QuickSort(b, 0, b.Count - 1, T);
             foreach(var oo in b)
             {
                 foreach(var pp in oo)
                 {
                     Console.Write(pp.intField+" ");
                 }
+                Console.WriteLine();
             }
-            Console.WriteLine();
+            
             Console.ReadLine();
         }
 
         static void Main(string[] args)
         {
-            //TrinityConfig.AddServer(new Trinity.Network.ServerInfo("192.168.1.112", 5304, Global.MyAssemblyPath, Trinity.Diagnostics.LogLevel.Error));
-            //TrinityConfig.AddServer(new Trinity.Network.ServerInfo("192.168.1.102", 5304, Global.MyAssemblyPath, Trinity.Diagnostics.LogLevel.Error));
-            //TrinityConfig.AddServer(new Trinity.Network.ServerInfo("127.0.0.1", 5305, Global.MyAssemblyPath, Trinity.Diagnostics.LogLevel.Error));
-            //TrinityConfig.AddServer(new Trinity.Network.ServerInfo("127.0.0.1", 5306, Global.MyAssemblyPath, Trinity.Diagnostics.LogLevel.Error));
-            //TrinityConfig.AddServer(new Trinity.Network.ServerInfo("127.0.0.1", 5307, Global.MyAssemblyPath, Trinity.Diagnostics.LogLevel.Error));
-            if (args.Length > 0 && args[0].Equals("-s"))
-            //{
+            if (args.Length > 0 && args[0].Equals("-k"))
+            {
+                //Global.CloudStorage.LoadStorage();
+                Database database = new Database("test");
+                Table tableA = new Table("A");
+                Table tableB = new Table("B");
+                List<dint> con = new List<dint>();
+                con.Add(new dint(0, 0));
+                con.Add(new dint(1, 1));
+                Console.WriteLine(tableA.tableNames[0]);
+                tableA.printTable();
+
+                Console.WriteLine(tableB.tableNames[0]);
+                tableB.printTable();
+                
+                //条件join
+                Table newtable = tableA.innerJoin(tableB,con);
+                Console.WriteLine(newtable.tableNames[0]);
+                newtable.printTable();
+                /*
+                //默认条件join
+                newtable = tableA.innerJoin(tableB);
+                Console.WriteLine(newtable.tableNames[0]);
+                newtable.printTable();
+                //笛卡尔积
+                newtable = tableA.innerJoin(tableB, new List<dint>());
+                Console.WriteLine(newtable.tableNames[0]);
+                newtable.printTable();
+                */
+                
+                newtable = tableA.innerJoinOnCluster(tableB, con);
+                Console.WriteLine(newtable.tableNames[0]);
+                newtable.printTable();
+                Console.ReadLine();
+            }
+            else
+                if (args.Length > 0 && args[0].Equals("-s"))
             {
                 TrinityConfig.CurrentRunningMode = RunningMode.Server;
                 DatabaseServer ds = new DatabaseServer();
                 ds.Start();
             }
-            else if (args.Length >0 && args[0].Equals("-p"))
+            else if (args.Length > 0 && args[0].Equals("-p"))
             {
                 TrinityConfig.CurrentRunningMode = RunningMode.Proxy;
                 DatabaseProxy dp = new DatabaseProxy();
                 dp.Start();
             }
-            //}
             else
             {
                 TrinityConfig.CurrentRunningMode = RunningMode.Client;
-                Global.CloudStorage.LoadStorage();
-                Console.WriteLine("读取完毕");
+                //Global.CloudStorage.ResetStorage();
+
                 Database.createDatabase("test");
+                //    Database.createDatabase("test2");
+                //    Database.createDatabase("test3");
+                //    Database.createDatabase("test4");
                 Database database = new Database("test");
-                //    /*
-                Table tableA = database.createTable("tableA", new string[] { "class" },
-                                new Tuple<int, string, object>(FieldType.INTEGER, "class", 2),
-                                new Tuple<int, string, object>(FieldType.STRING, "name", "hhh"),
-                               new Tuple<int, string, object>(FieldType.INTEGER, "age", 1));
 
-                Table tableB = database.createTable("tableB", new string[] { "cnumber" },
-                                new Tuple<int, string, object>(FieldType.INTEGER, "cnumber", 1),
-                                new Tuple<int, string, object>(FieldType.STRING, "score", "hhh"));
-                Table tableC = database.createTable("tableC", null,
-                    new Tuple<int, string, object>(FieldType.INTEGER, "id", 0),
-                    new Tuple<int, string, object>(FieldType.LONG, "long", 1));
+                Table tableA = database.createTable("A", null,
+                                new Tuple<int, string, object>(FieldType.INTEGER, "a", 0),
+                                new Tuple<int, string, object>(FieldType.INTEGER, "b", 0),
+                                new Tuple<int, string, object>(FieldType.INTEGER, "c", 0));
 
-                //Table tableA = new Table("tableC");
+                Table tableB = database.createTable("B", null,
+                                new Tuple<int, string, object>(FieldType.INTEGER, "a", 0),
+                                new Tuple<int, string, object>(FieldType.INTEGER, "b", 0));
+
+                Table tableC = database.createTable("C", null,
+                    new Tuple<int, string, object>(FieldType.INTEGER, "b", 0),
+                    new Tuple<int, string, object>(FieldType.INTEGER, "c", 0));
+
+                //Table tableA = new Table("tableA");
                 //Table tableB = new Table("tableB");
                 //Table tableC = new Table("tableC");
 
-                tableA.insert(new string[] { "class", "name", "age" }, new Object[] { 1, "111", 1 });
-                tableA.insert(new string[] { "class", "name", "age" }, new Object[] { 2, "222", 2 });
-                tableA.insert(new string[] { "class", "name", "age" }, new Object[] { 3, "333", 3 });
-                tableA.insert(new string[] { "class", "name", "age" }, new Object[] { 4, "444", 4 });
-                tableA.insert(new string[] { "class", "name", "age" }, new Object[] { 5, "555", 5 });
-                tableA.insert(new string[] { "class", "name", "age" }, new Object[] { 6, "666", 6 });
-                tableB.insert(new string[] { "cnumber", "score" }, new Object[] { 1, "c111" });
-                tableB.insert(new string[] { "cnumber", "score" }, new Object[] { 2, "c222" });
-                tableB.insert(new string[] { "cnumber", "score" }, new Object[] { 3, "c333" });
-                tableB.insert(new string[] { "cnumber", "score" }, new Object[] { 4, "c444" });
-                tableB.insert(new string[] { "cnumber", "score" }, new Object[] { 5, "c555" });
-                tableC.insert(new string[] { "id", "long" }, new Object[] { 123, 123 });
-                tableC.insert(new string[] { "id", "long" }, new Object[] { 234, 234 });
-                tableC.insert(new string[] { "id", "long" }, new Object[] { 345, 345 });
-                tableC.insert(new string[] { "id", "long" }, new Object[] { 456, 456 });
-                tableC.insert(new string[] { "id", "long" }, new Object[] { 567, 567 });
+                tableA.insert(new string[] { "a", "b", "c" }, new Object[] { 10, 20, 30 });
+                tableA.insert(new string[] { "a", "b", "c" }, new Object[] { 10, 21, 30 });
+                tableA.insert(new string[] { "a", "b", "c" }, new Object[] { 10, 20, 31 });
+                tableA.insert(new string[] { "a", "b", "c" }, new Object[] { 11, 20, 30 });
+                tableA.insert(new string[] { "a", "b", "c" }, new Object[] { 10, 22, 31 });
 
-                //tableA.print();
-                //tableB.print();
-                //tableC.print();
-                //Table tableABC = new Table("tableA", "tableC", "tableB");
-                //tableABC.print();
-                Table tA = tableA.select(new Tuple<string, string>[] {
-                    new Tuple<string, string>("*", "*") }, "a");
+                tableB.insert(new string[] { "a", "b" }, new Object[] { 10, 20 });
+                tableB.insert(new string[] { "a", "b" }, new Object[] { 10, 21 });
+                tableB.insert(new string[] { "a", "b" }, new Object[] { 11, 20 });
+                tableB.insert(new string[] { "a", "b" }, new Object[] { 11, 21 });
+
+                tableC.insert(new string[] { "b", "c" }, new Object[] { 20, 30 });
+                tableC.insert(new string[] { "b", "c" }, new Object[] { 21, 30 });
+                tableC.insert(new string[] { "b", "c" }, new Object[] { 20, 31 });
+
+                
+                tableA.printTable();
                 Global.CloudStorage.SaveStorage();
-                tA.print();
-                //Global.CloudStorage.SaveStorage();
+                Console.ReadKey();
             }
-
-            }
+        }
     }
 }

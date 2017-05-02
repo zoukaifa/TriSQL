@@ -1,0 +1,6 @@
+C:\Users\lining\Documents\Visual Studio 2015\Projects\TriSQL\TriSQLApp\bin\x64\Debug\TriSQLApp.exe
+C:\Users\lining\Documents\Visual Studio 2015\Projects\TriSQL\TriSQLApp\bin\x64\Debug\TriSQLApp.pdb
+C:\Users\lining\Documents\Visual Studio 2015\Projects\TriSQL\TriSQLApp\bin\x64\Debug\Trinity.Core.dll
+C:\Users\lining\Documents\Visual Studio 2015\Projects\TriSQL\TriSQLApp\bin\x64\Debug\TriSQL.dll
+C:\Users\lining\Documents\Visual Studio 2015\Projects\TriSQL\TriSQLApp\obj\x64\Debug\TriSQLApp.exe
+C:\Users\lining\Documents\Visual Studio 2015\Projects\TriSQL\TriSQLApp\obj\x64\Debug\TriSQLApp.pdb

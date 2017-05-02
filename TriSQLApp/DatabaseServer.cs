@@ -12,11 +12,6 @@ namespace TriSQLApp
 {
     class DatabaseServer : DatabaseServerBase
     {
-        /// <summary>
-        /// 查询数据库信息
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="response"></param>
         struct RowMessage
         {
             public List<long> cellId;
@@ -25,6 +20,13 @@ namespace TriSQLApp
             public Condition con;
             public List<List<long>> result;
         }
+
+
+        /// <summary>
+        /// 查询数据库信息
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="response"></param>
         public override void GetDatabaseHandler(GetDatabaseMessageReader request, GetDatabaseResponseWriter response)
         {
             long cellId = request.databaseId;
@@ -37,8 +39,10 @@ namespace TriSQLApp
 
         public override void GetElementHandler(GetElementMessageReader request, GetElementResponseWriter response)
         {
-            ElementCell ec = Global.LocalStorage.UseElementCell(request.cellId);
-            response.ele = FieldType.getElement(ec);
+            using (var ec = Global.LocalStorage.UseElementCell(request.cellId))
+            {
+                response.ele = FieldType.getElement(ec);
+            }
         }
 
         public override void GetRowHandler(GetRowMessageReader request, GetRowResponseWriter response)
@@ -50,8 +54,10 @@ namespace TriSQLApp
                 int serverId = Global.CloudStorage.GetServerIdByCellId(eleId);
                 if (serverId == Global.MyServerId)  //在本服务器上
                 {
-                    ElementCell ec = Global.LocalStorage.UseElementCell(eleId);
-                    response.row.Add(FieldType.getElement(ec));
+                    using (var ec = Global.LocalStorage.UseElementCell(eleId))
+                    {
+                        response.row.Add(FieldType.getElement(ec));
+                    }
                 }
                 else
                 {
@@ -77,69 +83,57 @@ namespace TriSQLApp
 
         public override void SelectFromProxyHandler(SelectMessageReader request)
         {
-            //List<List<long>> cellIds = request.rowIds;
-            //List<List<long>> result = new List<List<long>>();  //返回的信息
-            //for (int i = 0; i < request.rowIds.Count; i++)
-            //{
-            //    result.Add(new List<long>());
-            //}
-            //List<List<int>> types = request.columnTypes;
-            ////利用发送来的信息构造condition
-            //Table table = new Table(request.rowIds, request.tableNames,
-            //    request.tableIds, request.indexes, request.columnTypes, request.columnNames,
-            //    request.primaryIndexes, request.defaultValues);
-            //Condition con = new Condition(table, request.condition);
-            //for (int i = 0; i < cellIds[0].Count; i++)
-            //{
-            //    if (Global.CloudStorage.GetServerIdByCellId(cellIds[0][i])==Global.MyServerId)  //该行的前几列存储于本服务器上
-            //    {
-            //        //将数据进行转换
-            //        List<List<Object>> values = new List<List<object>>();
-            //        values.Add(FieldType.getValues(
-            //            Global.LocalStorage.UseRowCell(cellIds[0][i]).values, types[0]));
-            //        Console.WriteLine("{0},,,{1}",cellIds.Count, cellIds[0].Count);
-            //        for (int j = 1; j < cellIds.Count; j++)  //剩余的列从其他服务器获取
-            //        {
-            //            GetRowMessageWriter grmw = new GetRowMessageWriter(cellIds[j][i]);
-            //            values.Add(FieldType.getValues(
-            //                Global.CloudStorage.GetRowToDatabaseServer(
-            //                    Global.CloudStorage.GetServerIdByCellId(cellIds[j][i]), grmw).row
-            //                , types[j]));
-            //        }
-            //        if (con.getResult(values))  //筛选
-            //        {
-            //            for (int j = 0; j < cellIds.Count; j++)
-            //            {
-            //                result[j].Add(cellIds[j][i]);
-            //            }
-            //        }
-            //    }
-            //}
-            ////再把信息发回proxy0
-            //Global.CloudStorage.SelectFromServerToDatabaseProxy(0,
-            //    new SelectResultResponseWriter(Global.MyServerId, result));
-        }
-
-        public override void UpdateDatabaseHandler(UpdateDatabaseMessageReader request)
-        {
-            long cellId = request.databaseId;
-            using (var db = Global.LocalStorage.UseDatabaseCell(cellId))
+            List<List<long>> cellIds = request.cellIds;
+            //利用发送来的信息构造condition
+            Table table = new Table(request.columnNameList, request.columnTypeList);
+            Condition con = new Condition(table, request.condition);
+            List<List<long>> result = new List<List<long>>();
+            List<Thread> threads = new List<Thread>();
+            foreach (List<long> cellId in cellIds)
             {
-                db.tableIdList = request.tableIdList;
-                db.tableNameList = request.tableNameList;
+                if (Global.CloudStorage.GetServerIdByCellId(cellId[0]) == Global.MyServerId)  //这一行第一列存储于本服务器
+                {
+                    //每行开一个线程处理
+                    RowMessage rm = new RowMessage();
+                    rm.cellId = cellId;
+                    rm.con = con;
+                    rm.types = request.columnTypeList;
+                    rm.usedIndex = request.usedIndex;
+                    rm.result = result;
+                    Thread thread = new Thread(new ParameterizedThreadStart(filter));
+                    threads.Add(thread);
+                    thread.Start(rm);
+                }
             }
+            foreach (Thread thr in threads)
+            {
+                thr.Join();
+            }
+            //此时已经处理完结果
+            Global.CloudStorage.SelectFromServerToDatabaseProxy(0,
+                new SelectResultResponseWriter(Global.MyServerId, result));
         }
 
-        public override void UpdateElementHandler(UpdateElementMessageReader request)
+        /// <summary>
+        /// 在线程内对某一行进行判断
+        /// </summary>
+        /// <param name="cellId"></param>
+        private void filter(Object rowMessage)
         {
-            using (var eleCell = Global.LocalStorage.UseElementCell(request.eleId))
-            {
-                eleCell.intField = request.ele.intField;
-                eleCell.stringField = request.ele.stringField;
-                eleCell.doubleField = request.ele.doubleField;
-                eleCell.longField = request.ele.longField;
-                eleCell.dateField = request.ele.dateField;
+            RowMessage rm = (RowMessage)rowMessage;
 
+            List<Element> row = Global.CloudStorage.GetRowToDatabaseServer(
+                Global.CloudStorage.GetServerIdByCellId(rm.cellId[0]),
+                new GetRowMessageWriter(rm.cellId)).row;
+            List<Object> values = FieldType.getValues(row, rm.types);
+            if (rm.con.getResult(values))
+            {
+                List<long> cellId = new List<long>();
+                foreach (int index in rm.usedIndex)
+                {
+                    cellId.Add(rm.cellId[index]);
+                }
+                rm.result.Add(cellId);
             }
         }
 
@@ -147,6 +141,7 @@ namespace TriSQLApp
         {
             using (var thcell = Global.LocalStorage.UseTableHeadCell(request.tableId))
             {
+
                 thcell.tableName = request.tableName;
                 thcell.columnNameList = request.columnNameList;
                 thcell.columnTypeList = request.columnTypeList;
@@ -243,10 +238,29 @@ namespace TriSQLApp
             {
                 ElementCell elecell = FieldType.getElementCell(request.ele[i]);
                 cellIds.Add(elecell.CellID);
-                Global.LocalStorage.SaveElementCell(elecell);
+                Global.LocalStorage.SaveElementCell(elecell.CellID, elecell);
             }
             response.serverId = Global.MyServerId;
             response.cellIds = cellIds;
+        }
+
+        public override void SaveStorageHandler()
+        {
+            Console.WriteLine("开始存储");
+            Global.LocalStorage.SaveStorage();
+            Console.WriteLine("存储完毕");
+        }
+
+        public override void DoJoinHandler(JoinMessageReader request, JoinResponceWriter response)
+        {
+            Table Ta = new Table(request.cellidsA);
+            Table Tb = new Table(request.cellidsB);
+            List<dint> cond = new List<dint>();
+            for (int i = 0; i < request.conda.Count; i++)
+            {
+                cond.Add(new dint(request.conda[i], request.condb[i]));
+            }
+            response.celllids = (Ta.innerJoin(Tb, cond, false)).getCellIds();
         }
     }
 }

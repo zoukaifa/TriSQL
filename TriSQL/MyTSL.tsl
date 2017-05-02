@@ -46,17 +46,6 @@ protocol GetDatabase {
 	Response: GetDatabaseResponse;
 }
 
-//更新数据库
-struct UpdateDatabaseMessage {
-	long databaseId;
-	List<string> tableNameList;
-	List<long> tableIdList;
-}
-protocol UpdateDatabase {
-	Type: Syn;
-	Request: UpdateDatabaseMessage;
-	Response: void;	
-}
 
 //表
 struct GetTableMessage {  //查询表的信息
@@ -83,11 +72,12 @@ struct SelectMessage {
 	List<string> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
 	List<List<long>> cellIds;  //单元格的cellid的集合
+	List<int> usedIndex;
 	string condition;
 }
 //proxy向client回复结果
 struct SelectResponse {
-	List<List<long>> rowIds;
+	List<List<long>> cellIds;
 }
 //server向proxy回复结果
 struct SelectResultResponse {
@@ -122,18 +112,18 @@ protocol GetRow {
 	Response:GetRowResponse;
 }
 //获取某一单元格
-struct GetElementMessage{
+struct GetElementMessage {
 	long cellId;	
 }
 struct GetElementResponse {
 	Element ele;
 }
-
-protocol GetElement{
+protocol GetElement {
 	Type: Syn;	
 	Request: GetElementMessage;
 	Response: GetElementResponse;
 }
+
 struct UpdateTableMessage{
 	string tableName;  //表名
 	CellId tableId;
@@ -143,21 +133,12 @@ struct UpdateTableMessage{
 	List<Element> defaultValue;  //默认值
 	List<List<CellId>> cellIds;  //单元格的cellid的集合
 }
-
 protocol UpdateTable {
 	Type: Syn;
 	Request: UpdateTableMessage;
 	Response: void;	
 }
-struct UpdateElementMessage{
-	CellId eleId;
-	Element ele;
-}
-protocol UpdateElement{
-	Type:Syn;
-	Request:UpdateElementMessage;
-	Response:void;
-}
+
 struct  DeleteMessage{
 	List<List<long>>cellIds;
 	List<int> columnTypeList;
@@ -220,6 +201,31 @@ protocol InsertElement{
 	Request:InsertMessage;
 	Response:InsertResponce;
 }
+
+protocol SaveStorage {
+	Type:Syn;
+	Request:void;
+	Response:void;	
+}
+struct dint{
+	int a;
+	int b;	
+}
+struct JoinMessage{
+	List<List<long>> cellidsA;
+	List<List<long>> cellidsB;
+	List<int> conda;
+	List<int> condb;
+}
+struct JoinResponce{
+	List<List<long>> celllids;
+}
+protocol DoJoin {
+	Type:Syn;
+	Request:JoinMessage;
+	Response:JoinResponce;	
+}
+
 proxy DatabaseProxy {
 	protocol SelectFromClient;
 	protocol SelectFromServer;	
@@ -230,15 +236,15 @@ proxy DatabaseProxy {
 }
 
 server DatabaseServer {
-	protocol SelectFromProxy;
+	protocol SelectFromProxy;	
 	protocol DeleteFromProxy;
 	protocol TruncateFromProxy;
 	protocol InsertElement;
 	protocol GetDatabase;
-	protocol UpdateDatabase;
 	protocol GetTable;
 	protocol GetRow;
 	protocol GetElement;
 	protocol UpdateTable;
-	protocol UpdateElement;
+	protocol SaveStorage;
+	protocol DoJoin;
 }
