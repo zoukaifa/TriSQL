@@ -75,12 +75,14 @@ namespace TriSQLApp
 
                 Console.WriteLine(tableB.tableNames[0]);
                 tableB.printTable();
-                
+
+                Table newtable;
+                //本地调用
+                /*
                 //条件join
-                Table newtable = tableA.innerJoin(tableB,con);
+                newtable = tableA.innerJoin(tableB,con);
                 Console.WriteLine(newtable.tableNames[0]);
                 newtable.printTable();
-                /*
                 //默认条件join
                 newtable = tableA.innerJoin(tableB);
                 Console.WriteLine(newtable.tableNames[0]);
@@ -90,10 +92,22 @@ namespace TriSQLApp
                 Console.WriteLine(newtable.tableNames[0]);
                 newtable.printTable();
                 */
-                
+                //全局调用
+                /*
+                //条件join
                 newtable = tableA.innerJoinOnCluster(tableB, con);
                 Console.WriteLine(newtable.tableNames[0]);
                 newtable.printTable();
+                //默认条件join
+                newtable = tableA.innerJoinOnCluster(tableB);
+                Console.WriteLine(newtable.tableNames[0]);
+                newtable.printTable();
+                //笛卡尔积
+                newtable = tableA.innerJoinOnCluster(tableB, new List<dint>());
+                Console.WriteLine(newtable.tableNames[0]);
+                newtable.printTable();
+                */
+                
                 Console.ReadLine();
             }
             else
