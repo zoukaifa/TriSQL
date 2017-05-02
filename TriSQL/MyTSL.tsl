@@ -235,6 +235,7 @@ protocol JoinFromClient{
 }
 //topK
 struct TopKMessage{
+	int k;	
 	List<int> cond;	
 	List<List<long>> celllids;
 }
@@ -251,9 +252,14 @@ protocol TopKFromProxy{
 	Request:TopKMessage;
 	Response:void;	
 }
+struct TopKServerResponce{
+	List<List<long>> celllids;
+	List<int> values;
+	int serverid;
+}
 protocol TopKFromServer{
 	Type:Asyn;
-	Request:TopKResponce;
+	Request:TopKServerResponce;
 	Response:void;	
 }
 proxy DatabaseProxy {
@@ -282,5 +288,4 @@ server DatabaseServer {
 	protocol SaveStorage;
 	protocol DoJoinFromProxy;
 	protocol TopKFromProxy;
-
 }

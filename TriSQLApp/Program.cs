@@ -34,7 +34,7 @@ namespace TriSQLApp
             }
             foreach(var pppp in b)
             {
-                Console.WriteLine(b[0][0].intField.ToString() + " " + b[0][1].intField.ToString() +" "+ Table.CopTo(b[0], pppp) +" "+ pppp[0].intField+" "+ pppp[1].intField);
+                //Console.WriteLine(b[0][0].intField.ToString() + " " + b[0][1].intField.ToString() +" "+ Table.CopTo(b[0], pppp) +" "+ pppp[0].intField+" "+ pppp[1].intField);
             }
             foreach (var oo in b)
             {
@@ -46,7 +46,7 @@ namespace TriSQLApp
             }
 
             Console.WriteLine("------------");
-            Table.QuickSort(b, 0, b.Count - 1, T);
+            Table.QuickSort(b, 0, b.Count - 1, T.getCellIds());
             foreach(var oo in b)
             {
                 foreach(var pp in oo)
@@ -107,7 +107,10 @@ namespace TriSQLApp
                 Console.WriteLine(newtable.tableNames[0]);
                 newtable.printTable();
                 */
-                
+                newtable = new Table(tableA.topKOnLocal(4, "b"), tableA.getColumnTypes());
+                newtable.printTable();
+                newtable = new Table(tableA.topK(4, new string[] { "b" }), tableA.getColumnTypes());
+                newtable.printTable();
                 Console.ReadLine();
             }
             else

@@ -2670,7 +2670,7 @@
             A .NET runtime object representation of TopKMessage defined in TSL.
             </summary>
         </member>
-        <member name="M:TriSQL.TopKMessage.#ctor(System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}})">
+        <member name="M:TriSQL.TopKMessage.#ctor(System.Int32,System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}})">
             <summary>
             Initializes a new instance of the TopKMessage class with the specified parameters.
             </summary>
@@ -2721,6 +2721,11 @@
             Copies the struct content into a byte array.
             </summary>
         </member>
+        <member name="P:TriSQL.TopKMessage_Accessor.k">
+            <summary>
+            Provides in-place access to the object field k.
+            </summary>
+        </member>
         <member name="P:TriSQL.TopKMessage_Accessor.cond">
             <summary>
             Provides in-place access to the object field cond.
@@ -2754,6 +2759,11 @@
         <member name="M:TriSQL.TopKMessage_Accessor_ReadOnly.ToByteArray">
             <summary>
             Copies the struct content into a byte array.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKMessage_Accessor_ReadOnly.k">
+            <summary>
+            Provides in-place access to the object field k.
             </summary>
         </member>
         <member name="P:TriSQL.TopKMessage_Accessor_ReadOnly.cond">
@@ -2855,6 +2865,117 @@
         <member name="P:TriSQL.TopKResponce_Accessor_ReadOnly.celllids">
             <summary>
             Provides in-place access to the object field celllids.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TopKServerResponce">
+            <summary>
+            A .NET runtime object representation of TopKServerResponce defined in TSL.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKServerResponce.#ctor(System.Collections.Generic.List{System.Collections.Generic.List{System.Int64}},System.Collections.Generic.List{System.Int32},System.Int32)">
+            <summary>
+            Initializes a new instance of the TopKServerResponce class with the specified parameters.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKServerResponce.TryParse(System.String,TriSQL.TopKServerResponce@)">
+            <summary>
+            Converts the string representation of a TopKServerResponce to its
+            struct equivalent. A return value indicates whether the 
+            operation succeeded.
+            </summary>
+            <param name="input">A string to convert.</param>
+            <param name="value">
+            When this method returns, contains the struct equivalent of the value contained 
+            in input, if the conversion succeeded, or default(TopKServerResponce) if the conversion
+            failed. The conversion fails if the input parameter is null or String.Empty, or is 
+            not of the correct format. This parameter is passed uninitialized. 
+            </param>
+            <returns>True if input was converted successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:TriSQL.TopKServerResponce.ToString">
+            <summary>
+            Serializes this object to a Json string.
+            </summary>
+            <returns>The Json string serialized.</returns>
+        </member>
+        <member name="T:TriSQL.TopKServerResponce_Accessor">
+            <summary>
+            Provides in-place operations of TopKServerResponce defined in TSL.
+            </summary>
+        </member>
+        <member name="F:TriSQL.TopKServerResponce_Accessor.CellPtr">
+            <summary>
+            The pointer to the content of the object.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKServerResponce_Accessor.GetOptionalFieldNames">
+            <summary>
+            Get an array of the names of all optional fields for object type TopKServerResponce.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKServerResponce_Accessor.GetNotNullOptionalFields">
+            <summary>
+            Get a list of the names of available optional fields in the object being operated by this accessor.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKServerResponce_Accessor.ToByteArray">
+            <summary>
+            Copies the struct content into a byte array.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKServerResponce_Accessor.celllids">
+            <summary>
+            Provides in-place access to the object field celllids.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKServerResponce_Accessor.values">
+            <summary>
+            Provides in-place access to the object field values.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKServerResponce_Accessor.serverid">
+            <summary>
+            Provides in-place access to the object field serverid.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TopKServerResponce_Accessor_ReadOnly">
+            <summary>
+            Provides in-place operations of TopKServerResponce defined in TSL.
+            </summary>
+        </member>
+        <member name="F:TriSQL.TopKServerResponce_Accessor_ReadOnly.CellPtr">
+            <summary>
+            The pointer to the content of the object.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKServerResponce_Accessor_ReadOnly.GetOptionalFieldNames">
+            <summary>
+            Get an array of the names of all optional fields for object type TopKServerResponce.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKServerResponce_Accessor_ReadOnly.GetNotNullOptionalFields">
+            <summary>
+            Get a list of the names of available optional fields in the object being operated by this accessor.
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKServerResponce_Accessor_ReadOnly.ToByteArray">
+            <summary>
+            Copies the struct content into a byte array.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKServerResponce_Accessor_ReadOnly.celllids">
+            <summary>
+            Provides in-place access to the object field celllids.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKServerResponce_Accessor_ReadOnly.values">
+            <summary>
+            Provides in-place access to the object field values.
+            </summary>
+        </member>
+        <member name="P:TriSQL.TopKServerResponce_Accessor_ReadOnly.serverid">
+            <summary>
+            Provides in-place access to the object field serverid.
             </summary>
         </member>
         <member name="T:TriSQL.DatabaseCell">
@@ -3360,24 +3481,24 @@
             </summary>
             <param name="ctx">A <see cref="T:System.Net.HttpListenerContext"/> object.</param>
         </member>
-        <member name="T:TriSQL.GetRowMessageReader">
+        <member name="T:TriSQL.GetTableMessageReader">
             <summary>
-            Represents a read-only accessor on the message of type GetRowMessage defined in the TSL protocols.
+            Represents a read-only accessor on the message of type GetTableMessage defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.GetRowMessageReader.Dispose">
+        <member name="M:TriSQL.GetTableMessageReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.GetRowMessageWriter">
+        <member name="T:TriSQL.GetTableMessageWriter">
             <summary>
-            Represents a writer accessor on the message of type GetRowMessage defined in the TSL protocols.
+            Represents a writer accessor on the message of type GetTableMessage defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3385,30 +3506,30 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.GetRowMessageWriter.Dispose">
+        <member name="M:TriSQL.GetTableMessageWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.GetRowResponseReader">
+        <member name="T:TriSQL.GetTableResponseReader">
             <summary>
-            Represents a read-only accessor on the message of type GetRowResponse defined in the TSL protocols.
+            Represents a read-only accessor on the message of type GetTableResponse defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.GetRowResponseReader.Dispose">
+        <member name="M:TriSQL.GetTableResponseReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.GetRowResponseWriter">
+        <member name="T:TriSQL.GetTableResponseWriter">
             <summary>
-            Represents a writer accessor on the message of type GetRowResponse defined in the TSL protocols.
+            Represents a writer accessor on the message of type GetTableResponse defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3416,30 +3537,30 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.GetRowResponseWriter.Dispose">
+        <member name="M:TriSQL.GetTableResponseWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.TopKMessageReader">
+        <member name="T:TriSQL.TopKServerResponceReader">
             <summary>
-            Represents a read-only accessor on the message of type TopKMessage defined in the TSL protocols.
+            Represents a read-only accessor on the message of type TopKServerResponce defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.TopKMessageReader.Dispose">
+        <member name="M:TriSQL.TopKServerResponceReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.TopKMessageWriter">
+        <member name="T:TriSQL.TopKServerResponceWriter">
             <summary>
-            Represents a writer accessor on the message of type TopKMessage defined in the TSL protocols.
+            Represents a writer accessor on the message of type TopKServerResponce defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3447,100 +3568,7 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.TopKMessageWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.TopKResponceReader">
-            <summary>
-            Represents a read-only accessor on the message of type TopKResponce defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.TopKResponceReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.TopKResponceWriter">
-            <summary>
-            Represents a writer accessor on the message of type TopKResponce defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.TopKResponceWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.DeleteMessageReader">
-            <summary>
-            Represents a read-only accessor on the message of type DeleteMessage defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.DeleteMessageReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.DeleteMessageWriter">
-            <summary>
-            Represents a writer accessor on the message of type DeleteMessage defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.DeleteMessageWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.DeleteResponceReader">
-            <summary>
-            Represents a read-only accessor on the message of type DeleteResponce defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.DeleteResponceReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.DeleteResponceWriter">
-            <summary>
-            Represents a writer accessor on the message of type DeleteResponce defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.DeleteResponceWriter.Dispose">
+        <member name="M:TriSQL.TopKServerResponceWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
@@ -3608,24 +3636,24 @@
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.DeleteResultResponceReader">
+        <member name="T:TriSQL.InsertMessageReader">
             <summary>
-            Represents a read-only accessor on the message of type DeleteResultResponce defined in the TSL protocols.
+            Represents a read-only accessor on the message of type InsertMessage defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.DeleteResultResponceReader.Dispose">
+        <member name="M:TriSQL.InsertMessageReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.DeleteResultResponceWriter">
+        <member name="T:TriSQL.InsertMessageWriter">
             <summary>
-            Represents a writer accessor on the message of type DeleteResultResponce defined in the TSL protocols.
+            Represents a writer accessor on the message of type InsertMessage defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3633,30 +3661,30 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.DeleteResultResponceWriter.Dispose">
+        <member name="M:TriSQL.InsertMessageWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.SelectResultResponseReader">
+        <member name="T:TriSQL.InsertResponceReader">
             <summary>
-            Represents a read-only accessor on the message of type SelectResultResponse defined in the TSL protocols.
+            Represents a read-only accessor on the message of type InsertResponce defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.SelectResultResponseReader.Dispose">
+        <member name="M:TriSQL.InsertResponceReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.SelectResultResponseWriter">
+        <member name="T:TriSQL.InsertResponceWriter">
             <summary>
-            Represents a writer accessor on the message of type SelectResultResponse defined in the TSL protocols.
+            Represents a writer accessor on the message of type InsertResponce defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3664,7 +3692,38 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.SelectResultResponseWriter.Dispose">
+        <member name="M:TriSQL.InsertResponceWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.DeleteMessageReader">
+            <summary>
+            Represents a read-only accessor on the message of type DeleteMessage defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.DeleteMessageReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.DeleteMessageWriter">
+            <summary>
+            Represents a writer accessor on the message of type DeleteMessage defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.DeleteMessageWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
@@ -3696,161 +3755,6 @@
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
         <member name="M:TriSQL.TruncateMessageWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.TruncateResponceReader">
-            <summary>
-            Represents a read-only accessor on the message of type TruncateResponce defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.TruncateResponceReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.TruncateResponceWriter">
-            <summary>
-            Represents a writer accessor on the message of type TruncateResponce defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.TruncateResponceWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.JoinMessageReader">
-            <summary>
-            Represents a read-only accessor on the message of type JoinMessage defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.JoinMessageReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.JoinMessageWriter">
-            <summary>
-            Represents a writer accessor on the message of type JoinMessage defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.JoinMessageWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.JoinResponceReader">
-            <summary>
-            Represents a read-only accessor on the message of type JoinResponce defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.JoinResponceReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.JoinResponceWriter">
-            <summary>
-            Represents a writer accessor on the message of type JoinResponce defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.JoinResponceWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.GetElementMessageReader">
-            <summary>
-            Represents a read-only accessor on the message of type GetElementMessage defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.GetElementMessageReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.GetElementMessageWriter">
-            <summary>
-            Represents a writer accessor on the message of type GetElementMessage defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.GetElementMessageWriter.Dispose">
-            <summary>
-            Dispose the message writer and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.GetElementResponseReader">
-            <summary>
-            Represents a read-only accessor on the message of type GetElementResponse defined in the TSL protocols.
-            The message readers will be instantiated by the system and passed to user's logic.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            </summary>
-        </member>
-        <member name="M:TriSQL.GetElementResponseReader.Dispose">
-            <summary>
-            Dispose the message reader and release the memory resource.
-            It is the user's responsibility to call this method after finished accessing the message.
-            </summary>
-        </member>
-        <member name="T:TriSQL.GetElementResponseWriter">
-            <summary>
-            Represents a writer accessor on the message of type GetElementResponse defined in the TSL protocols.
-            The message writers should be instantiated by the user's logic and passed to the system to send it out.
-            After finished accessing the message. It is the user's responsibility to call Dispose()
-            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
-            </summary>
-            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
-            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
-        </member>
-        <member name="M:TriSQL.GetElementResponseWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
@@ -3918,24 +3822,24 @@
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.GetTableMessageReader">
+        <member name="T:TriSQL.GetRowMessageReader">
             <summary>
-            Represents a read-only accessor on the message of type GetTableMessage defined in the TSL protocols.
+            Represents a read-only accessor on the message of type GetRowMessage defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.GetTableMessageReader.Dispose">
+        <member name="M:TriSQL.GetRowMessageReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.GetTableMessageWriter">
+        <member name="T:TriSQL.GetRowMessageWriter">
             <summary>
-            Represents a writer accessor on the message of type GetTableMessage defined in the TSL protocols.
+            Represents a writer accessor on the message of type GetRowMessage defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3943,30 +3847,30 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.GetTableMessageWriter.Dispose">
+        <member name="M:TriSQL.GetRowMessageWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.GetTableResponseReader">
+        <member name="T:TriSQL.GetRowResponseReader">
             <summary>
-            Represents a read-only accessor on the message of type GetTableResponse defined in the TSL protocols.
+            Represents a read-only accessor on the message of type GetRowResponse defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.GetTableResponseReader.Dispose">
+        <member name="M:TriSQL.GetRowResponseReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.GetTableResponseWriter">
+        <member name="T:TriSQL.GetRowResponseWriter">
             <summary>
-            Represents a writer accessor on the message of type GetTableResponse defined in the TSL protocols.
+            Represents a writer accessor on the message of type GetRowResponse defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -3974,7 +3878,69 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.GetTableResponseWriter.Dispose">
+        <member name="M:TriSQL.GetRowResponseWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.GetElementMessageReader">
+            <summary>
+            Represents a read-only accessor on the message of type GetElementMessage defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.GetElementMessageReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.GetElementMessageWriter">
+            <summary>
+            Represents a writer accessor on the message of type GetElementMessage defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.GetElementMessageWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.GetElementResponseReader">
+            <summary>
+            Represents a read-only accessor on the message of type GetElementResponse defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.GetElementResponseReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.GetElementResponseWriter">
+            <summary>
+            Represents a writer accessor on the message of type GetElementResponse defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.GetElementResponseWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
@@ -4011,24 +3977,24 @@
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.InsertMessageReader">
+        <member name="T:TriSQL.JoinMessageReader">
             <summary>
-            Represents a read-only accessor on the message of type InsertMessage defined in the TSL protocols.
+            Represents a read-only accessor on the message of type JoinMessage defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.InsertMessageReader.Dispose">
+        <member name="M:TriSQL.JoinMessageReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.InsertMessageWriter">
+        <member name="T:TriSQL.JoinMessageWriter">
             <summary>
-            Represents a writer accessor on the message of type InsertMessage defined in the TSL protocols.
+            Represents a writer accessor on the message of type JoinMessage defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -4036,30 +4002,30 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.InsertMessageWriter.Dispose">
+        <member name="M:TriSQL.JoinMessageWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.InsertResponceReader">
+        <member name="T:TriSQL.TopKMessageReader">
             <summary>
-            Represents a read-only accessor on the message of type InsertResponce defined in the TSL protocols.
+            Represents a read-only accessor on the message of type TopKMessage defined in the TSL protocols.
             The message readers will be instantiated by the system and passed to user's logic.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             </summary>
         </member>
-        <member name="M:TriSQL.InsertResponceReader.Dispose">
+        <member name="M:TriSQL.TopKMessageReader.Dispose">
             <summary>
             Dispose the message reader and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.
             </summary>
         </member>
-        <member name="T:TriSQL.InsertResponceWriter">
+        <member name="T:TriSQL.TopKMessageWriter">
             <summary>
-            Represents a writer accessor on the message of type InsertResponce defined in the TSL protocols.
+            Represents a writer accessor on the message of type TopKMessage defined in the TSL protocols.
             The message writers should be instantiated by the user's logic and passed to the system to send it out.
             After finished accessing the message. It is the user's responsibility to call Dispose()
             on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
@@ -4067,7 +4033,193 @@
             <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
             <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
         </member>
-        <member name="M:TriSQL.InsertResponceWriter.Dispose">
+        <member name="M:TriSQL.TopKMessageWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.JoinResponceReader">
+            <summary>
+            Represents a read-only accessor on the message of type JoinResponce defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.JoinResponceReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.JoinResponceWriter">
+            <summary>
+            Represents a writer accessor on the message of type JoinResponce defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.JoinResponceWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.DeleteResultResponceReader">
+            <summary>
+            Represents a read-only accessor on the message of type DeleteResultResponce defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.DeleteResultResponceReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.DeleteResultResponceWriter">
+            <summary>
+            Represents a writer accessor on the message of type DeleteResultResponce defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.DeleteResultResponceWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.SelectResultResponseReader">
+            <summary>
+            Represents a read-only accessor on the message of type SelectResultResponse defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.SelectResultResponseReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.SelectResultResponseWriter">
+            <summary>
+            Represents a writer accessor on the message of type SelectResultResponse defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.SelectResultResponseWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.DeleteResponceReader">
+            <summary>
+            Represents a read-only accessor on the message of type DeleteResponce defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.DeleteResponceReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.DeleteResponceWriter">
+            <summary>
+            Represents a writer accessor on the message of type DeleteResponce defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.DeleteResponceWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TruncateResponceReader">
+            <summary>
+            Represents a read-only accessor on the message of type TruncateResponce defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.TruncateResponceReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TruncateResponceWriter">
+            <summary>
+            Represents a writer accessor on the message of type TruncateResponce defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.TruncateResponceWriter.Dispose">
+            <summary>
+            Dispose the message writer and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TopKResponceReader">
+            <summary>
+            Represents a read-only accessor on the message of type TopKResponce defined in the TSL protocols.
+            The message readers will be instantiated by the system and passed to user's logic.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the reader object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            </summary>
+        </member>
+        <member name="M:TriSQL.TopKResponceReader.Dispose">
+            <summary>
+            Dispose the message reader and release the memory resource.
+            It is the user's responsibility to call this method after finished accessing the message.
+            </summary>
+        </member>
+        <member name="T:TriSQL.TopKResponceWriter">
+            <summary>
+            Represents a writer accessor on the message of type TopKResponce defined in the TSL protocols.
+            The message writers should be instantiated by the user's logic and passed to the system to send it out.
+            After finished accessing the message. It is the user's responsibility to call Dispose()
+            on the writer object. Recommend wrapping the reader with a <c>using Statement block</c>.
+            </summary>
+            <seealso ref="https://msdn.microsoft.com/en-us/library/yh598w02.aspx"/>
+            <remarks>Calling <c>Dispose()</c> does not send the message out.</remarks>
+        </member>
+        <member name="M:TriSQL.TopKResponceWriter.Dispose">
             <summary>
             Dispose the message writer and release the memory resource.
             It is the user's responsibility to call this method after finished accessing the message.

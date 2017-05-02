@@ -171,26 +171,48 @@ namespace TriSQLApp
         #region topk
         public override void TopKFromClientHandler(TopKMessageReader request, TopKResponceWriter response)
         {
-            /*
+            idDict.Clear();
+            values.Clear();
             List<List<List<long>>> classify = Classify(request.celllids, request.cond);
             for (int i = 0; i < Global.ServerCount; i++)
             {
-                JoinMessageWriter msg = new JoinMessageWriter(request.cellidsA, classify[i], request.conda, request.condb);
-                Global.CloudStorage.DoJoinFromProxyToDatabaseServer(i, msg);
+                TopKMessageWriter msg = new TopKMessageWriter(request.k,request.cond,classify[i]);
+                Global.CloudStorage.TopKFromProxyToDatabaseServer(i, msg);
             }
             sem.WaitOne();
-            response.celllids = new List<List<long>>();
-            for (int i = 0; i < Global.ServerCount; i++)
+            int k = request.k;
+            int[] stage = new int[k];
+            for (int i = 0; i < k; i++)
             {
-                response.celllids.AddRange(idDict[i]);
+                stage[i] = 0;
             }
-            response.serverid = 0;
-            */
+            response.celllids = new List<List<long>>();
+            for (int i = 0; i < k; i++)
+            {
+                int max = values[0][stage[0]];
+                int maxserver = 0;
+                for (int j = 1; j < Global.ServerCount; j++)
+                {
+                    if (max < values[j][stage[j]])
+                    {
+                        max = values[j][stage[j]];
+                        maxserver = j;
+                    }
+                }
+                response.celllids.Add(idDict[maxserver][stage[maxserver]]);
+                stage[maxserver]++;
+            }
         }
 
-        public override void TopKFromServerHandler(TopKResponceReader request)
+        Dictionary<int, List<int>> values = new Dictionary<int, List<int>>();
+        public override void TopKFromServerHandler(TopKServerResponceReader request)
         {
-            throw new NotImplementedException();
+            idDict.Add(request.serverid, request.celllids);
+            values.Add(request.serverid, request.values);
+            if (idDict.Count == Global.ServerCount)
+            {
+                sem.Release();
+            }
         }
         #endregion
     }

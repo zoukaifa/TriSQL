@@ -34,6 +34,11 @@ namespace TriSQLApp
         public Table()
         {   
         }
+        public Table(List<List<long>> cellIds, List<int> columnTypes)
+        {
+            this.cellIds = cellIds;
+            this.columnTypes = columnTypes;
+        }
         public Table(List<string> columnNameList, List<int> columnTypeList)
         {
             this.columnNames = columnNameList;
@@ -453,19 +458,69 @@ namespace TriSQLApp
             throw new Exception("不存在的列名");
         }
         /// <summary>
-        /// topk
+        /// topk 目前的names.count = 1 主要在服务器端未实现多值比较
         /// </summary>
-        public List<List<long>> topK(int k, string name)
+        public List<List<long>> topK(int k, string[] names)
+        {
+            List<int> pos = new List<int>();
+            foreach(var name in names)
+            {
+                pos.Add(nametopos(name));
+            }
+            TopKMessageWriter msg = new TopKMessageWriter(k, pos, this.cellIds);
+            List<List<long>> r = Global.CloudStorage.TopKFromClientToDatabaseProxy(0, msg).celllids;
+            return r;
+        }
+        public List<List<long>> topKOnLocal(int k, string name)
         {
             int pos = nametopos(name);
-            List<int> resp = new List<int>();
-            for(int i =0;i<Global.CloudStorage.ServerCount; i++)
-            {
-                //resp.AddRange()
-            }
-            return null;
-        }
+            List<int> cond = new List<int>();
+            cond.Add(pos);
+            List<List<Element>> correspondA = getCorrespon(cond, this.cellIds);
 
+            List<List<long>> res = new List<List<long>>(k);
+            List<int> cmp = new List<int>(k);
+            for (int i = 0; i < k; i++)
+            {
+                cmp.Add(-1);
+                res.Add(null);
+            }
+            for (int a = 0; a < correspondA.Count; a++)
+            {
+                bool flag = false;
+                int p = 0;
+                while (p < k && correspondA[a][0].intField > cmp[p])
+                {
+                    ++p;
+                    flag = true;
+                }
+                if (flag)
+                {
+                    int tint = correspondA[a][0].intField;
+                    List<long> tres = cellIds[a];
+                    while (p - 1 >= 0)
+                    {
+                        int tint2 = cmp[p - 1];
+                        List<long> tres2 = res[p - 1];
+                        cmp[p - 1] = tint;
+                        res[p - 1] = tres;
+                        tint = tint2;
+                        tres = tres2;
+                        --p;
+                    }
+                }
+            }
+            for(int i = 0; i < (k)/2; i++)
+            {
+                int tint = cmp[i];
+                List<long> tres = res[i];
+                cmp[i] = cmp[k - i-1];
+                res[i] = res[k - i-1];
+                cmp[k - i-1] = tint;
+                res[k - i-1] = tres;
+            }
+            return res;
+        }
         private List<dint> calcond(List<string> another)
         {
             List<dint> res = new List<dint>();
@@ -488,7 +543,7 @@ namespace TriSQLApp
         /// <param name="ids"></param>
         /// <param name="control"></param>
         /// <param name="another">if control is 1 another can't be null</param>
-        private List<List<Element>> getCorrespon(List<int> ids, List<List<long>> ID)
+        public static List<List<Element>> getCorrespon(List<int> ids, List<List<long>> ID)
         {
             var res = new List<List<Element>>();
             List<long> temp = new List<long>();
@@ -507,10 +562,10 @@ namespace TriSQLApp
             return res;
         }
         /// <summary>
-        /// 自定义快排,多线程待实现
+        /// 自定义快排,多线程待实现 left =0; right = count-1
         /// </summary>
         /// <param name="control">默认为inc 若为-1 则dec</param>
-        public static void QuickSort(List<List<Element>> array, int left, int right, Table t, int control = 1)
+        public static void QuickSort(List<List<Element>> array, int left, int right, List<List<long>> t, int control = 1)
         {
 
             if (left < right)
@@ -524,7 +579,7 @@ namespace TriSQLApp
             }
 
         }
-        public static void QuickSort_multithread(List<List<Element>> array, int left, int right, Table t, int control = 1)
+        public static void QuickSort_multithread(List<List<Element>> array, int left, int right, List<List<long>> t, int control = 1)
         {
             int threadCount = Environment.ProcessorCount;
             Thread[] threadNum = new Thread[threadCount];
@@ -533,15 +588,15 @@ namespace TriSQLApp
 
                 int middle = GetMiddleFroQuickSort(array, left, right, t, control);
 
-                QuickSort(array, left, middle - 1, t);
+                QuickSort_multithread(array, left, middle - 1, t);
 
-                QuickSort(array, middle + 1, right, t);
+                QuickSort_multithread(array, middle + 1, right, t);
             }
         }
-        private static int GetMiddleFroQuickSort(List<List<Element>> array, int left, int right, Table t, int control = 1)
+        private static int GetMiddleFroQuickSort(List<List<Element>> array, int left, int right, List<List<long>> t, int control = 1)
         {
             List<Element> key = array[left];
-            List<long> ktemp = t.cellIds[left];
+            List<long> ktemp = t[left];
             while (left < right)
             {
                 while (left < right && CopTo(key,array[right], control) < 0)
@@ -553,8 +608,8 @@ namespace TriSQLApp
                     List<Element> temp = array[left];
                     array[left] = array[right];
 
-                    List<long> tempp = t.cellIds[left];
-                    t.cellIds[left] = t.cellIds[right];
+                    List<long> tempp = t[left];
+                    t[left] = t[right];
                     left++;
                 }
 
@@ -567,12 +622,12 @@ namespace TriSQLApp
                     List<Element> temp = array[right];
                     array[right] = array[left];
 
-                    List<long> tempp = t.cellIds[right];
-                    t.cellIds[right] = t.cellIds[left];
+                    List<long> tempp = t[right];
+                    t[right] = t[left];
                     right--;
                 }
                 array[left] = key;
-                t.cellIds[left] = ktemp;
+                t[left] = ktemp;
             }
             return left;
         }
@@ -580,7 +635,7 @@ namespace TriSQLApp
         /// 比较函数compare to
         /// </summary>
         /// <param name="control">默认为inc 若为-1 则dec</param>
-        public static int CopTo(List<Element> key, List<Element> arr, int control = 1)
+        private static int CopTo(List<Element> key, List<Element> arr, int control = 1)
         {
             for (int i = 0; i< key.Count; i++)
             {
@@ -638,7 +693,7 @@ namespace TriSQLApp
             }
 
         }
-        int Equal(List<Element> A, List<Element> B)
+        private int Equal(List<Element> A, List<Element> B)
         {
             for (int i = 0; i < A.Count; i++)
             {
@@ -775,8 +830,8 @@ namespace TriSQLApp
                 List<List<Element>> correspondA = getCorrespon(conda, this.cellIds);
                 List<List<Element>> correspondB = getCorrespon(condb, anotherTable.cellIds);
 
-                QuickSort(correspondA, 0, correspondA.Count - 1, this);
-                QuickSort(correspondB, 0, correspondB.Count - 1, anotherTable);
+                QuickSort(correspondA, 0, correspondA.Count - 1, this.cellIds);
+                QuickSort(correspondB, 0, correspondB.Count - 1, anotherTable.cellIds);
 
                 int threadCount = Environment.ProcessorCount;
                 Thread[] threadNum = new Thread[threadCount];

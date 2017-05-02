@@ -266,7 +266,52 @@ namespace TriSQLApp
 
         public override void TopKFromProxyHandler(TopKMessageReader request)
         {
-            throw new NotImplementedException();
+            List<List<long>> cellids = request.celllids;
+            List<List<Element>> correspon = Table.getCorrespon(request.cond, cellids);
+            int k = request.k;
+            List<List<long>> res = new List<List<long>>(k);
+            List<int> cmp = new List<int>(k);
+            for (int i = 0; i < k; i++)
+            {
+                cmp.Add(-1);
+                res.Add(null);
+            }
+            for (int a = 0; a < correspon.Count; a++)
+            {
+                bool flag = false;
+                int p = 0;
+                while (p < k && correspon[a][0].intField > cmp[p])
+                {
+                    ++p;
+                    flag = true;
+                }
+                if (flag)
+                {
+                    int tint = correspon[a][0].intField;
+                    List<long> tres = cellids[a];
+                    while (p - 1 >= 0)
+                    {
+                        int tint2 = cmp[p - 1];
+                        List<long> tres2 = res[p - 1];
+                        cmp[p - 1] = tint;
+                        res[p - 1] = tres;
+                        tint = tint2;
+                        tres = tres2;
+                        --p;
+                    }
+                }
+            }
+            for (int i = 0; i < (k) / 2; i++)
+            {
+                int tint = cmp[i];
+                List<long> tres = res[i];
+                cmp[i] = cmp[k - i - 1];
+                res[i] = res[k - i - 1];
+                cmp[k - i - 1] = tint;
+                res[k - i - 1] = tres;
+            }
+            TopKServerResponceWriter msg = new TopKServerResponceWriter(res, cmp, Global.MyServerId);
+            Global.CloudStorage.TopKFromServerToDatabaseProxy(0, msg);
         }
     }
 }
