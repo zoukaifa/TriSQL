@@ -107,10 +107,15 @@ namespace TriSQLApp
                 Console.WriteLine(newtable.tableNames[0]);
                 newtable.printTable();
                 */
+
+                /*
+                //topk on local
                 newtable = new Table(tableA.topKOnLocal(4, "b"), tableA.getColumnTypes());
                 newtable.printTable();
+                //topk on cluster
                 newtable = new Table(tableA.topK(4, new string[] { "b" }), tableA.getColumnTypes());
                 newtable.printTable();
+                */
                 Console.ReadLine();
             }
             else

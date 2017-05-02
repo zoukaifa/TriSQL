@@ -416,7 +416,7 @@ namespace TriSQLApp
             return res;
         }
         /// <summary>
-        /// union distinct
+        /// union distinct 猜测效率很低
         /// </summary>
         /// <param name="anotherTable"></param>
         public Table union_distinct(Table anotherTable)
@@ -425,15 +425,16 @@ namespace TriSQLApp
             {
                 if (!columnNames[i].Equals(anotherTable.columnNames)) throw new Exception("两表无并相容性");
             }
-
-
             cellIds.AddRange(anotherTable.cellIds);
+
+
             return this;
         }
         /// <summary>
         /// union all
         /// </summary>
         /// <param name="anotherTable"></param>
+        /// <returns>并不是生成新表而是把anothertable 加入到this中</returns>
         public Table union_all(Table anotherTable)
         {
             for(int i = 0; i< columnNames.Count; i++)
@@ -693,6 +694,10 @@ namespace TriSQLApp
             }
 
         }
+        /// <summary>
+        /// equal only intfield
+        /// </summary>
+        /// <returns></returns>
         private int Equal(List<Element> A, List<Element> B)
         {
             for (int i = 0; i < A.Count; i++)
