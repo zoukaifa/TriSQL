@@ -11,10 +11,25 @@ namespace TriSQLApp
     class DatabaseProxy : DatabaseProxyBase
     {
         Semaphore sem = new Semaphore(0, 1);  //信号量
-        Dictionary<int, List<List<long>>> idDict = new Dictionary<int, List<List<long>>>();  //收集消息
+        Dictionary<int, List<List<long>>> idDict = new Dictionary<int, List<List<long>>>();  //收集cellid消息
+        #region 邹开发 select
         public override void SelectFromClientHandler(SelectMessageReader request, SelectResponseWriter response)
         {
-
+            idDict.Clear();
+            for (int i = 0; i < Global.ServerCount; i++)
+            {
+                //每个服务器挨个发送
+                SelectMessageWriter smw = new SelectMessageWriter(request.columnNameList,
+                    request.columnTypeList, request.cellIds, request.usedIndex, request.condition);
+                Global.CloudStorage.SelectFromProxyToDatabaseServer(i, smw);
+            }
+            sem.WaitOne();  //等待服务器全部返回信息
+            response.cellIds = new List<List<long>>();
+            //将信息合并
+            for (int i = 0; i < Global.ServerCount; i++)
+            {
+                response.cellIds.AddRange(idDict[i]);
+            }
         }
 
         public override void SelectFromServerHandler(SelectResultResponseReader request)
@@ -26,6 +41,8 @@ namespace TriSQLApp
                 sem.Release();
             }
         }
+        #endregion
+        #region 田超 delete
         public override void DeleteFromClientHandler(DeleteMessageReader request, DeleteResponceWriter response)
         {
             idDict.Clear();
@@ -73,6 +90,8 @@ namespace TriSQLApp
                 sem.Release();
             }
         }
+        #endregion
+
         #region join
         struct ClassifyObject
         {
@@ -117,7 +136,7 @@ namespace TriSQLApp
             }
         }
         /// <summary>
-        /// 分类器 把行按照服务器分类 
+        /// 分类器 把行按照服务器分类 多线程
         /// </summary>
         /// <param name="CELLIDS"></param>
         /// <param name="cond">条件表达式表示用到的行</param>
@@ -176,7 +195,7 @@ namespace TriSQLApp
             List<List<List<long>>> classify = Classify(request.celllids, request.cond);
             for (int i = 0; i < Global.ServerCount; i++)
             {
-                TopKMessageWriter msg = new TopKMessageWriter(request.k,request.cond,classify[i]);
+                TopKMessageWriter msg = new TopKMessageWriter(request.k, request.cond, classify[i]);
                 Global.CloudStorage.TopKFromProxyToDatabaseServer(i, msg);
             }
             sem.WaitOne();
@@ -215,5 +234,33 @@ namespace TriSQLApp
             }
         }
         #endregion
+        #region union
+        public override void UnionFromClientHandler(UnionMessageReader request, UnionResponseWriter response)
+        {
+            idDict.Clear();
+            List<List<List<long>>> classify = Classify(request.cellidsB, null);
+            for (int i = 0; i < Global.ServerCount; i++)
+            {
+                UnionMessageWriter msg = new UnionMessageWriter(request.cellidsA, classify[i]);
+                Global.CloudStorage.UnionFromProxyToDatabaseServer(i, msg);
+            }
+            sem.WaitOne();
+            for (int i = 0; i < Global.ServerCount; i++)
+            {
+                response.cellids.AddRange(idDict[i]);
+            }
+        }
+
+        public override void UnionFromServerHandler(UnionServerResponseReader request)
+        {
+            idDict.Add(request.serverid, request.cellids);
+            if (idDict.Count == Global.ServerCount)
+            {
+                sem.Release();
+            }
+        }
+        #endregion
+
+
     }
 }

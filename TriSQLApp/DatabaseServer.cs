@@ -21,6 +21,11 @@ namespace TriSQLApp
             public List<List<long>> result;
         }
 
+        public DatabaseServer():base()
+        {
+            Global.LocalStorage.LoadStorage();
+        }
+
 
         /// <summary>
         /// 查询数据库信息
@@ -141,7 +146,7 @@ namespace TriSQLApp
         {
             using (var thcell = Global.LocalStorage.UseTableHeadCell(request.tableId))
             {
-
+                
                 thcell.tableName = request.tableName;
                 thcell.columnNameList = request.columnNameList;
                 thcell.columnTypeList = request.columnTypeList;
@@ -260,7 +265,7 @@ namespace TriSQLApp
             {
                 cond.Add(new dint(request.conda[i], request.condb[i]));
             }
-            JoinResponceWriter msg = new JoinResponceWriter(Global.MyServerId,(Ta.innerJoin(Tb, cond, false)).getCellIds());
+            JoinResponceWriter msg = new JoinResponceWriter(Global.MyServerId, (Ta.innerJoin(Tb, cond, false)).getCellIds());
             Global.CloudStorage.REdoJoinFromServerToDatabaseProxy(0, msg);
         }
 
@@ -312,6 +317,38 @@ namespace TriSQLApp
             }
             TopKServerResponceWriter msg = new TopKServerResponceWriter(res, cmp, Global.MyServerId);
             Global.CloudStorage.TopKFromServerToDatabaseProxy(0, msg);
+        }
+
+        public override void UnionFromProxyHandler(UnionMessageReader request)
+        {
+            
+            if (request.cellidsA.Count == 0)
+            {
+                UnionServerResponseWriter msg = new UnionServerResponseWriter(request.cellidsB, Global.MyServerId);
+                Global.CloudStorage.UnionFromServerToDatabaseProxy(0, msg);
+            } else
+            {
+                List<List<long>> res = new List<List<long>>();
+                List<int> conda = new List<int>();
+                List<List<long>> cellids = request.cellidsA;
+                List<List<long>> cellidsb = request.cellidsB;
+                for (int i = 0; i < request.cellidsA[0].Count; i++) 
+                {
+                    conda.Add(i);
+                }
+                List<List<Element>> correspondA = Table.getCorrespon(conda, cellids);
+                List<List<Element>> correspondB = Table.getCorrespon(conda, cellidsb);
+                Table.QuickSort(correspondA, 0, correspondA.Count - 1, cellids);
+                for (int i = 0; i<correspondB.Count; i++)
+                {
+                    if (Table.BinSearch(correspondA,correspondB[i],0) < 0)//don't match
+                    {
+                        res.Add(cellidsb[i]);
+                    }
+                }
+                UnionServerResponseWriter msg = new UnionServerResponseWriter(res, Global.MyServerId);
+                Global.CloudStorage.UnionFromServerToDatabaseProxy(0, msg);
+            }
         }
     }
 }

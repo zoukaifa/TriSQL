@@ -9,7 +9,8 @@ using Trinity.Core.Lib;
 
 namespace TriSQLApp
 {
-    class Database {
+    class Database
+    {
         /// <summary>
         /// 指示当前的数据库
         /// </summary>
@@ -31,7 +32,8 @@ namespace TriSQLApp
         /// 根据已有的数据库名，实例化数据库对象
         /// </summary>
         /// <param name="name">数据库名，必须已存在</param>
-        public Database(string name) {
+        public Database(string name)
+        {
             //如果该数据库不存在，抛出异常
             long databaseId = HashHelper.HashString2Int64(name);
             if (!Global.CloudStorage.Contains(databaseId))
@@ -55,7 +57,8 @@ namespace TriSQLApp
         /// <param name="name">数据库名</param>
         /// <param name="tableIdList">表的cellId列表</param>
         /// <param name="tableNameList">表的名字列表</param>
-        private Database(string name, List<long> tableIdList, List<string> tableNameList) {
+        private Database(string name, List<long> tableIdList, List<string> tableNameList)
+        {
             this.name = name;
             this.tableIdList = tableIdList;
             this.tableNameList = tableNameList;
@@ -66,10 +69,12 @@ namespace TriSQLApp
         /// </summary>
         /// <param name="name">数据库的名字</param>
         /// <returns>对应于该数据库的Database的实例化对象</returns>
-        public static Database createDatabase(string name) {
+        public static Database createDatabase(string name)
+        {
             long databaseId = HashHelper.HashString2Int64(name);
             //先确认该数据库并不存在
-            if (Global.CloudStorage.Contains(databaseId)) {
+            if (Global.CloudStorage.Contains(databaseId))
+            {
                 throw new Exception(String.Format("数据库{0}已经存在!", name));
             }
 
@@ -113,7 +118,7 @@ namespace TriSQLApp
                 for (int i = 0; i < primaryKeyList.Length; i++)
                 {
                     string key = primaryKeyList[i];
-                    if (! thc.columnNameList.Contains(key))
+                    if (!thc.columnNameList.Contains(key))
                     {
                         throw new Exception(String.Format("字段{0}不在字段列表中，不能作为主键.", key));
                     }
@@ -148,7 +153,7 @@ namespace TriSQLApp
         /// <param name="name">要删除的表名</param>
         public void dropTable(string name)
         {
-            if (! tableExists(name))
+            if (!tableExists(name))
             {
                 throw new Exception(String.Format("表{0}不存在.", name));
             }

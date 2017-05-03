@@ -70,10 +70,10 @@ namespace TriSQLApp
                 List<dint> con = new List<dint>();
                 con.Add(new dint(0, 0));
                 con.Add(new dint(1, 1));
-                Console.WriteLine(tableA.tableNames[0]);
+                Console.WriteLine(tableA.getTableNames()[0]);
                 tableA.printTable();
 
-                Console.WriteLine(tableB.tableNames[0]);
+                Console.WriteLine(tableB.getTableNames()[0]);
                 tableB.printTable();
 
                 Table newtable;

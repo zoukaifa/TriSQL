@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using TriSQL;
 using Trinity;
 using Trinity.Core.Lib;
-
 using System.Threading;
 
 namespace TriSQLApp
@@ -23,6 +22,7 @@ namespace TriSQLApp
     }
     class Table
     {
+        #region 字段
         //类成员的初始化在构造方法里进行
         private bool isSingle;  //是否是直接由构造函数生成的完整单表（即使是select的也是false）
         private List<List<long>> cellIds = new List<List<long>>();
@@ -30,22 +30,7 @@ namespace TriSQLApp
         private List<string> columnNames = new List<string> { };
         private List<int> primaryIndexs = new List<int> { };  //主键索引
         private List<Element> defaultValues = new List<Element> { };  //默认值
-        public List<string> tableNames = new List<string> { };
-        public Table()
-        {   
-        }
-        public Table(List<List<long>> cellIds, List<int> columnTypes)
-        {
-            this.cellIds = cellIds;
-            this.columnTypes = columnTypes;
-        }
-        public Table(List<string> columnNameList, List<int> columnTypeList)
-        {
-            this.columnNames = columnNameList;
-            this.columnTypes = columnTypeList;
-        }
-        #region 田超--------------------------------------------------------------------------------------------------------
-
+        private List<string> tableNames = new List<string> { };
         public struct UpdateMessage
         {
             public List<long> cellId;
@@ -56,11 +41,43 @@ namespace TriSQLApp
             public Condition con;
             public List<int> typeList;
         }
+        #endregion
+        #region 构造
         public Table(List<List<long>> cellIds)
         {
             this.cellIds = cellIds;
         }
-        public Table(params string[] tableName)
+        public Table(List<List<long>> cellIds, List<int> columnTypes)
+        {
+            this.cellIds = cellIds;
+            this.columnTypes = columnTypes;
+        }
+        public Table(List<List<long>> cellIds, List<int> columnTypes, List<string> columnNames,
+                List<int> primaryIndexs, List<Element> defaultValues, List<string> tableNames)
+        {
+            this.cellIds = cellIds;
+            this.columnNames = columnNames;
+            this.columnTypes = columnTypes;
+            this.primaryIndexs = primaryIndexs;
+            this.defaultValues = defaultValues;
+            this.tableNames = tableNames;
+        }
+
+        public Table(List<string> columnNameList, List<int> columnTypeList)
+        {
+            this.columnNames = columnNameList;
+            this.columnTypes = columnTypeList;
+        }
+
+        public Table()
+        {
+            cellIds = new List<List<long>>();
+            columnNames = new List<string>();
+            columnTypes = new List<int>();
+            primaryIndexs = new List<int>();
+            defaultValues = new List<Element>();
+        }
+        public Table(string tableName)
         {
             List<long> tableIds = new List<long> { };
             if (Database.getCurrentDatabase() == null)
@@ -68,16 +85,14 @@ namespace TriSQLApp
                 throw new Exception(String.Format("当前数据库不存在"));
             }
 
-            if (tableName.Length == 1)
-            {
+          
                 isSingle = true;
-                if (!Database.getCurrentDatabase().tableExists(tableName[0]))
+                if (!Database.getCurrentDatabase().tableExists(tableName))
                 {
                     throw new Exception(String.Format("当前表{0}不存在!", tableName[0]));
                 }
-                this.tableNames.Add(tableName[0]);
-                tableIds.Add(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableName
-                    [0])));
+                this.tableNames.Add(tableName);
+                tableIds.Add(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableName)));
                 using (var request = new GetTableMessageWriter(tableIds[0]))
                 {
                     int serverId = Global.CloudStorage.GetServerIdByCellId(tableIds[0]);
@@ -90,74 +105,22 @@ namespace TriSQLApp
                         this.primaryIndexs = res.primaryIndex;
                     }
                 }
-            }
-            else
-            {
-                List<int> countNum = new List<int> { };
-                List<int> Num = new List<int> { };
-                List<List<List<long>>> CID = new List<List<List<long>>> { };
-                isSingle = false;
-
-                for (int i = 0; i < tableName.Length; i++)
-                {
-                    if (!Database.getCurrentDatabase().tableExists(tableName[i]))
-                    {
-                        throw new Exception(String.Format("当前表{0}不存在!", tableName[i]));
-                    }
-                    this.tableNames.Add(tableName[0]);
-                    tableIds.Add(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
-                   [i])));
-                    using (var request = new GetTableMessageWriter(tableIds[i]))
-                    {
-                        int serverId = Global.CloudStorage.GetServerIdByCellId(tableIds[i]);
-                        using (var res = Global.CloudStorage.GetTableToDatabaseServer(serverId, request))
-                        {
-                            for (int j = 0; j < res.columnNameList.Count; j++)
-                            {
-                                this.columnNames.Add(res.tableName + '.' + res.columnNameList[j]);
-                                this.columnTypes.Add(res.columnTypeList[j]);
-                            }
-                            countNum.Add(res.cellIds.Count);
-                            CID.Add(res.cellIds);
-                        }
-                    }
-                }
-                int sum = 1;
-                for (int i = 0; i < tableName.Length; i++)
-                {
-                    sum = sum * countNum[i];
-
-                }
-                for (int j = 0; j < tableName.Length; j++)
-                {
-                    int tempNum = 1;
-                    for (int i = tableName.Length - 1; i > j; i--)
-                    {
-                        tempNum = tempNum * countNum[i];
-                    }
-                    Num.Add(tempNum);
-                }
-                //  Console.WriteLine("{0}", sum);
-                List<long> temp = new List<long> { };
-                for (int i = 0; i < tableName.Length; i++)
-                {
-                    List<List<long>> tempList = new List<List<long>> { };
-                    for (int j = 0; j < sum / (Num[i] * countNum[i]); j++)
-                    {
-                        for (int k = 0; k < countNum[i]; k++)
-                        {
-                            for (int l = 0; l < Num[i]; l++)
-                            {
-                                tempList.Add(CID[i][k]);
-                            }
-                        }
-                    }
-                    // this.cellIds.Add(tempList);
-                }
-
-
-            }
         }
+        public Table MultiTable(params string[] tableName)
+        {
+            Table M;
+            Table t1 = new Table(tableName[0]);
+            Table t2 = new Table(tableName[1]);
+            M = t1.innerJoinOnCluster(t2, new List<dint>());
+            for (int i = 2; i < tableName.Length; i++)
+            {
+                Table temp = new Table(tableName[i]);
+                 M = M.innerJoinOnCluster(temp,new List<dint>());
+            }
+            return M;
+        }
+        #endregion
+        #region 田超-delete,update,insert,truncate,rename
         public void delete(string con)
         {
             if (!isSingle)
@@ -225,7 +188,7 @@ namespace TriSQLApp
             List<Object> values = FieldType.getValues(row, um.typeList);
             int index = this.columnNames.IndexOf(um.fieldname);
             int serverID;
-            if (true)//um.con.getResult(values)
+            if (um.con.getResult(values))//um.con.getResult(values)
             {
                 Element ele = new Element { };
                 using (var req = new GetElementMessageWriter(um.cellId[index]))
@@ -287,32 +250,26 @@ namespace TriSQLApp
             {
                 throw new Exception(String.Format("不可输入多个表"));
             }
-            //存储一行的element
+
             List<Element> ele = new List<Element>();
-            List<long> ID = new List<long> { };
+            List<long> ID = new List<long>();
             ElementCell elecell = FieldType.setValueCell(values[0], this.columnTypes.ElementAt(columnNames.IndexOf(fieldNames[0])));
-            Global.CloudStorage.SaveElementCell(elecell);
+            Global.CloudStorage.SaveElementCell(elecell.CellID, elecell);
             ID.Add(elecell.CellID);
             for (int i = 1; i < fieldNames.Length; i++)
             {
                 Element temp = FieldType.setValue(values[i], this.columnTypes.ElementAt(columnNames.IndexOf(fieldNames[i])));
                 ele.Add(temp);
             }
-            using (var request = new InsertMessageWriter(ele))
+            List<long> ids = Global.CloudStorage.InsertElementToDatabaseServer(0,
+                new InsertMessageWriter(ele)).cellIds;
+            for (int k = 0; k < ids.Count; k++)
             {
-                int serverId = Global.CloudStorage.GetServerIdByCellId(elecell.CellID);
-                using (var res = Global.CloudStorage.InsertElementToDatabaseServer(serverId, request))
-                {
-                    for (int k = 0; k < res.cellIds.Count; k++)
-                    {
-                        ID.Add(res.cellIds[k]);
-                    }
-                }
+                ID.Add(ids[k]);
             }
-            //更新this table
             this.cellIds.Add(ID);
-            //更新table head
-            long tableId = Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames[0]));
+            long tableId = Database.getCurrentDatabase().getTableIdList()[Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
+                 [0])];
             TableHeadCell thc = new TableHeadCell(this.tableNames[0], this.columnNames, this.columnTypes, this.primaryIndexs, this.defaultValues, this.cellIds);
             Global.CloudStorage.SaveTableHeadCell(tableId, thc);
         }
@@ -386,8 +343,78 @@ namespace TriSQLApp
             DatabaseCell dbc = new DatabaseCell(Database.getCurrentDatabase().getName(), tbName, tbID);
             Global.CloudStorage.SaveDatabaseCell(dbId, dbc);
         }
-#endregion
-        #region 李宁  --------------------------------------------------------------------------------------------------------------
+        #endregion
+        #region 邹开发 select
+
+        /// <summary>
+        /// 无into的select语句
+        /// </summary>
+        /// <param name="fields">三元组数组，第一个表示字段，第二个表示别名</param>
+        /// <param name="con">条件表达式</param>
+        /// <returns></returns>
+        public Table select(Tuple<string, string>[] fields, string con)
+        {
+            //新表的结构
+            List<string> newColumnNames = new List<string>();
+            List<int> newColumnTypes = new List<int>();
+            List<int> usedIndexes = new List<int>();  //标记被select的索引
+            //先检查字段是否符合
+            if (fields.Length == 1 && fields[0].Item1.Equals("*"))
+            {
+                newColumnNames = columnNames;
+                newColumnTypes = columnTypes;
+            }
+            else
+            {
+                foreach (Tuple<string, string> field in fields)
+                {
+                    string fieldName = field.Item1;  //字段名
+                    if (columnNames.Contains(fieldName))  //直接能识别出该字段
+                    {
+                        newColumnNames.Add((field.Item2 == null) || (field.Item2.Equals("")) ?
+                            fieldName : field.Item2);  //别名
+                        newColumnTypes.Add(columnTypes[columnNames.IndexOf(fieldName)]);
+                        usedIndexes.Add(columnNames.IndexOf(fieldName));
+                    }
+                    else  //说明要么该字段不存在，要么没有使用表名直接使用字段名
+                    {
+                        int count = 0;
+                        int fieldIndex = 0;
+                        for (int i = 0; i < columnNames.Count; i++)
+                        {
+                            if (columnNames.Contains("." + fieldName))  //统计是否重复了
+                            {
+                                count++;
+                                fieldIndex = i;
+                            }
+                        }
+                        if (count == 0)
+                        {
+                            throw new Exception(String.Format("字段{0}不存在", fieldName));
+                        }
+                        else if (count > 1)
+                        {
+                            throw new Exception(String.Format("字段{0}重复，需要指明表名", fieldName));
+                        }
+                        else
+                        {
+                            newColumnNames.Add((field.Item2 == null) || (field.Item2.Equals("")) ?
+                            columnNames[fieldIndex] : field.Item2);  //别名
+                            newColumnTypes.Add(fieldIndex);
+                            usedIndexes.Add(fieldIndex);
+                        }
+                    }
+                }
+            }
+            usedIndexes.Sort();
+            //此时，新表的结构构建完成，向proxy发送查询任务
+            SelectMessageWriter smw = new SelectMessageWriter(columnNames, columnTypes, cellIds, usedIndexes, con);
+            List<List<long>> newCellIds = Global.CloudStorage.SelectFromClientToDatabaseProxy(0, smw).cellIds;
+            return new Table(newCellIds, newColumnTypes, newColumnNames, this.primaryIndexs,
+                this.defaultValues, this.tableNames);
+        }
+        #endregion
+        #region 李宁 join topk union
 
         /// <summary>
         /// distinct 多线程可行
@@ -400,14 +427,15 @@ namespace TriSQLApp
             int s = 0;
             int e = 0;
             List<Element> ele = correspond[0];
-            for(int i = 1; i<correspond.Count+1; i++)
+            for (int i = 1; i < correspond.Count + 1; i++)
             {
                 if (i < correspond.Count && Equal(ele, correspond[i]) > 0)
                 {
                     e++;
-                }else
+                }
+                else
                 {
-                    for (int j = s; j<=e; j++)
+                    for (int j = s; j <= e; j++)
                         res.Add(new dint(s, e));
                     s = i;
                     e = i;
@@ -416,18 +444,19 @@ namespace TriSQLApp
             return res;
         }
         /// <summary>
-        /// union distinct 猜测效率很低
+        /// union distinct 假设重复是由两表合并引起的
         /// </summary>
         /// <param name="anotherTable"></param>
+        /// <returns>this</returns>
         public Table union_distinct(Table anotherTable)
         {
             for (int i = 0; i < columnNames.Count; i++)
             {
                 if (!columnNames[i].Equals(anotherTable.columnNames)) throw new Exception("两表无并相容性");
             }
-            cellIds.AddRange(anotherTable.cellIds);
 
-
+            UnionMessageWriter msg = new UnionMessageWriter(this.cellIds, anotherTable.cellIds);
+            this.cellIds = Global.CloudStorage.UnionFromClientToDatabaseProxy(0, msg).cellids;
             return this;
         }
         /// <summary>
@@ -437,7 +466,7 @@ namespace TriSQLApp
         /// <returns>并不是生成新表而是把anothertable 加入到this中</returns>
         public Table union_all(Table anotherTable)
         {
-            for(int i = 0; i< columnNames.Count; i++)
+            for (int i = 0; i < columnNames.Count; i++)
             {
                 if (!columnNames[i].Equals(anotherTable.columnNames)) throw new Exception("两表无并相容性");
             }
@@ -464,7 +493,7 @@ namespace TriSQLApp
         public List<List<long>> topK(int k, string[] names)
         {
             List<int> pos = new List<int>();
-            foreach(var name in names)
+            foreach (var name in names)
             {
                 pos.Add(nametopos(name));
             }
@@ -511,14 +540,14 @@ namespace TriSQLApp
                     }
                 }
             }
-            for(int i = 0; i < (k)/2; i++)
+            for (int i = 0; i < (k) / 2; i++)
             {
                 int tint = cmp[i];
                 List<long> tres = res[i];
-                cmp[i] = cmp[k - i-1];
-                res[i] = res[k - i-1];
-                cmp[k - i-1] = tint;
-                res[k - i-1] = tres;
+                cmp[i] = cmp[k - i - 1];
+                res[i] = res[k - i - 1];
+                cmp[k - i - 1] = tint;
+                res[k - i - 1] = tres;
             }
             return res;
         }
@@ -556,7 +585,7 @@ namespace TriSQLApp
                     temp.Add(e[id]);
                 }
                 GetRowMessageWriter msg = new GetRowMessageWriter(temp);
-                GetRowResponseReader r = Global.CloudStorage.GetRowToDatabaseServer(0,msg);
+                GetRowResponseReader r = Global.CloudStorage.GetRowToDatabaseServer(0, msg);
                 res.Add(r.row);
                 temp.Clear();
             }
@@ -600,7 +629,7 @@ namespace TriSQLApp
             List<long> ktemp = t[left];
             while (left < right)
             {
-                while (left < right && CopTo(key,array[right], control) < 0)
+                while (left < right && CopTo(key, array[right], control) < 0)
                 {
                     right--;
                 }
@@ -614,7 +643,7 @@ namespace TriSQLApp
                     left++;
                 }
 
-                while (left < right && CopTo(key,array[left], control) > 0)
+                while (left < right && CopTo(key, array[left], control) > 0)
                 {
                     left++;
                 }
@@ -638,7 +667,7 @@ namespace TriSQLApp
         /// <param name="control">默认为inc 若为-1 则dec</param>
         private static int CopTo(List<Element> key, List<Element> arr, int control = 1)
         {
-            for (int i = 0; i< key.Count; i++)
+            for (int i = 0; i < key.Count; i++)
             {
                 if (key[i].intField < arr[i].intField)
                     return -control;
@@ -680,9 +709,9 @@ namespace TriSQLApp
                 start = p.threadIndex * ele;
                 end = c - 1;
             }
-            
-            
-            for (int i = start; i<= end; i++)
+
+
+            for (int i = start; i <= end; i++)
             {
                 foreach (var a in another.cellIds)
                 {
@@ -707,10 +736,10 @@ namespace TriSQLApp
             }
             return 1;
         }
-        int BinSearch(List<List<Element>> correspondA, List<Element> key)
+        public static int BinSearch(List<List<Element>> correspondA, List<Element> key, int low)
         {
             int array_size = correspondA.Count;
-            int low = 0, high = array_size - 1, mid;
+            int high = array_size - 1, mid;
 
             while (low <= high)
             {
@@ -718,7 +747,7 @@ namespace TriSQLApp
 
                 if (Equal(correspondA[mid], key) > 0)
                     return mid; //找到则返回相应的位置  
-                if (CopTo(correspondA[mid], key) > 0) 
+                if (CopTo(correspondA[mid], key) > 0)
                     high = mid - 1; //如果比key大，则往低的位置查找  
                 else
                     low = mid + 1;  //如果比key小，则往高的位置查找  
@@ -770,21 +799,23 @@ namespace TriSQLApp
                 end = c - 1;
             }
             int i = start;
+            int low = 0;
             while (i <= end)
             {
                 int s, e;
                 s = i;
                 e = i;
-                while (e<=end-1 && Equal(correspondB[s], correspondB[e+1]) > 0)
+                while (e <= end - 1 && Equal(correspondB[s], correspondB[e + 1]) > 0)
                 {
                     e++;
                 }
-                int pos = BinSearch(correspondA, correspondB[i]);
+                int pos = BinSearch(correspondA, correspondB[i], low);
                 if (pos == -1)//no match
                 {
                     i = e + 1;
                     continue;
-                }else//match
+                }
+                else//match
                 {
                     int s1, e1;
                     s1 = range[pos].a;
@@ -800,6 +831,7 @@ namespace TriSQLApp
                         }
                     }
                     i = e + 1;
+                    low = e1 + 1;
                 }
             }
         }
@@ -902,31 +934,15 @@ namespace TriSQLApp
 
             return newtable;
         }
-#endregion
-        #region *邹开发-------------------------------------------------------------------------------------------------------------------------------------------------------------
+        #endregion
+        #region getRow, getColumn, print
+
 
         /// <summary>
-        /// 无into的select语句
+        /// 获得某一行
         /// </summary>
-        /// <param name="fields">三元组数组，第一个表示字段，第二个表示别名</param>
-        /// <param name="con">条件表达式</param>
+        /// <param name="index"></param>
         /// <returns></returns>
-        public Table select(Tuple<string, string>[] fields, string con)
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// 有into的select
-        /// </summary>
-        /// <param name="fields">元组第一个表示字段或表达式，第二个表示施加的函数</param>
-        /// <param name="con">条件</param>
-        /// <param name="vars">要into的变量</param>
-        public void select(Tuple<string, int>[] fields, string con, ref object[] vars)
-        {
-            
-        }
-
         public List<Object> getRow(int index)
         {
             List<long> cellId = cellIds[index];
@@ -994,6 +1010,21 @@ namespace TriSQLApp
             return columnTypes;
         }
 
+        public List<int> getPrimayIndexs()
+        {
+            return primaryIndexs;
+        }
+		
+		public List<string> getTableNames() {
+			return tableNames;
+		}
+
+
+        public List<Element> getDefaultValues()
+        {
+            return defaultValues;
+        }
+
         public void printTable()
         {
             foreach (string name in columnNames)
@@ -1013,4 +1044,5 @@ namespace TriSQLApp
         }
         #endregion
     }
+
 }

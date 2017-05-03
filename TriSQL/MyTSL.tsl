@@ -207,6 +207,7 @@ protocol SaveStorage {
 	Request:void;
 	Response:void;	
 }
+
 //join
 struct JoinMessage{
 	List<List<long>> cellidsA;
@@ -262,6 +263,33 @@ protocol TopKFromServer{
 	Request:TopKServerResponce;
 	Response:void;	
 }
+//union distinct
+struct UnionMessage{
+	List<List<long>> cellidsA;
+	List<List<long>> cellidsB;
+}
+struct UnionResponse{
+	List<List<long>> cellids;
+}
+struct UnionServerResponse{
+	List<List<long>> cellids;
+	int serverid;
+}
+protocol UnionFromClient{
+	Type:Syn;
+	Request:UnionMessage;
+	Response:UnionResponse;	
+}
+protocol UnionFromProxy{
+	Type:Asyn;
+	Request:UnionMessage;
+	Response:void;	
+}
+protocol UnionFromServer{
+	Type:Asyn;
+	Request:UnionServerResponse;
+	Response:void;	
+}
 proxy DatabaseProxy {
 	protocol SelectFromClient;
 	protocol SelectFromServer;	
@@ -273,6 +301,8 @@ proxy DatabaseProxy {
 	protocol JoinFromClient;
 	protocol TopKFromClient;
 	protocol TopKFromServer;
+	protocol UnionFromClient;
+	protocol UnionFromServer;
 }
 
 server DatabaseServer {
@@ -288,4 +318,5 @@ server DatabaseServer {
 	protocol SaveStorage;
 	protocol DoJoinFromProxy;
 	protocol TopKFromProxy;
+	protocol UnionFromProxy;
 }
