@@ -11,7 +11,7 @@ namespace TriSQLApp
     /// <summary>
     /// 接口使用说明：
     /// 初始化查询字符串：注意括号左右两侧应有空格, 字符串类型的数据应该用\"string\"的形式, 嵌套形式in后面的字符串内容随便
-    /// string cond = "( Stu.name == \"mike\" or Stu.name == \"cindy\" ) and Stu.id <= Course.sid and val in \"tmp\"";
+    /// string cond = "( Stu.name == mike or Stu.name == cindy ) and Stu.id <= Course.sid and val in tmp"
     /// 初始化Condition对象：table为主查询表对象, cond为查询字符串, tableList为嵌套查询的表列表
     /// Condition condition = new Condition(Table table, string cond, List<Table> tableList);
     /// 调用getResult()接口获取判断结果,其中rowData输入顺序和查询字符串保持一致, 重复属性无需重复输入
