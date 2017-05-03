@@ -131,8 +131,7 @@ namespace TriSQLApp
                 Global.CloudStorage.GetServerIdByCellId(rm.cellId[0]),
                 new GetRowMessageWriter(rm.cellId)).row;
             List<Object> values = FieldType.getValues(row, rm.types);
-            //if (rm.con.getResult(values))
-            if (true)
+            if (rm.con.getResult(values))
             {
                 List<long> cellId = new List<long>();
                 foreach (int index in rm.usedIndex)

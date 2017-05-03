@@ -188,8 +188,7 @@ namespace TriSQLApp
             List<Object> values = FieldType.getValues(row, um.typeList);
             int index = this.columnNames.IndexOf(um.fieldname);
             int serverID;
-            //if (um.con.getResult(values))//um.con.getResult(values)
-            if (true)
+            if (um.con.getResult(values))//um.con.getResult(values)
             {
                 Element ele = new Element { };
                 using (var req = new GetElementMessageWriter(um.cellId[index]))
