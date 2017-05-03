@@ -21,6 +21,11 @@ namespace TriSQLApp
             public List<List<long>> result;
         }
 
+        public DatabaseServer():base()
+        {
+            Global.LocalStorage.LoadStorage();
+        }
+
 
         /// <summary>
         /// 查询数据库信息
@@ -30,7 +35,8 @@ namespace TriSQLApp
         public override void GetDatabaseHandler(GetDatabaseMessageReader request, GetDatabaseResponseWriter response)
         {
             long cellId = request.databaseId;
-            using (var db = Global.LocalStorage.UseDatabaseCell(cellId)) {
+            using (var db = Global.LocalStorage.UseDatabaseCell(cellId))
+            {
                 response.tableIdList = db.tableIdList;
                 response.tableNameList = db.tableNameList;
             }
@@ -38,8 +44,10 @@ namespace TriSQLApp
 
         public override void GetElementHandler(GetElementMessageReader request, GetElementResponseWriter response)
         {
-            ElementCell ec = Global.LocalStorage.UseElementCell(request.cellId);
-            response.ele =  FieldType.getElement(ec);
+            using (var ec = Global.LocalStorage.UseElementCell(request.cellId))
+            {
+                response.ele = FieldType.getElement(ec);
+            }
         }
 
         public override void GetRowHandler(GetRowMessageReader request, GetRowResponseWriter response)
@@ -51,9 +59,12 @@ namespace TriSQLApp
                 int serverId = Global.CloudStorage.GetServerIdByCellId(eleId);
                 if (serverId == Global.MyServerId)  //在本服务器上
                 {
-                    ElementCell ec = Global.LocalStorage.UseElementCell(eleId);
-                    response.row.Add(FieldType.getElement(ec));
-                } else
+                    using (var ec = Global.LocalStorage.UseElementCell(eleId))
+                    {
+                        response.row.Add(FieldType.getElement(ec));
+                    }
+                }
+                else
                 {
                     Element ec = Global.CloudStorage.GetElementToDatabaseServer(
                         serverId, new GetElementMessageWriter(eleId)).ele;
@@ -83,7 +94,7 @@ namespace TriSQLApp
             Condition con = new Condition(table, request.condition);
             List<List<long>> result = new List<List<long>>();
             List<Thread> threads = new List<Thread>();
-            foreach(List<long> cellId in cellIds)
+            foreach (List<long> cellId in cellIds)
             {
                 if (Global.CloudStorage.GetServerIdByCellId(cellId[0]) == Global.MyServerId)  //这一行第一列存储于本服务器
                 {
@@ -99,7 +110,7 @@ namespace TriSQLApp
                     thread.Start(rm);
                 }
             }
-            foreach(Thread thr in threads)
+            foreach (Thread thr in threads)
             {
                 thr.Join();
             }
@@ -115,15 +126,16 @@ namespace TriSQLApp
         private void filter(Object rowMessage)
         {
             RowMessage rm = (RowMessage)rowMessage;
-            
+
             List<Element> row = Global.CloudStorage.GetRowToDatabaseServer(
                 Global.CloudStorage.GetServerIdByCellId(rm.cellId[0]),
                 new GetRowMessageWriter(rm.cellId)).row;
             List<Object> values = FieldType.getValues(row, rm.types);
-            if (rm.con.getResult(values))
+            //if (rm.con.getResult(values))
+            if (true)
             {
                 List<long> cellId = new List<long>();
-                foreach(int index in rm.usedIndex)
+                foreach (int index in rm.usedIndex)
                 {
                     cellId.Add(rm.cellId[index]);
                 }
@@ -135,6 +147,7 @@ namespace TriSQLApp
         {
             using (var thcell = Global.LocalStorage.UseTableHeadCell(request.tableId))
             {
+                
                 thcell.tableName = request.tableName;
                 thcell.columnNameList = request.columnNameList;
                 thcell.columnTypeList = request.columnTypeList;
@@ -231,10 +244,80 @@ namespace TriSQLApp
             {
                 ElementCell elecell = FieldType.getElementCell(request.ele[i]);
                 cellIds.Add(elecell.CellID);
-                Global.LocalStorage.SaveElementCell(elecell);
+                Global.LocalStorage.SaveElementCell(elecell.CellID, elecell);
             }
             response.serverId = Global.MyServerId;
             response.cellIds = cellIds;
+        }
+
+        public override void SaveStorageHandler()
+        {
+            Console.WriteLine("开始存储");
+            Global.LocalStorage.SaveStorage();
+            Console.WriteLine("存储完毕");
+        }
+
+        public override void DoJoinFromProxyHandler(JoinMessageReader request)
+        {
+            Table Ta = new Table(request.cellidsA);
+            Table Tb = new Table(request.cellidsB);
+            List<dint> cond = new List<dint>();
+            for (int i = 0; i < request.conda.Count; i++)
+            {
+                cond.Add(new dint(request.conda[i], request.condb[i]));
+            }
+            JoinResponceWriter msg = new JoinResponceWriter(Global.MyServerId, (Ta.innerJoin(Tb, cond, false)).getCellIds());
+            Global.CloudStorage.REdoJoinFromServerToDatabaseProxy(0, msg);
+        }
+
+        public override void TopKFromProxyHandler(TopKMessageReader request)
+        {
+            List<List<long>> cellids = request.celllids;
+            List<List<Element>> correspon = Table.getCorrespon(request.cond, cellids);
+            int k = request.k;
+            List<List<long>> res = new List<List<long>>(k);
+            List<int> cmp = new List<int>(k);
+            for (int i = 0; i < k; i++)
+            {
+                cmp.Add(-1);
+                res.Add(null);
+            }
+            for (int a = 0; a < correspon.Count; a++)
+            {
+                bool flag = false;
+                int p = 0;
+                while (p < k && correspon[a][0].intField > cmp[p])
+                {
+                    ++p;
+                    flag = true;
+                }
+                if (flag)
+                {
+                    int tint = correspon[a][0].intField;
+                    List<long> tres = cellids[a];
+                    while (p - 1 >= 0)
+                    {
+                        int tint2 = cmp[p - 1];
+                        List<long> tres2 = res[p - 1];
+                        cmp[p - 1] = tint;
+                        res[p - 1] = tres;
+                        tint = tint2;
+                        tres = tres2;
+                        --p;
+                    }
+                }
+            }
+            for (int i = 0; i < (k) / 2; i++)
+            {
+                int tint = cmp[i];
+                List<long> tres = res[i];
+                cmp[i] = cmp[k - i - 1];
+                res[i] = res[k - i - 1];
+                cmp[k - i - 1] = tint;
+                res[k - i - 1] = tres;
+            }
+            TopKServerResponceWriter msg = new TopKServerResponceWriter(res, cmp, Global.MyServerId);
+            Global.CloudStorage.TopKFromServerToDatabaseProxy(0, msg);
         }
     }
 }

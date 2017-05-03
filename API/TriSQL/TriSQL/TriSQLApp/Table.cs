@@ -22,6 +22,7 @@ namespace TriSQLApp
     }
     class Table
     {
+        #region 字段
         //类成员的初始化在构造方法里进行
         private bool isSingle;  //是否是直接由构造函数生成的完整单表（即使是select的也是false）
         private List<List<long>> cellIds = new List<List<long>>();
@@ -40,11 +41,17 @@ namespace TriSQLApp
             public Condition con;
             public List<int> typeList;
         }
+        #endregion
+        #region 构造
         public Table(List<List<long>> cellIds)
         {
             this.cellIds = cellIds;
         }
-       
+        public Table(List<List<long>> cellIds, List<int> columnTypes)
+        {
+            this.cellIds = cellIds;
+            this.columnTypes = columnTypes;
+        }
         public Table(List<List<long>> cellIds, List<int> columnTypes, List<string> columnNames,
                 List<int> primaryIndexs, List<Element> defaultValues, List<string> tableNames)
         {
@@ -62,7 +69,6 @@ namespace TriSQLApp
             this.columnTypes = columnTypeList;
         }
 
-        
         public Table()
         {
             cellIds = new List<List<long>>();
@@ -104,9 +110,73 @@ namespace TriSQLApp
             }
             else
             {
+                List<int> countNum = new List<int> { };
+                List<int> Num = new List<int> { };
+                List<List<List<long>>> CID = new List<List<List<long>>> { };
                 isSingle = false;
+
+                for (int i = 0; i < tableName.Length; i++)
+                {
+                    if (!Database.getCurrentDatabase().tableExists(tableName[i]))
+                    {
+                        throw new Exception(String.Format("当前表{0}不存在!", tableName[i]));
+                    }
+                    this.tableNames.Add(tableName[0]);
+                    tableIds.Add(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
+                   [i])));
+                    using (var request = new GetTableMessageWriter(tableIds[i]))
+                    {
+                        int serverId = Global.CloudStorage.GetServerIdByCellId(tableIds[i]);
+                        using (var res = Global.CloudStorage.GetTableToDatabaseServer(serverId, request))
+                        {
+                            for (int j = 0; j < res.columnNameList.Count; j++)
+                            {
+                                this.columnNames.Add(res.tableName + '.' + res.columnNameList[j]);
+                                this.columnTypes.Add(res.columnTypeList[j]);
+                            }
+                            countNum.Add(res.cellIds.Count);
+                            CID.Add(res.cellIds);
+                        }
+                    }
+                }
+                int sum = 1;
+                for (int i = 0; i < tableName.Length; i++)
+                {
+                    sum = sum * countNum[i];
+
+                }
+                for (int j = 0; j < tableName.Length; j++)
+                {
+                    int tempNum = 1;
+                    for (int i = tableName.Length - 1; i > j; i--)
+                    {
+                        tempNum = tempNum * countNum[i];
+                    }
+                    Num.Add(tempNum);
+                }
+                //  Console.WriteLine("{0}", sum);
+                List<long> temp = new List<long> { };
+                for (int i = 0; i < tableName.Length; i++)
+                {
+                    List<List<long>> tempList = new List<List<long>> { };
+                    for (int j = 0; j < sum / (Num[i] * countNum[i]); j++)
+                    {
+                        for (int k = 0; k < countNum[i]; k++)
+                        {
+                            for (int l = 0; l < Num[i]; l++)
+                            {
+                                tempList.Add(CID[i][k]);
+                            }
+                        }
+                    }
+                    // this.cellIds.Add(tempList);
+                }
+
+
             }
         }
+        #endregion
+        #region 田超-delete,update,insert,truncate
         public void delete(string con)
         {
             if (!isSingle)
@@ -143,12 +213,12 @@ namespace TriSQLApp
         public void update(string fieldName, int flag, char op, int opNum, string con)
         {
             Table table = new Table(this.cellIds);
-            Condition contemp = new Condition(table, con);
+            //Condition contemp = new Condition(table, con);
             List<Thread> threads = new List<Thread> { };
             foreach (List<long> Id in this.cellIds)
             {
                 UpdateMessage um = new UpdateMessage();
-                um.con = contemp;
+                //um.con = contemp;
                 um.fieldname = fieldName;
                 um.flag = flag;
                 um.op = op;
@@ -174,7 +244,8 @@ namespace TriSQLApp
             List<Object> values = FieldType.getValues(row, um.typeList);
             int index = this.columnNames.IndexOf(um.fieldname);
             int serverID;
-            if (um.con.getResult(values))//um.con.getResult(values)
+            //if (um.con.getResult(values))//um.con.getResult(values)
+            if (true)
             {
                 Element ele = new Element { };
                 using (var req = new GetElementMessageWriter(um.cellId[index]))
@@ -238,29 +309,24 @@ namespace TriSQLApp
             }
 
             List<Element> ele = new List<Element>();
-            List<long> ID = new List<long> { };
+            List<long> ID = new List<long>();
             ElementCell elecell = FieldType.setValueCell(values[0], this.columnTypes.ElementAt(columnNames.IndexOf(fieldNames[0])));
-            Global.CloudStorage.SaveElementCell(elecell);
+            Global.CloudStorage.SaveElementCell(elecell.CellID, elecell);
             ID.Add(elecell.CellID);
             for (int i = 1; i < fieldNames.Length; i++)
             {
                 Element temp = FieldType.setValue(values[i], this.columnTypes.ElementAt(columnNames.IndexOf(fieldNames[i])));
                 ele.Add(temp);
             }
-            using (var request = new InsertMessageWriter(ele))
+            List<long> ids = Global.CloudStorage.InsertElementToDatabaseServer(0,
+                new InsertMessageWriter(ele)).cellIds;
+            for (int k = 0; k < ids.Count; k++)
             {
-                int serverId = Global.CloudStorage.GetServerIdByCellId(elecell.CellID);
-                using (var res = Global.CloudStorage.InsertElementToDatabaseServer(serverId, request))
-                {
-                    for (int k = 0; k < res.cellIds.Count; k++)
-                    {
-                        ID.Add(res.cellIds[k]);
-                    }
-                }
+                ID.Add(ids[k]);
             }
             this.cellIds.Add(ID);
-            long tableId = Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
-                 [0]));
+            long tableId = Database.getCurrentDatabase().getTableIdList()[Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
+                 [0])];
             TableHeadCell thc = new TableHeadCell(this.tableNames[0], this.columnNames, this.columnTypes, this.primaryIndexs, this.defaultValues, this.cellIds);
             Global.CloudStorage.SaveTableHeadCell(tableId, thc);
         }
@@ -299,7 +365,7 @@ namespace TriSQLApp
             long tableId = Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
                 [0]));
             TableHeadCell thc = new TableHeadCell(this.tableNames[0], this.columnNames, this.columnTypes, this.primaryIndexs, this.defaultValues, this.cellIds);
-            Global.CloudStorage.SaveTableHeadCell(tableId, thc);
+            //Global.CloudStorage.SaveTableHeadCell(tableId, thc);
 
         }
         public void insert(string[] fieldNames, Table anotherTable)
@@ -334,6 +400,8 @@ namespace TriSQLApp
             DatabaseCell dbc = new DatabaseCell(Database.getCurrentDatabase().getName(), tbName, tbID);
             Global.CloudStorage.SaveDatabaseCell(dbId, dbc);
         }
+        #endregion
+        #region 邹开发 select
 
         /// <summary>
         /// 无into的select语句
@@ -362,6 +430,7 @@ namespace TriSQLApp
                     {
                         newColumnNames.Add((field.Item2 == null) || (field.Item2.Equals("")) ?
                             fieldName : field.Item2);  //别名
+                        newColumnTypes.Add(columnTypes[columnNames.IndexOf(fieldName)]);
                         usedIndexes.Add(columnNames.IndexOf(fieldName));
                     }
                     else  //说明要么该字段不存在，要么没有使用表名直接使用字段名
@@ -388,6 +457,7 @@ namespace TriSQLApp
                         {
                             newColumnNames.Add((field.Item2 == null) || (field.Item2.Equals("")) ?
                             columnNames[fieldIndex] : field.Item2);  //别名
+                            newColumnTypes.Add(fieldIndex);
                             usedIndexes.Add(fieldIndex);
                         }
                     }
@@ -400,6 +470,527 @@ namespace TriSQLApp
             return new Table(newCellIds, newColumnTypes, newColumnNames, this.primaryIndexs,
                 this.defaultValues, this.tableNames);
         }
+        #endregion
+        #region 李宁 join topk union
+
+        /// <summary>
+        /// distinct 多线程可行
+        /// </summary>
+        /// <param name="correspond">排序后的,count必须大于等于2</param>
+        private List<dint> distinct(List<List<Element>> correspond)
+        {
+            if (correspond.Count < 2) throw new Exception("count必须大于等于2");
+            List<dint> res = new List<dint>();
+            int s = 0;
+            int e = 0;
+            List<Element> ele = correspond[0];
+            for (int i = 1; i < correspond.Count + 1; i++)
+            {
+                if (i < correspond.Count && Equal(ele, correspond[i]) > 0)
+                {
+                    e++;
+                }
+                else
+                {
+                    for (int j = s; j <= e; j++)
+                        res.Add(new dint(s, e));
+                    s = i;
+                    e = i;
+                }
+            }
+            return res;
+        }
+        /// <summary>
+        /// union distinct 猜测效率很低
+        /// </summary>
+        /// <param name="anotherTable"></param>
+        public Table union_distinct(Table anotherTable)
+        {
+            for (int i = 0; i < columnNames.Count; i++)
+            {
+                if (!columnNames[i].Equals(anotherTable.columnNames)) throw new Exception("两表无并相容性");
+            }
+            cellIds.AddRange(anotherTable.cellIds);
+
+
+            return this;
+        }
+        /// <summary>
+        /// union all
+        /// </summary>
+        /// <param name="anotherTable"></param>
+        /// <returns>并不是生成新表而是把anothertable 加入到this中</returns>
+        public Table union_all(Table anotherTable)
+        {
+            for (int i = 0; i < columnNames.Count; i++)
+            {
+                if (!columnNames[i].Equals(anotherTable.columnNames)) throw new Exception("两表无并相容性");
+            }
+            cellIds.AddRange(anotherTable.cellIds);
+            return this;
+        }
+        /// <summary>
+        /// 将列名转化为位置序号
+        /// </summary>
+        private int nametopos(string name)
+        {
+            for (int i = 0; i < columnNames.Count; i++)
+            {
+                if (columnNames[i].Equals(name))
+                {
+                    return i;
+                }
+            }
+            throw new Exception("不存在的列名");
+        }
+        /// <summary>
+        /// topk 目前的names.count = 1 主要在服务器端未实现多值比较
+        /// </summary>
+        public List<List<long>> topK(int k, string[] names)
+        {
+            List<int> pos = new List<int>();
+            foreach (var name in names)
+            {
+                pos.Add(nametopos(name));
+            }
+            TopKMessageWriter msg = new TopKMessageWriter(k, pos, this.cellIds);
+            List<List<long>> r = Global.CloudStorage.TopKFromClientToDatabaseProxy(0, msg).celllids;
+            return r;
+        }
+        public List<List<long>> topKOnLocal(int k, string name)
+        {
+            int pos = nametopos(name);
+            List<int> cond = new List<int>();
+            cond.Add(pos);
+            List<List<Element>> correspondA = getCorrespon(cond, this.cellIds);
+
+            List<List<long>> res = new List<List<long>>(k);
+            List<int> cmp = new List<int>(k);
+            for (int i = 0; i < k; i++)
+            {
+                cmp.Add(-1);
+                res.Add(null);
+            }
+            for (int a = 0; a < correspondA.Count; a++)
+            {
+                bool flag = false;
+                int p = 0;
+                while (p < k && correspondA[a][0].intField > cmp[p])
+                {
+                    ++p;
+                    flag = true;
+                }
+                if (flag)
+                {
+                    int tint = correspondA[a][0].intField;
+                    List<long> tres = cellIds[a];
+                    while (p - 1 >= 0)
+                    {
+                        int tint2 = cmp[p - 1];
+                        List<long> tres2 = res[p - 1];
+                        cmp[p - 1] = tint;
+                        res[p - 1] = tres;
+                        tint = tint2;
+                        tres = tres2;
+                        --p;
+                    }
+                }
+            }
+            for (int i = 0; i < (k) / 2; i++)
+            {
+                int tint = cmp[i];
+                List<long> tres = res[i];
+                cmp[i] = cmp[k - i - 1];
+                res[i] = res[k - i - 1];
+                cmp[k - i - 1] = tint;
+                res[k - i - 1] = tres;
+            }
+            return res;
+        }
+        private List<dint> calcond(List<string> another)
+        {
+            List<dint> res = new List<dint>();
+            for (var a = 0; a < this.columnNames.Count; a++)
+            {
+                for (var b = 0; b < another.Count; b++)
+                {
+                    if (columnNames[a].Equals(another[b]))
+                    {
+                        res.Add(new dint(a, b));
+                        continue;
+                    }
+                }
+            }
+            return res;
+        }
+        /// <summary>
+        /// 获取几列内容 get row
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <param name="control"></param>
+        /// <param name="another">if control is 1 another can't be null</param>
+        public static List<List<Element>> getCorrespon(List<int> ids, List<List<long>> ID)
+        {
+            var res = new List<List<Element>>();
+            List<long> temp = new List<long>();
+
+            foreach (var e in ID)
+            {
+                foreach (int id in ids)
+                {
+                    temp.Add(e[id]);
+                }
+                GetRowMessageWriter msg = new GetRowMessageWriter(temp);
+                GetRowResponseReader r = Global.CloudStorage.GetRowToDatabaseServer(0, msg);
+                res.Add(r.row);
+                temp.Clear();
+            }
+            return res;
+        }
+        /// <summary>
+        /// 自定义快排,多线程待实现 left =0; right = count-1
+        /// </summary>
+        /// <param name="control">默认为inc 若为-1 则dec</param>
+        public static void QuickSort(List<List<Element>> array, int left, int right, List<List<long>> t, int control = 1)
+        {
+
+            if (left < right)
+            {
+
+                int middle = GetMiddleFroQuickSort(array, left, right, t, control);
+
+                QuickSort(array, left, middle - 1, t);
+
+                QuickSort(array, middle + 1, right, t);
+            }
+
+        }
+        public static void QuickSort_multithread(List<List<Element>> array, int left, int right, List<List<long>> t, int control = 1)
+        {
+            int threadCount = Environment.ProcessorCount;
+            Thread[] threadNum = new Thread[threadCount];
+            if (left < right)
+            {
+
+                int middle = GetMiddleFroQuickSort(array, left, right, t, control);
+
+                QuickSort_multithread(array, left, middle - 1, t);
+
+                QuickSort_multithread(array, middle + 1, right, t);
+            }
+        }
+        private static int GetMiddleFroQuickSort(List<List<Element>> array, int left, int right, List<List<long>> t, int control = 1)
+        {
+            List<Element> key = array[left];
+            List<long> ktemp = t[left];
+            while (left < right)
+            {
+                while (left < right && CopTo(key, array[right], control) < 0)
+                {
+                    right--;
+                }
+                if (left < right)
+                {
+                    List<Element> temp = array[left];
+                    array[left] = array[right];
+
+                    List<long> tempp = t[left];
+                    t[left] = t[right];
+                    left++;
+                }
+
+                while (left < right && CopTo(key, array[left], control) > 0)
+                {
+                    left++;
+                }
+                if (left < right)
+                {
+                    List<Element> temp = array[right];
+                    array[right] = array[left];
+
+                    List<long> tempp = t[right];
+                    t[right] = t[left];
+                    right--;
+                }
+                array[left] = key;
+                t[left] = ktemp;
+            }
+            return left;
+        }
+        /// <summary>
+        /// 比较函数compare to
+        /// </summary>
+        /// <param name="control">默认为inc 若为-1 则dec</param>
+        private static int CopTo(List<Element> key, List<Element> arr, int control = 1)
+        {
+            for (int i = 0; i < key.Count; i++)
+            {
+                if (key[i].intField < arr[i].intField)
+                    return -control;
+                if (key[i].intField > arr[i].intField)
+                    return control;
+            }
+            return control;
+        }
+        struct JoinThreadObject
+        {
+            public int threadCount;
+            public int threadIndex;
+            public Table another;
+            public Table newtable;
+            public JoinThreadObject(int threadCount, int threadIndex, Table another, Table newtable)
+            {
+                this.threadCount = threadCount;
+                this.threadIndex = threadIndex;
+                this.newtable = newtable;
+                this.another = another;
+            }
+        }
+        void JoinThreadProc(object par)
+        {
+            JoinThreadObject p = (JoinThreadObject)par;
+            int start = -1;
+            int end = -1;
+            Table another = p.another;
+            Table newtable = p.newtable;
+            int c = this.cellIds.Count;
+            int ele = c / p.threadCount;
+            if (p.threadCount != p.threadIndex + 1)
+            {
+                start = p.threadIndex * ele;
+                end = start + ele - 1;
+            }
+            else
+            {
+                start = p.threadIndex * ele;
+                end = c - 1;
+            }
+
+
+            for (int i = start; i <= end; i++)
+            {
+                foreach (var a in another.cellIds)
+                {
+                    List<long> row = new List<long>();
+                    row.AddRange(cellIds[i]);
+                    row.AddRange(a);
+                    newtable.cellIds.Add(row);
+                }
+            }
+
+        }
+        /// <summary>
+        /// equal only intfield
+        /// </summary>
+        /// <returns></returns>
+        private int Equal(List<Element> A, List<Element> B)
+        {
+            for (int i = 0; i < A.Count; i++)
+            {
+                if (A[i].intField != B[i].intField)
+                    return -1;
+            }
+            return 1;
+        }
+        int BinSearch(List<List<Element>> correspondA, List<Element> key)
+        {
+            int array_size = correspondA.Count;
+            int low = 0, high = array_size - 1, mid;
+
+            while (low <= high)
+            {
+                mid = (low + high) / 2;//获取中间的位置  
+
+                if (Equal(correspondA[mid], key) > 0)
+                    return mid; //找到则返回相应的位置  
+                if (CopTo(correspondA[mid], key) > 0)
+                    high = mid - 1; //如果比key大，则往低的位置查找  
+                else
+                    low = mid + 1;  //如果比key小，则往高的位置查找  
+            }
+            return -1;
+        }
+        struct JoinJudgeThreadObject
+        {
+            public int threadCount;
+            public int threadIndex;
+            public Table another;
+            public Table newtable;
+            public List<List<Element>> correspondA;
+            public List<List<Element>> correspondB;
+            public List<dint> range;
+            public JoinJudgeThreadObject(int threadCount, int threadIndex, Table another, Table newtable,
+                List<List<Element>> correspondA, List<List<Element>> correspondB, List<dint> range)
+            {
+                this.threadCount = threadCount;
+                this.threadIndex = threadIndex;
+                this.newtable = newtable;
+                this.another = another;
+                this.correspondA = correspondA;
+                this.correspondB = correspondB;
+                this.range = range;
+            }
+        }
+        void JoinJudgeThreadProc(object par)
+        {
+            JoinJudgeThreadObject p = (JoinJudgeThreadObject)par;
+            int start = -1;
+            int end = -1;
+            Table another = p.another;
+            Table newtable = p.newtable;
+            List<List<Element>> correspondA = p.correspondA;
+            List<List<Element>> correspondB = p.correspondB;
+            List<dint> range = p.range;
+            int c = another.cellIds.Count;
+            int ele = c / p.threadCount;
+
+            if (p.threadCount != p.threadIndex + 1)
+            {
+                start = p.threadIndex * ele;
+                end = start + ele - 1;
+            }
+            else
+            {
+                start = p.threadIndex * ele;
+                end = c - 1;
+            }
+            int i = start;
+            while (i <= end)
+            {
+                int s, e;
+                s = i;
+                e = i;
+                while (e <= end - 1 && Equal(correspondB[s], correspondB[e + 1]) > 0)
+                {
+                    e++;
+                }
+                int pos = BinSearch(correspondA, correspondB[i]);
+                if (pos == -1)//no match
+                {
+                    i = e + 1;
+                    continue;
+                }
+                else//match
+                {
+                    int s1, e1;
+                    s1 = range[pos].a;
+                    e1 = range[pos].b;
+                    for (int j = s1; j <= e1; j++)//this
+                    {
+                        for (int ii = s; ii <= e; ii++) //another
+                        {
+                            List<long> row = new List<long>();
+                            row.AddRange(this.cellIds[j]);
+                            row.AddRange(another.cellIds[ii]);
+                            newtable.cellIds.Add(row);
+                        }
+                    }
+                    i = e + 1;
+                }
+            }
+        }
+        public Table innerJoin(Table anotherTable, List<dint> cond = null, bool isLocal = true)
+        {
+            //first 
+            //cellids columnNames columntypes
+            Table newtable = new Table();
+            if (isLocal)
+            {
+                foreach (var a in this.columnNames)
+                    newtable.columnNames.Add(tableNames[0] + "." + a);
+                foreach (var a in this.columnTypes)
+                    newtable.columnTypes.Add(a);
+                foreach (var a in anotherTable.columnNames)
+                    newtable.columnNames.Add(anotherTable.tableNames[0] + "." + a);
+                foreach (var a in anotherTable.columnTypes)
+                    newtable.columnTypes.Add(a);
+                newtable.tableNames.Add(this.tableNames[0] + anotherTable.tableNames[0]);
+            }
+            //process
+            if (cond == null)//使用默认条件，名字相同
+                cond = calcond(anotherTable.columnNames);
+            if (cond.Count != 0)//使用自定义条件
+            {
+                List<int> conda = new List<int>();
+                List<int> condb = new List<int>();
+                foreach (var a in cond)
+                {
+                    conda.Add(a.a);
+                    condb.Add(a.b);
+                }
+                List<List<Element>> correspondA = getCorrespon(conda, this.cellIds);
+                List<List<Element>> correspondB = getCorrespon(condb, anotherTable.cellIds);
+
+                QuickSort(correspondA, 0, correspondA.Count - 1, this.cellIds);
+                QuickSort(correspondB, 0, correspondB.Count - 1, anotherTable.cellIds);
+
+                int threadCount = Environment.ProcessorCount;
+                Thread[] threadNum = new Thread[threadCount];
+                List<dint> range = distinct(correspondA);//get the range
+                for (int threadIndex = 0; threadIndex < threadCount; threadIndex++)
+                {
+                    JoinJudgeThreadObject p = new JoinJudgeThreadObject(threadCount, threadIndex, anotherTable, newtable, correspondA, correspondB, range);
+                    threadNum[threadIndex] = new Thread(JoinJudgeThreadProc);
+                    threadNum[threadIndex].Start(p);
+                }
+                for (int inde = 0; inde < threadCount; inde++)
+                    threadNum[inde].Join();
+            }
+            else//使用恒true条件
+            {
+                int threadCount = Environment.ProcessorCount;
+                Thread[] threadNum = new Thread[threadCount];
+
+                for (int threadIndex = 0; threadIndex < threadCount; threadIndex++)
+                {
+                    JoinThreadObject p = new JoinThreadObject(threadCount, threadIndex, anotherTable, newtable);
+                    threadNum[threadIndex] = new Thread(JoinThreadProc);
+                    threadNum[threadIndex].Start(p);
+                }
+                for (int inde = 0; inde < threadCount; inde++)
+                    threadNum[inde].Join();
+            }
+            return newtable;
+        }
+        /// <summary>
+        /// 按照another第一个元素进行分类 another尽可能是单表, this 最好尺寸小
+        /// </summary>
+        /// <param name="anotherTable"></param>
+        /// <param name="cond">条件表达式</param>
+        /// <returns></returns>
+        public Table innerJoinOnCluster(Table anotherTable, List<dint> cond = null)
+        {
+            //first 
+            //cellids columnNames columntypes
+            Table newtable = new Table();
+            foreach (var a in this.columnNames)
+                newtable.columnNames.Add(tableNames[0] + "." + a);
+            foreach (var a in this.columnTypes)
+                newtable.columnTypes.Add(a);
+            foreach (var a in anotherTable.columnNames)
+                newtable.columnNames.Add(anotherTable.tableNames[0] + "." + a);
+            foreach (var a in anotherTable.columnTypes)
+                newtable.columnTypes.Add(a);
+            newtable.tableNames.Add(this.tableNames[0] + anotherTable.tableNames[0]);
+            //process
+            if (cond == null)//使用默认条件，名字相同
+                cond = calcond(anotherTable.columnNames);
+
+            List<int> conda = new List<int>();
+            List<int> condb = new List<int>();
+            foreach (var a in cond)
+            {
+                conda.Add(a.a);
+                condb.Add(a.b);
+            }
+            JoinMessageWriter msg = new JoinMessageWriter(this.cellIds, anotherTable.cellIds, conda, condb);
+            newtable.cellIds = Global.CloudStorage.JoinFromClientToDatabaseProxy(0, msg).celllids;
+
+            return newtable;
+        }
+        #endregion
+        #region getRow, getColumn, print
+
 
         /// <summary>
         /// 获得某一行
@@ -473,23 +1064,35 @@ namespace TriSQLApp
             return columnTypes;
         }
 
+        public List<int> getPrimayIndexs()
+        {
+            return primaryIndexs;
+        }
+
+
+        public List<Element> getDefaultValues()
+        {
+            return defaultValues;
+        }
+
         public void printTable()
         {
-            foreach(string name in columnNames)
+            foreach (string name in columnNames)
             {
                 Console.Write("{0, -15}", name);
             }
             Console.WriteLine();
-            for(int i = 0; i < cellIds.Count; i++)
+            for (int i = 0; i < cellIds.Count; i++)
             {
                 List<Object> row = getRow(i);
-                foreach(Object ele in row)
+                foreach (Object ele in row)
                 {
                     Console.Write("{0, -15}", ele);
                 }
                 Console.WriteLine();
             }
         }
+        #endregion
     }
 
 }

@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using TriSQL;
 
-namespace TriSQLApp {
+namespace TriSQLApp
+{
     /// <summary>
     /// 定义了各个类型的宏
     /// </summary>
-    class FieldType {
+    class FieldType
+    {
         /// <summary>
         /// 字符串
         /// </summary>
@@ -46,7 +48,8 @@ namespace TriSQLApp {
         /// <param name="ele">Element对象</param>
         /// <param name="type">所存数据类型</param>
         /// <returns>所存的值</returns>
-        public static object getValue(Element ele, int type) {
+        public static object getValue(Element ele, int type)
+        {
             Object value = null;
             if (ele.Equals(null))
             {
@@ -85,7 +88,7 @@ namespace TriSQLApp {
         public static List<Object> getValues(List<Element> eles, List<int> types)
         {
             List<Object> values = new List<object>();
-            foreach(Element ele in eles)
+            foreach (Element ele in eles)
             {
                 values.Add(getValue(ele, types[eles.IndexOf(ele)]));
             }
@@ -103,11 +106,14 @@ namespace TriSQLApp {
             Element ele = new Element();
             if (value == null)  //无默认值
             {
-                if (type < STRING || type > LONG) {
+                if (type < STRING || type > LONG)
+                {
                     throw new Exception(String.Format("不存在的字段类型:{0}", type));
                 }
                 return null;
-            } else {
+            }
+            else
+            {
                 switch (type)
                 {
                     case INTEGER:
@@ -145,7 +151,7 @@ namespace TriSQLApp {
 
         public static ElementCell setValueCell(object value, int type)
         {
-            ElementCell ele = new ElementCell(stringField:null);
+            ElementCell ele = new ElementCell("1",1,1,new DateTime(), 1);
             if (value == null)  //无默认值
             {
                 if (type < STRING || type > LONG)

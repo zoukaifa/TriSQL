@@ -202,7 +202,67 @@ protocol InsertElement{
 	Response:InsertResponce;
 }
 
+protocol SaveStorage {
+	Type:Syn;
+	Request:void;
+	Response:void;	
+}
 
+//join
+struct JoinMessage{
+	List<List<long>> cellidsA;
+	List<List<long>> cellidsB;
+	List<int> conda;
+	List<int> condb;
+}
+struct JoinResponce{
+	int serverid;	
+	List<List<long>> celllids;
+}
+protocol DoJoinFromProxy{
+	Type:Asyn;
+	Request:JoinMessage;
+	Response:void;	
+}
+protocol REdoJoinFromServer{
+	Type:Asyn;
+	Request:JoinResponce;
+	Response:void;	
+}
+protocol JoinFromClient{
+	Type:Syn;
+	Request:JoinMessage;
+	Response:JoinResponce;	
+}
+//topK
+struct TopKMessage{
+	int k;	
+	List<int> cond;	
+	List<List<long>> celllids;
+}
+struct TopKResponce{
+	List<List<long>> celllids;
+}
+protocol TopKFromClient{
+	Type:Syn;
+	Request:TopKMessage;
+	Response:TopKResponce;
+}
+protocol TopKFromProxy{
+	Type:Asyn;
+	Request:TopKMessage;
+	Response:void;	
+}
+struct TopKServerResponce{
+	List<List<long>> celllids;
+	List<int> values;
+	int serverid;
+}
+protocol TopKFromServer{
+	Type:Asyn;
+	Request:TopKServerResponce;
+	Response:void;	
+}
 proxy DatabaseProxy {
 	protocol SelectFromClient;
 	protocol SelectFromServer;	
@@ -210,6 +270,10 @@ proxy DatabaseProxy {
 	protocol DeleteFromServer;
 	protocol TruncateFromClient;
 	protocol TruncateFromServer;
+	protocol REdoJoinFromServer;
+	protocol JoinFromClient;
+	protocol TopKFromClient;
+	protocol TopKFromServer;
 }
 
 server DatabaseServer {
@@ -222,4 +286,7 @@ server DatabaseServer {
 	protocol GetRow;
 	protocol GetElement;
 	protocol UpdateTable;
+	protocol SaveStorage;
+	protocol DoJoinFromProxy;
+	protocol TopKFromProxy;
 }
