@@ -77,7 +77,7 @@ namespace TriSQLApp
             primaryIndexs = new List<int>();
             defaultValues = new List<Element>();
         }
-        public Table(params string[] tableName)
+        public Table(string tableName)
         {
             List<long> tableIds = new List<long> { };
             if (Database.getCurrentDatabase() == null)
@@ -85,16 +85,14 @@ namespace TriSQLApp
                 throw new Exception(String.Format("当前数据库不存在"));
             }
 
-            if (tableName.Length == 1)
-            {
+          
                 isSingle = true;
-                if (!Database.getCurrentDatabase().tableExists(tableName[0]))
+                if (!Database.getCurrentDatabase().tableExists(tableName))
                 {
                     throw new Exception(String.Format("当前表{0}不存在!", tableName[0]));
                 }
-                this.tableNames.Add(tableName[0]);
-                tableIds.Add(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableName
-                    [0])));
+                this.tableNames.Add(tableName);
+                tableIds.Add(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableName)));
                 using (var request = new GetTableMessageWriter(tableIds[0]))
                 {
                     int serverId = Global.CloudStorage.GetServerIdByCellId(tableIds[0]);
@@ -107,76 +105,22 @@ namespace TriSQLApp
                         this.primaryIndexs = res.primaryIndex;
                     }
                 }
-            }
-            else
+        }
+        public Table MultiTable(params string[] tableName)
+        {
+            Table M;
+            Table t1 = new Table(tableName[0]);
+            Table t2 = new Table(tableName[1]);
+            M = t1.innerJoinOnCluster(t2, new List<dint>());
+            for (int i = 2; i < tableName.Length; i++)
             {
-                List<int> countNum = new List<int> { };
-                List<int> Num = new List<int> { };
-                List<List<List<long>>> CID = new List<List<List<long>>> { };
-                isSingle = false;
-
-                for (int i = 0; i < tableName.Length; i++)
-                {
-                    if (!Database.getCurrentDatabase().tableExists(tableName[i]))
-                    {
-                        throw new Exception(String.Format("当前表{0}不存在!", tableName[i]));
-                    }
-                    this.tableNames.Add(tableName[0]);
-                    tableIds.Add(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
-                   [i])));
-                    using (var request = new GetTableMessageWriter(tableIds[i]))
-                    {
-                        int serverId = Global.CloudStorage.GetServerIdByCellId(tableIds[i]);
-                        using (var res = Global.CloudStorage.GetTableToDatabaseServer(serverId, request))
-                        {
-                            for (int j = 0; j < res.columnNameList.Count; j++)
-                            {
-                                this.columnNames.Add(res.tableName + '.' + res.columnNameList[j]);
-                                this.columnTypes.Add(res.columnTypeList[j]);
-                            }
-                            countNum.Add(res.cellIds.Count);
-                            CID.Add(res.cellIds);
-                        }
-                    }
-                }
-                int sum = 1;
-                for (int i = 0; i < tableName.Length; i++)
-                {
-                    sum = sum * countNum[i];
-
-                }
-                for (int j = 0; j < tableName.Length; j++)
-                {
-                    int tempNum = 1;
-                    for (int i = tableName.Length - 1; i > j; i--)
-                    {
-                        tempNum = tempNum * countNum[i];
-                    }
-                    Num.Add(tempNum);
-                }
-                //  Console.WriteLine("{0}", sum);
-                List<long> temp = new List<long> { };
-                for (int i = 0; i < tableName.Length; i++)
-                {
-                    List<List<long>> tempList = new List<List<long>> { };
-                    for (int j = 0; j < sum / (Num[i] * countNum[i]); j++)
-                    {
-                        for (int k = 0; k < countNum[i]; k++)
-                        {
-                            for (int l = 0; l < Num[i]; l++)
-                            {
-                                tempList.Add(CID[i][k]);
-                            }
-                        }
-                    }
-                    // this.cellIds.Add(tempList);
-                }
-
-
+                Table temp = new Table(tableName[i]);
+                 M = M.innerJoinOnCluster(temp,new List<dint>());
             }
+            return M;
         }
         #endregion
-        #region 田超-delete,update,insert,truncate
+        #region 田超-delete,update,insert,truncate,rename
         public void delete(string con)
         {
             if (!isSingle)
@@ -365,7 +309,7 @@ namespace TriSQLApp
             long tableId = Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
                 [0]));
             TableHeadCell thc = new TableHeadCell(this.tableNames[0], this.columnNames, this.columnTypes, this.primaryIndexs, this.defaultValues, this.cellIds);
-            //Global.CloudStorage.SaveTableHeadCell(tableId, thc);
+            Global.CloudStorage.SaveTableHeadCell(tableId, thc);
 
         }
         public void insert(string[] fieldNames, Table anotherTable)
