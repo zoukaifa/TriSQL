@@ -157,12 +157,12 @@ namespace TriSQLApp
         public void update(string fieldName, int flag, char op, int opNum, string con)
         {
             Table table = new Table(this.cellIds);
-            //Condition contemp = new Condition(table, con);
+            Condition contemp = new Condition(table, con);
             List<Thread> threads = new List<Thread> { };
             foreach (List<long> Id in this.cellIds)
             {
                 UpdateMessage um = new UpdateMessage();
-                //um.con = contemp;
+                um.con = contemp;
                 um.fieldname = fieldName;
                 um.flag = flag;
                 um.op = op;
