@@ -1012,6 +1012,10 @@ namespace TriSQLApp
         {
             return primaryIndexs;
         }
+		
+		public List<string> getTableNames() {
+			return tableNames;
+		}
 
 
         public List<Element> getDefaultValues()
