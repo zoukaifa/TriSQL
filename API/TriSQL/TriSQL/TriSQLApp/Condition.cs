@@ -8,6 +8,16 @@ using TriModel;
 
 namespace TriSQLApp
 {
+    /// <summary>
+    /// 接口使用说明：
+    /// 初始化查询字符串：注意括号左右两侧应有空格, 字符串类型的数据应该用\"string\"的形式, 嵌套形式in后面的字符串内容随便
+    /// string cond = "( Stu.name == \"mike\" or Stu.name == \"cindy\" ) and Stu.id <= Course.sid and val in \"tmp\"";
+    /// 初始化Condition对象：table为主查询表对象, cond为查询字符串, tableList为嵌套查询的表列表
+    /// Condition condition = new Condition(Table table, string cond, List<Table> tableList);
+    /// 调用getResult()接口获取判断结果,其中rowData输入顺序和查询字符串保持一致, 重复属性无需重复输入
+    /// condition.getResult(rowData));
+    /// </summary>
+    
     public enum Operand
     {
         EQUAL,
@@ -33,14 +43,18 @@ namespace TriSQLApp
         TABLE
     }
 
+    /// <summary>
+    /// 条件对
+    /// </summary>
     class ConditionPair
     {
         public string left;
         public Operand operand;
         public RightOptType rightValType;
         public object rightValue;
-        public List<object> rightValueList;
-        public List<Table> rightTableList;
+
+        public Table rightTable;               //保存in右部的table对象
+        public List<object> rightValueList;    //根据左部的指定列名获取table对象中某列数据
 
         public ConditionPair()
         {
@@ -49,34 +63,37 @@ namespace TriSQLApp
 
         public ConditionPair(string left, Operand operand, RightOptType rightIsValue, object rightValue)
         {
-            Console.WriteLine("带参数初始化构造函数构造成功");
+            Console.WriteLine("带参数初始化构造函数构造成功(无嵌套)");
             this.left = left;
             this.operand = operand;
             this.rightValType = rightIsValue;
             this.rightValue = rightValue;
         }
 
-        public ConditionPair(string left, Operand operand, RightOptType rightIsValue, List<object> rightValue)
+        public ConditionPair(string left, Operand operand, RightOptType rightIsValue, Table table)
         {
-            Console.WriteLine("带参数初始化构造函数构造成功");
+            Console.WriteLine("带参数初始化构造函数构造成功(有嵌套)");
             this.left = left;
             this.operand = operand;
             this.rightValType = rightIsValue;
-            this.rightValueList = rightValue;
-            Console.WriteLine(rightValueList.Count);
+
+            this.rightTable = table;
+            this.rightValueList = table.getColumn(left); //需增加一个异常捕获
         }
 
-        public ConditionPair(string left, Operand operand, RightOptType rightIsValue, List<Table> nestedTable)
-        {
-            Console.WriteLine("带参数(嵌套)初始化构造函数构造成功");
-            this.left = left;
-            this.operand = operand;
-            this.rightValType = rightIsValue;
-            this.rightTableList = nestedTable;
-        }
+        //public ConditionPair(string left, Operand operand, RightOptType rightIsValue, List<Table> nestedTable)
+        //{
+        //    Console.WriteLine("带参数(嵌套)初始化构造函数构造成功");
+        //    this.left = left;
+        //    this.operand = operand;
+        //    this.rightValType = rightIsValue;
+        //    this.rightTableList = nestedTable;
+        //}
     }
 
-
+    /// <summary>
+    /// where子句(由一系列的条件对及逻辑符组成)
+    /// </summary>
     class Condition
     {
         private Table table;
@@ -85,7 +102,7 @@ namespace TriSQLApp
         private string[] strs;
         private int isDefault = -1;
 
-        //初始构造函数（不含嵌套）
+        //初始构造函数
         public Condition(Table table, string condition, List<Table> nestedTable = null)
         {
             if (condition == null || condition.Equals(""))
@@ -119,11 +136,18 @@ namespace TriSQLApp
                         {
                             this.conditions.Add(new ConditionPair(param1, opt, type, nestedTable[nestedIndex]));
                             nestedIndex++;
+                            if (!this.columnName.ContainsKey(param1))
+                            {
+                                this.columnName.Add(param1, columnIndex++);
+                            }
                         }
                         else
                         {
                             throw new Exception("嵌套Table数量不正确");
                         }
+                        strs[i - 1] = " ";
+                        strs[i] = "?";
+                        strs[i + 1] = " ";
                     }
                     else if (strs[i].Equals("==") || strs[i].Equals("!=") || strs[i].Equals(">") || strs[i].Equals(">=") || strs[i].Equals("<")
                         || strs[i].Equals("<="))
@@ -165,7 +189,11 @@ namespace TriSQLApp
 
         }
 
-        //where子句判断接口
+        /// <summary>
+        /// where子句判断接口
+        /// </summary>
+        /// <param name="rowData"></param>
+        /// <returns></returns>
         public bool getResult(List<object> rowData)
         {
             if (this.isDefault == -1)
@@ -191,11 +219,11 @@ namespace TriSQLApp
                 isMatch = false;
                 cp = curConditon[i];
                 object leftValue = rowData[this.columnName[cp.left]];
+                Console.WriteLine(leftValue);
 
                 //处理嵌套的情况
                 if (cp.operand == Operand.IN && cp.rightValType == RightOptType.TABLE)
                 {
-                    // 调用邹同学的Table.getColumn()的接口
                     for (int j = 0; j < cp.rightValueList.Count; j++)
                     {
                         if (leftValue.Equals(cp.rightValueList[j]))
@@ -392,7 +420,6 @@ namespace TriSQLApp
             }
             return result;
         }
-
 
         private static Operand getOperand(string opt)
         {
