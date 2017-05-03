@@ -11,45 +11,84 @@ namespace TriSQLApp
     class DatabaseProxy : DatabaseProxyBase
     {
         Semaphore sem = new Semaphore(0, 1);  //信号量
-        Dictionary<int, List<List<long>>> messageDic = new Dictionary<int, List<List<long>>>();  //收集消息
+        Dictionary<int, List<List<long>>> idDict = new Dictionary<int, List<List<long>>>();  //收集cellid消息
         
         public override void SelectFromClientHandler(SelectMessageReader request, SelectResponseWriter response)
         {
-            messageDic.Clear();
+            idDict.Clear();
             for(int i = 0; i < Global.ServerCount; i++)
             {
                 //每个服务器挨个发送
-                SelectMessageWriter smw = new SelectMessageWriter(request.rowIds,
-                    request.tableNames, request.tableIds, request.indexes, request.columnTypes,
-                    request.columnNames, request.primaryIndexes, request.defaultValues, request.condition);
+                SelectMessageWriter smw = new SelectMessageWriter(request.columnNameList, 
+                    request.columnTypeList, request.cellIds, request.usedIndex, request.condition);
                 Global.CloudStorage.SelectFromProxyToDatabaseServer(i, smw);
             }
             sem.WaitOne();  //等待服务器全部返回信息
-            List<List<long>> rowIds = new List<List<long>>();
-            for(int i = 0; i < request.rowIds.Count; i++)
-            {
-                rowIds.Add(new List<long>());
-            }
+            response.cellIds = new List<List<long>>();
             //将信息合并
             for(int i = 0; i < Global.ServerCount; i++)
             {
-                List<List<long>> partRowIds = messageDic[i];
-                for (int j = 0; j < request.rowIds.Count; j++)
-                {
-                    rowIds[j].AddRange(partRowIds[j]);
-                }
+                response.cellIds.AddRange(idDict[i]);
             }
-            response.rowIds = rowIds;
         }
 
         public override void SelectFromServerHandler(SelectResultResponseReader request)
         {
-            messageDic.Add(request.serverId, request.rowIds);  //将收到的信息加入字典
-            if (messageDic.Count == Global.ServerCount)
+            idDict.Add(request.serverId, request.cellIds);  //将收到的信息加入字典
+            if (idDict.Count == Global.ServerCount)
             {
                 //所有服务器均完成查询，并已经发送给了proxy
                 sem.Release();
             }
         }
+        public override void DeleteFromClientHandler(DeleteMessageReader request, DeleteResponceWriter response)
+        {
+            idDict.Clear();
+            for (int i = 0; i < Global.ServerCount; i++)
+            {
+                //每个服务器挨个发送
+                DeleteMessageWriter dmw = new DeleteMessageWriter(request.cellIds, request.columnTypeList, request.con);
+                Global.CloudStorage.DeleteFromProxyToDatabaseServer(i, dmw);
+            }
+            sem.WaitOne();  //等待服务器全部返回信息
+            response.cellIds = new List<List<long>>();
+            //将信息合并
+            for (int i = 0; i < Global.ServerCount; i++)
+            {
+                response.cellIds.AddRange(idDict[i]);
+            }
+        }
+        public override void DeleteFromServerHandler(DeleteResultResponceReader request)
+        {
+            idDict.Add(request.serverId, request.cellIds);
+            if (idDict.Count == Global.ServerCount)
+            {
+                //所有服务器均完成查询，并已经发送给了proxy
+                sem.Release();
+            }
+        }
+        public override void TruncateFromClientHandler(TruncateMessageReader request)
+        {
+            idDict.Clear();
+            for (int i = 0; i < Global.ServerCount; i++)
+            {
+                //每个服务器挨个发送
+                TruncateMessageWriter tmw = new TruncateMessageWriter(request.cellIds);
+                Global.CloudStorage.TruncateFromProxyToDatabaseServer(i, tmw);
+            }
+            sem.WaitOne();  //等待服务器全部返回信息
+
+        }
+        public override void TruncateFromServerHandler(TruncateResponceReader request)
+        {
+            idDict.Add(request.serverId, null);
+            if (idDict.Count == Global.ServerCount)
+            {
+                //所有服务器均完成查询，并已经发送给了proxy
+                sem.Release();
+            }
+        }
+
+
     }
 }

@@ -46,17 +46,6 @@ protocol GetDatabase {
 	Response: GetDatabaseResponse;
 }
 
-//更新数据库
-struct UpdateDatabaseMessage {
-	long databaseId;
-	List<string> tableNameList;
-	List<long> tableIdList;
-}
-protocol UpdateDatabase {
-	Type: Syn;
-	Request: UpdateDatabaseMessage;
-	Response: void;	
-}
 
 //表
 struct GetTableMessage {  //查询表的信息
@@ -83,16 +72,17 @@ struct SelectMessage {
 	List<string> columnNameList;  //列名
 	List<int> columnTypeList;  //列类型
 	List<List<long>> cellIds;  //单元格的cellid的集合
+	List<int> usedIndex;
 	string condition;
 }
 //proxy向client回复结果
 struct SelectResponse {
-	List<List<long>> rowIds;
+	List<List<long>> cellIds;
 }
 //server向proxy回复结果
 struct SelectResultResponse {
 	int serverId;	
-	List<List<long>> rowIds;
+	List<List<long>> cellIds;
 }
 protocol SelectFromClient {  //client向proxy发送
 	Type: Syn;
@@ -134,18 +124,102 @@ protocol GetElement {
 	Response: GetElementResponse;
 }
 
+struct UpdateTableMessage{
+	string tableName;  //表名
+	CellId tableId;
+	List<string> columnNameList;  //列名
+	List<int> columnTypeList;  //列类型
+	List<int> primaryIndex;  //主键索引
+	List<Element> defaultValue;  //默认值
+	List<List<CellId>> cellIds;  //单元格的cellid的集合
+}
+protocol UpdateTable {
+	Type: Syn;
+	Request: UpdateTableMessage;
+	Response: void;	
+}
+
+struct  DeleteMessage{
+	List<List<long>>cellIds;
+	List<int> columnTypeList;
+	string con;
+}
+struct DeleteResponce{
+    List<List<long>>cellIds;
+}
+struct DeleteResultResponce{
+	int serverId;
+	List<List<long>>cellIds;
+}
+protocol DeleteFromClient{
+	Type:Syn;
+	Request:DeleteMessage;
+	Response:DeleteResponce;
+}
+protocol DeleteFromProxy{
+	Type:Asyn;
+	Request:DeleteMessage;
+	Response:void;
+}
+protocol DeleteFromServer{
+	Type:Asyn;
+	Request:DeleteResultResponce;
+	Response:void;
+}
+
+struct  TruncateMessage{
+	List<List<long>>cellIds;
+}
+struct TruncateResponce{
+	int serverId;	
+}
+protocol TruncateFromClient{
+	Type:Syn;
+	Request:TruncateMessage;
+	Response:void;
+}
+protocol TruncateFromProxy{
+	Type:Asyn;
+	Request:TruncateMessage;
+	Response:void;
+}
+protocol TruncateFromServer{
+	Type:Asyn;
+	Request:TruncateResponce;
+	Response:void;
+}
+
+struct InsertMessage{
+	List<Element>ele;
+}
+struct InsertResponce{
+	int serverId;	
+	List<CellId>cellIds;	
+}
+protocol InsertElement{
+	Type:Syn;
+	Request:InsertMessage;
+	Response:InsertResponce;
+}
 
 
 proxy DatabaseProxy {
 	protocol SelectFromClient;
 	protocol SelectFromServer;	
+	protocol DeleteFromClient;
+	protocol DeleteFromServer;
+	protocol TruncateFromClient;
+	protocol TruncateFromServer;
 }
 
 server DatabaseServer {
 	protocol SelectFromProxy;	
+	protocol DeleteFromProxy;
+	protocol TruncateFromProxy;
+	protocol InsertElement;
 	protocol GetDatabase;
-	protocol UpdateDatabase;
 	protocol GetTable;
 	protocol GetRow;
 	protocol GetElement;
+	protocol UpdateTable;
 }

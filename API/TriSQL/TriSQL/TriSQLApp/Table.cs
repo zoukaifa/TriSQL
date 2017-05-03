@@ -6,284 +6,333 @@ using System.Threading.Tasks;
 using TriSQL;
 using Trinity;
 using Trinity.Core.Lib;
+using System.Threading;
 
 namespace TriSQLApp
 {
+    struct dint
+    {
+        public int a;
+        public int b;
+        public dint(int a, int b)
+        {
+            this.a = a;
+            this.b = b;
+        }
+    }
     class Table
     {
         //类成员的初始化在构造方法里进行
         private bool isSingle;  //是否是直接由构造函数生成的完整单表（即使是select的也是false）
-        private List<List<long>> cellIds;
-        private List<int> columnTypes;
-        private List<string> columnNames;
-        private List<int> primaryIndexs;  //主键索引
-        private List<Element> defaultValues;  //默认值
-
-        public Table(params string[] tableNames)
+        private List<List<long>> cellIds = new List<List<long>>();
+        private List<int> columnTypes = new List<int> { };
+        private List<string> columnNames = new List<string> { };
+        private List<int> primaryIndexs = new List<int> { };  //主键索引
+        private List<Element> defaultValues = new List<Element> { };  //默认值
+        private List<string> tableNames = new List<string> { };
+        public struct UpdateMessage
         {
-            //判断当前database是不是存在的
+            public List<long> cellId;
+            public string fieldname;
+            public int flag;
+            public char op;
+            public int operationNum;
+            public Condition con;
+            public List<int> typeList;
+        }
+        public Table(List<List<long>> cellIds)
+        {
+            this.cellIds = cellIds;
+        }
+       
+        public Table(List<List<long>> cellIds, List<int> columnTypes, List<string> columnNames,
+                List<int> primaryIndexs, List<Element> defaultValues, List<string> tableNames)
+        {
+            this.cellIds = cellIds;
+            this.columnNames = columnNames;
+            this.columnTypes = columnTypes;
+            this.primaryIndexs = primaryIndexs;
+            this.defaultValues = defaultValues;
+            this.tableNames = tableNames;
+        }
+
+        public Table(List<string> columnNameList, List<int> columnTypeList)
+        {
+            this.columnNames = columnNameList;
+            this.columnTypes = columnTypeList;
+        }
+
+        
+        public Table()
+        {
+            cellIds = new List<List<long>>();
+            columnNames = new List<string>();
+            columnTypes = new List<int>();
+            primaryIndexs = new List<int>();
+            defaultValues = new List<Element>();
+        }
+        public Table(params string[] tableName)
+        {
+            List<long> tableIds = new List<long> { };
             if (Database.getCurrentDatabase() == null)
             {
                 throw new Exception(String.Format("当前数据库不存在"));
             }
-            this.databaseName = Database.getCurrentDatabase().getName();
-            if (tableNames.Length == 1)
+
+            if (tableName.Length == 1)
             {
-                if (!Database.getCurrentDatabase().tableExists(tableNames[0]))
+                isSingle = true;
+                if (!Database.getCurrentDatabase().tableExists(tableName[0]))
                 {
-                    throw new Exception(String.Format("当前表{0}不存在!", tableNames[0]));
+                    throw new Exception(String.Format("当前表{0}不存在!", tableName[0]));
                 }
-                //获取当前表的名字
-                //this.tableNames[0] = tableNames[0];
-                this.tableNames.Add(tableNames[0]);
-                //获取表的ID
-                // this.tableIds[0] = Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
-                //     [0]));
-                this.tableIds.Add(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
+                this.tableNames.Add(tableName[0]);
+                tableIds.Add(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableName
                     [0])));
-                using (var request = new GetTableMessageWriter(Database.getCurrentDatabase().getName(), tableIds[0]))
+                using (var request = new GetTableMessageWriter(tableIds[0]))
                 {
                     int serverId = Global.CloudStorage.GetServerIdByCellId(tableIds[0]);
                     using (var res = Global.CloudStorage.GetTableToDatabaseServer(serverId, request))
                     {
-                        // this.columnNames[0] = res.columnNameList;
-                        this.columnNames.Add(res.columnNameList);
-                        //this.cellIds[0] = res.rowList;
-                        this.cellIds.Add(res.rowList);
-                        //this.columnTypes[0] = res.columnTypeList;
-                        this.columnTypes.Add(res.columnTypeList);
-                        //this.primaryIndexs[0] = res.primaryIndex;
-                        this.primaryIndexs.Add(res.primaryIndex);
-                        //this.defaultValues[0] = res.defaultValue;
-                        this.defaultValues.Add(res.defaultValue);
+                        this.cellIds = res.cellIds;
+                        this.columnNames = res.columnNameList;
+                        this.columnTypes = res.columnTypeList;
+                        this.defaultValues = res.defaultValue;
+                        this.primaryIndexs = res.primaryIndex;
                     }
                 }
-
             }
-            else if (tableNames.Length > 1)
+            else
             {
-                int sum = 1;
-                List<int> countNum = new List<int> { };
-                List<int> Num = new List<int> { };
-                List<List<long>> CIDs = new List<List<long>> { };
-
-                for (int i = 0; i < tableNames.Length; i++)
-                {
-                    if (!Database.getCurrentDatabase().tableExists(tableNames[i]))
-                    {
-                        throw new Exception(String.Format("当前表{0}不存在!", tableNames[i]));
-                    }
-                    this.tableNames.Add(tableNames.ElementAt(i));
-                    Console.WriteLine("{0}", this.tableNames[i]);
-                    // this.tableIds[i]= Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
-                    // [i]));
-                    this.tableIds.Add(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
-                   [i])));
-                    Console.WriteLine("{0}", this.tableIds.ElementAt(i));
-                    using (var request = new GetTableMessageWriter(Database.getCurrentDatabase().getName(), tableIds[i]))
-                    {
-                        //int serverId = Global.CloudStorage.GetServerIdByCellId(tableIds[i]);
-                        int serverId = Global.CloudStorage.GetServerIdByCellId(tableIds[i]);
-                        using (var res = Global.CloudStorage.GetTableToDatabaseServer(serverId, request))
-                        {
-                            // this.columnNames[0] = res.columnNameList;
-                            this.columnNames.Add(res.columnNameList);
-                            //this.cellIds[0] = res.rowList;
-                            // this.cellIds.Add(res.rowList);
-                            //this.columnTypes[0] = res.columnTypeList;
-                            this.columnTypes.Add(res.columnTypeList);
-                            //this.primaryIndexs[0] = res.primaryIndex;
-                            this.primaryIndexs.Add(res.primaryIndex);
-                            //this.defaultValues[0] = res.defaultValue;
-                            this.defaultValues.Add(res.defaultValue);
-                            countNum.Add(res.rowList.Count);
-                            CIDs.Add(res.rowList);
-                        }
-                    }
-                }
-                for (int i = 0; i < tableNames.Length; i++)
-                {
-                    sum = sum * countNum[i];
-
-                }
-                for (int j = 0; j < tableNames.Length; j++)
-                {
-                    int tempNum = 1;
-                    for (int i = tableNames.Length - 1; i > j; i--)
-                    {
-                        tempNum = tempNum * countNum[i];
-                    }
-                    Num.Add(tempNum);
-                }
-                Console.WriteLine("{0}", sum);
-                List<long> temp = new List<long> { };
-                for (int i = 0; i < tableNames.Length; i++)
-                {
-                    List<long> tempList = new List<long> { };
-                    for (int j = 0; j < sum / (Num[i] * countNum[i]); j++)
-                    {
-                        for (int k = 0; k < countNum[i]; k++)
-                        {
-                            for (int l = 0; l < Num[i]; l++)
-                            {
-                                tempList.Add(CIDs[i][k]);
-                            }
-                        }
-                    }
-                    this.cellIds.Add(tempList);
-                }
+                isSingle = false;
             }
         }
-
-
-        public Table(List<List<long>> cellIds,
-                     List<string> tableNames,
-                     List<long> tableIds,
-                     List<List<int>> indexes,
-                     List<List<int>> columnTypes,
-                     List<List<string>> columnNames,
-                     List<List<int>> primaryIndexs,
-                     List<List<Element>> defaultValues
-                     )
+        public void delete(string con)
         {
-            this.cellIds = cellIds;
-            this.tableIds = tableIds;
-            this.tableNames = tableNames;
-            this.columnNames = columnNames;
-            this.columnTypes = columnTypes;
-            this.indexes = indexes;
-            this.primaryIndexs = primaryIndexs;
-            this.defaultValues = defaultValues;
-        }
-        public void delete(Condition con = null)
-        {
-            List<long> RID = con.getResult(this.tableNames, con);
-            if (tableNames.Count != 1)
+            if (!isSingle)
             {
-                throw new Exception(String.Format("不可输入多个表"));
+                throw new Exception(String.Format("不可对多个表进行delete操作"));
             }
-            for (int i = 0; i < RID.Count; i++)
+            DeleteMessageWriter dmw = new DeleteMessageWriter(cellIds, this.columnTypes, con);
+            List<List<long>> newCellIds = Global.CloudStorage.DeleteFromClientToDatabaseProxy(0, dmw).cellIds;
+            foreach (List<long> ids in newCellIds)
             {
-                for (int j = 0; j < this.cellIds[0].Count; j++)
+                this.cellIds.Remove(ids);
+            }
+            TableHeadCell thc = new TableHeadCell(this.tableNames[0], this.columnNames, this.columnTypes, this.primaryIndexs, this.defaultValues, this.cellIds);
+            long thcId = Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
+                   [0]));
+            Global.CloudStorage.SaveTableHeadCell(thcId, thc);
+        }
+        public void truncate()
+        {
+            if (!isSingle)
+            {
+                throw new Exception(String.Format("不可对多个表进行delete操作"));
+            }
+
+            TruncateMessageWriter tmw = new TruncateMessageWriter(cellIds);
+            Global.CloudStorage.TruncateFromClientToDatabaseProxy(0, tmw);
+
+            this.cellIds = null;
+            TableHeadCell thc = new TableHeadCell(this.tableNames[0], this.columnNames, this.columnTypes, this.primaryIndexs, this.defaultValues, this.cellIds);
+            long thcId = Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
+                   [0]));
+            Global.CloudStorage.SaveTableHeadCell(thcId, thc);
+        }
+        public void update(string fieldName, int flag, char op, int opNum, string con)
+        {
+            Table table = new Table(this.cellIds);
+            Condition contemp = new Condition(table, con);
+            List<Thread> threads = new List<Thread> { };
+            foreach (List<long> Id in this.cellIds)
+            {
+                UpdateMessage um = new UpdateMessage();
+                um.con = contemp;
+                um.fieldname = fieldName;
+                um.flag = flag;
+                um.op = op;
+                um.operationNum = opNum;
+                um.cellId = Id;
+                um.typeList = this.columnTypes;
+                Thread thread = new Thread(new ParameterizedThreadStart(UpdateFunction));
+                threads.Add(thread);
+                thread.Start(um);
+            }
+            foreach (Thread thr in threads)
+            {
+                thr.Join();
+            }
+        }
+        private void UpdateFunction(Object Message)
+        {
+            UpdateMessage um = (UpdateMessage)Message;
+
+            List<Element> row = Global.CloudStorage.GetRowToDatabaseServer(
+                Global.CloudStorage.GetServerIdByCellId(um.cellId[0]),
+                new GetRowMessageWriter(um.cellId)).row;
+            List<Object> values = FieldType.getValues(row, um.typeList);
+            int index = this.columnNames.IndexOf(um.fieldname);
+            int serverID;
+            if (um.con.getResult(values))//um.con.getResult(values)
+            {
+                Element ele = new Element { };
+                using (var req = new GetElementMessageWriter(um.cellId[index]))
                 {
-                    if (this.cellIds[0][j] == RID[i])
+                    serverID = Global.CloudStorage.GetServerIdByCellId(um.cellId[index]);
+                    using (var responce = Global.CloudStorage.GetElementToDatabaseServer(serverID, req))
                     {
-                        this.cellIds[0].RemoveAt(j);
+                        ele = responce.ele;
                     }
                 }
+                if (um.flag == 1)
+                {
+                    switch (um.op)
+                    {
+                        case '+':
+                            ele.intField += um.operationNum;
+                            break;
+                        case '-':
+                            ele.intField -= um.operationNum;
+                            break;
+                        case '*':
+                            ele.intField *= um.operationNum;
+                            break;
+                        case '/':
+                            ele.intField /= um.operationNum;
+                            break;
+                        default:
+                            throw new Exception(String.Format("不合法的操作"));
+                    }
+                }
+                else
+                {
+                    switch (um.op)
+                    {
+                        case '+':
+                            ele.intField += um.operationNum;
+                            break;
+                        case '-':
+                            ele.intField = um.operationNum - ele.intField;
+                            break;
+                        case '*':
+                            ele.intField *= um.operationNum;
+                            break;
+                        case '/':
+                            ele.intField = um.operationNum / ele.intField;
+                            break;
+                        default:
+                            throw new Exception(String.Format("不合法的操作"));
+                    }
+                }
+                ElementCell eleCell = FieldType.getElementCell(ele);
+                Global.CloudStorage.SaveElementCell(um.cellId[index], eleCell);
             }
-            UpdateTableMessageWriter utmw = new UpdateTableMessageWriter(tableName: this.tableNames[0], tableId: this.tableIds[0], columnNameList: this.columnNames[0], columnTypeList: this.columnTypes
-              [0], primaryIndex: this.primaryIndexs[0], defaultValue: this.defaultValues[0], rowList: this.cellIds[0]);
-            int serverID = Global.CloudStorage.GetServerIdByCellId(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
-                    [0])));
-            Global.CloudStorage.UpdateTableToDatabaseServer(serverID, utmw);
-            Global.CloudStorage.SaveStorage();
         }
-
 
         public void insert(string[] fieldNames, object[] values)
         {
-            if (tableNames.Count != 1)
+            if (!isSingle)
             {
                 throw new Exception(String.Format("不可输入多个表"));
             }
-            RowCell rc = new RowCell(values: new List<Element>());
-            for (int j = 0; j < fieldNames.Length; j++)
+
+            List<Element> ele = new List<Element>();
+            List<long> ID = new List<long> { };
+            ElementCell elecell = FieldType.setValueCell(values[0], this.columnTypes.ElementAt(columnNames.IndexOf(fieldNames[0])));
+            Global.CloudStorage.SaveElementCell(elecell);
+            ID.Add(elecell.CellID);
+            for (int i = 1; i < fieldNames.Length; i++)
             {
-                if (!this.columnNames[0].Contains(fieldNames[j]))
-                {
-                    throw new Exception(String.Format("当前字段不存在"));
-                }
-                object val = values[j];
-                int type = columnTypes[0].ElementAt(columnNames[0].IndexOf(fieldNames[j]));
-                rc.values.Add(FieldType.setValue(val, type));
+                Element temp = FieldType.setValue(values[i], this.columnTypes.ElementAt(columnNames.IndexOf(fieldNames[i])));
+                ele.Add(temp);
             }
-            this.cellIds[0].Add(rc.CellID);
-            Global.CloudStorage.SaveRowCell(rc);
-            UpdateTableMessageWriter utmw = new UpdateTableMessageWriter(tableName: tableNames[0], tableId: this.tableIds[0], columnNameList: this.columnNames[0], columnTypeList: this.columnTypes
-                [0], primaryIndex: this.primaryIndexs[0], defaultValue: this.defaultValues[0], rowList: this.cellIds[0]);
-            int serverID = Global.CloudStorage.GetServerIdByCellId(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
-                    [0])));
-            Global.CloudStorage.UpdateTableToDatabaseServer(serverID, utmw);
-            //Global.CloudStorage.SaveStorage();
+            using (var request = new InsertMessageWriter(ele))
+            {
+                int serverId = Global.CloudStorage.GetServerIdByCellId(elecell.CellID);
+                using (var res = Global.CloudStorage.InsertElementToDatabaseServer(serverId, request))
+                {
+                    for (int k = 0; k < res.cellIds.Count; k++)
+                    {
+                        ID.Add(res.cellIds[k]);
+                    }
+                }
+            }
+            this.cellIds.Add(ID);
+            long tableId = Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
+                 [0]));
+            TableHeadCell thc = new TableHeadCell(this.tableNames[0], this.columnNames, this.columnTypes, this.primaryIndexs, this.defaultValues, this.cellIds);
+            Global.CloudStorage.SaveTableHeadCell(tableId, thc);
         }
 
         public void insert(string[] fieldNames, object[][] values)
         {
-            if (tableNames.Count != 1)
+            if (tableNames.Count > 1)
             {
                 throw new Exception(String.Format("不可输入多个表"));
             }
-            for (int i = 0; i < values.Length; i++)
+            for (int j = 0; j < values.Length; j++)
             {
-                RowCell rc = new RowCell(values: new List<Element>());
-                for (int j = 0; j < fieldNames.Length; j++)
+                List<Element> ele = new List<Element>();
+                List<long> ID = new List<long> { };
+                ElementCell elecell = FieldType.setValueCell(values[j][0], this.columnTypes.ElementAt(columnNames.IndexOf(fieldNames[0])));
+                Global.CloudStorage.SaveElementCell(elecell);
+                ID.Add(elecell.CellID);
+                for (int i = 1; i < fieldNames.Length; i++)
                 {
-                    if (!this.columnNames[0].Contains(fieldNames[j]))
-                    {
-                        throw new Exception(String.Format("当前字段不存在"));
-                    }
-                    object val = values[i][j];
-                    int type = columnTypes[0].ElementAt(columnNames[0].IndexOf(fieldNames[j]));
-                    rc.values.Add(FieldType.setValue(val, type));
+                    Element temp = FieldType.setValue(values[j][i], this.columnTypes.ElementAt(columnNames.IndexOf(fieldNames[i])));
+                    ele.Add(temp);
                 }
-                this.cellIds[0].Add(rc.CellID);
-                Global.CloudStorage.SaveRowCell(rc);
+                using (var request = new InsertMessageWriter(ele))
+                {
+                    int serverId = Global.CloudStorage.GetServerIdByCellId(elecell.CellID);
+                    using (var res = Global.CloudStorage.InsertElementToDatabaseServer(serverId, request))
+                    {
+                        for (int k = 0; k < res.cellIds.Count; k++)
+                        {
+                            ID.Add(res.cellIds[k]);
+                        }
+                    }
+                }
+                this.cellIds.Add(ID);
             }
+            long tableId = Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
+                [0]));
+            TableHeadCell thc = new TableHeadCell(this.tableNames[0], this.columnNames, this.columnTypes, this.primaryIndexs, this.defaultValues, this.cellIds);
+            Global.CloudStorage.SaveTableHeadCell(tableId, thc);
 
-            UpdateTableMessageWriter utmw = new UpdateTableMessageWriter(tableName: tableNames[0], tableId: this.tableIds[0], columnNameList: this.columnNames[0], columnTypeList: this.columnTypes
-                [0], primaryIndex: this.primaryIndexs[0], defaultValue: this.defaultValues[0], rowList: this.cellIds[0]);
-
-            int serverID = Global.CloudStorage.GetServerIdByCellId(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
-                    [0])));
-            Global.CloudStorage.UpdateTableToDatabaseServer(serverID, utmw);
-            Global.CloudStorage.SaveStorage();
         }
-
-
-        public void truncate()
+        public void insert(string[] fieldNames, Table anotherTable)
         {
-            List<long> RID = null;
-            //remove cell
-            UpdateTableMessageWriter utmw = new UpdateTableMessageWriter(tableName: tableNames[0], tableId: this.tableIds[0], columnNameList: this.columnNames[0], columnTypeList: this.columnTypes
-                [0], primaryIndex: this.primaryIndexs[0], defaultValue: this.defaultValues[0], rowList: RID);
-
-            int serverID = Global.CloudStorage.GetServerIdByCellId(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
-                    [0])));
-            Global.CloudStorage.UpdateTableToDatabaseServer(serverID, utmw);
-            Global.CloudStorage.SaveStorage();
+            if (this.tableNames.Count != 1)
+            {
+                throw new Exception(String.Format("不可输入多个表"));
+            }
+            for (int i = 0; i < anotherTable.cellIds.Count; i++)
+            {
+                this.cellIds.Add(anotherTable.cellIds[i]);
+            }
+            long tableId = Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
+               [0]));
+            TableHeadCell thc = new TableHeadCell(this.tableNames[0], this.columnNames, this.columnTypes, this.primaryIndexs, this.defaultValues, this.cellIds);
+            Global.CloudStorage.SaveTableHeadCell(tableId, thc);
         }
-
         public void rename(string newName)
         {
-            UpdateTableMessageWriter utmw = new UpdateTableMessageWriter(tableName: newName, tableId: this.tableIds[0], columnNameList: this.columnNames[0], columnTypeList: this.columnTypes
-               [0], primaryIndex: this.primaryIndexs[0], defaultValue: this.defaultValues[0], rowList: this.cellIds[0]);
-            int serverID = Global.CloudStorage.GetServerIdByCellId(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
-                    [0])));
-            Global.CloudStorage.UpdateTableToDatabaseServer(serverID, utmw);
-            Global.CloudStorage.SaveStorage();
+            long tableId = Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
+                  [0]));
+            TableHeadCell thc = new TableHeadCell(newName, this.columnNames, this.columnTypes, this.primaryIndexs, this.defaultValues, this.cellIds);
+            Global.CloudStorage.SaveTableHeadCell(tableId, thc);
             //更改数据库里的tablelist信息
             List<string> tbName = Database.getCurrentDatabase().getTableNameList();
             List<long> tbID = Database.getCurrentDatabase().getTableIdList();
-            tbName.RemoveAt(tbID.IndexOf(this.tableIds[0]));
-            tbID.Remove(this.tableIds[0]);
+            tbName.RemoveAt(tbID.IndexOf(tableId));
+            tbID.Remove(tableId);
             tbName.Add(newName);
-            tbID.Add(this.tableIds[0]);
-            UpdateDatabaseMessageWriter udmw = new UpdateDatabaseMessageWriter(
-               name: Database.getCurrentDatabase().getName(), tableNameList: tbName, tableIdList: tbID);
-            int dbId = Global.CloudStorage.GetServerIdByCellId(HashHelper.HashString2Int64(Database.getCurrentDatabase().getName()));
-            Global.CloudStorage.UpdateDatabaseToDatabaseServer(dbId, udmw);
-            Global.CloudStorage.SaveStorage();
-        }
-
-        public Table union(Table anotherTable)
-        {
-            return null;
-        }
-
-        public Table innerJoin(Table anotherTable)
-        {
-            return null;
+            tbID.Add(tableId);
+            long dbId = HashHelper.HashString2Int64(Database.getCurrentDatabase().getName());
+            DatabaseCell dbc = new DatabaseCell(Database.getCurrentDatabase().getName(), tbName, tbID);
+            Global.CloudStorage.SaveDatabaseCell(dbId, dbc);
         }
 
         /// <summary>
@@ -295,18 +344,12 @@ namespace TriSQLApp
         public Table select(Tuple<string, string>[] fields, string con)
         {
             //新表的结构
-            List<List<long>> newCellIds = new List<List<long>>();
-            List<string> newTableNames = new List<string>();
-            List<long> newTableIds = new List<long>();
-            List<List<int>> newIndexes = new List<List<int>>();
-            List<List<string>> newColumnNames = new List<List<string>>();
-            List<List<int>> newColumnTypes = new List<List<int>>();
+            List<string> newColumnNames = new List<string>();
+            List<int> newColumnTypes = new List<int>();
+            List<int> usedIndexes = new List<int>();  //标记被select的索引
             //先检查字段是否符合
             if (fields.Length == 1 && fields[0].Item1.Equals("*"))
             {
-                newTableIds = tableIds;
-                newTableNames = tableNames;
-                newIndexes = indexes;
                 newColumnNames = columnNames;
                 newColumnTypes = columnTypes;
             }
@@ -315,110 +358,138 @@ namespace TriSQLApp
                 foreach (Tuple<string, string> field in fields)
                 {
                     string fieldName = field.Item1;  //字段名
-                    if (fieldName.Contains("."))  //表名.字段名
+                    if (columnNames.Contains(fieldName))  //直接能识别出该字段
                     {
-                        string tableName = fieldName.Split('.')[0];
-                        fieldName = fieldName.Split('.')[1];
-                        int tableIndex = tableNames.IndexOf(tableName);
-                        if (tableIndex != -1)  //含有该表
+                        newColumnNames.Add((field.Item2 == null) || (field.Item2.Equals("")) ?
+                            fieldName : field.Item2);  //别名
+                        usedIndexes.Add(columnNames.IndexOf(fieldName));
+                    }
+                    else  //说明要么该字段不存在，要么没有使用表名直接使用字段名
+                    {
+                        int count = 0;
+                        int fieldIndex = 0;
+                        for (int i = 0; i < columnNames.Count; i++)
                         {
-                            if (!newTableNames.Contains(tableName))
-                            {  //添加到新表的表结构里
-                                newTableNames.Add(tableName);
-                                newTableIds.Add(tableIds[newTableNames.IndexOf(tableName)]);
-                                newColumnNames.Add(new List<string>());
-                                newIndexes.Add(new List<int>());
-                                newColumnTypes.Add(new List<int>());
-                            }
-                            int newTableIndex = newTableNames.IndexOf(tableName);
-                            int fieldIndex = columnNames[tableIndex].IndexOf(fieldName);
-                            if (fieldIndex == -1)
+                            if (columnNames.Contains("." + fieldName))  //统计是否重复了
                             {
-                                throw new Exception(String.Format("表{0}不存在字段{1}", tableName, fieldName));
+                                count++;
+                                fieldIndex = i;
                             }
-                            else
-                            {
-                                //此时确认表和字段均存在
-                                string newFieldName = field.Item2 == null ? fieldName : field.Item2;  //更名
-                                newColumnNames[newTableIndex].Add(newFieldName);  //完善新的表结构
-                                newIndexes[newTableIndex].Add(indexes[tableIndex][fieldIndex]);
-                                newColumnTypes[newTableIndex].Add(columnTypes[tableIndex][fieldIndex]);
-                            }
-
+                        }
+                        if (count == 0)
+                        {
+                            throw new Exception(String.Format("字段{0}不存在", fieldName));
+                        }
+                        else if (count > 1)
+                        {
+                            throw new Exception(String.Format("字段{0}重复，需要指明表名", fieldName));
                         }
                         else
                         {
-                            throw new Exception(String.Format("表{0}不存在.", tableName));
+                            newColumnNames.Add((field.Item2 == null) || (field.Item2.Equals("")) ?
+                            columnNames[fieldIndex] : field.Item2);  //别名
+                            usedIndexes.Add(fieldIndex);
                         }
                     }
                 }
             }
+            usedIndexes.Sort();
             //此时，新表的结构构建完成，向proxy发送查询任务
-            SelectMessageWriter smw = new SelectMessageWriter(cellIds, tableNames, tableIds, indexes,
-                columnTypes, columnNames, primaryIndexs, defaultValues, con);
-            using (var response = Global.CloudStorage.SelectFromClientToDatabaseProxy(0, smw))
-            {
-                //现在筛选在客户端重新排列rowIds
-                List<List<long>> rowIds = response.rowIds;
-                //横向的顺序需要按照newTableNames的顺序来排列
-                for (int i = 0; i < newTableNames.Count; i++)
-                {
-                    newCellIds.Add(rowIds[tableNames.IndexOf(newTableNames[i])]);
-                }
-            }
-            return new Table(newCellIds, newTableNames, newTableIds, newIndexes, newColumnTypes, newColumnNames,
-                primaryIndexs, defaultValues);
+            SelectMessageWriter smw = new SelectMessageWriter(columnNames, columnTypes, cellIds, usedIndexes, con);
+            List<List<long>> newCellIds = Global.CloudStorage.SelectFromClientToDatabaseProxy(0, smw).cellIds;
+            return new Table(newCellIds, newColumnTypes, newColumnNames, this.primaryIndexs,
+                this.defaultValues, this.tableNames);
         }
 
         /// <summary>
-        /// 有into的select
+        /// 获得某一行
         /// </summary>
-        /// <param name="fields">元组第一个表示字段或表达式，第二个表示施加的函数</param>
-        /// <param name="con">条件</param>
-        /// <param name="vars">要into的变量</param>
-        public void select(Tuple<string, int>[] fields, string con, ref object[] vars)
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public List<Object> getRow(int index)
         {
-            
+            List<long> cellId = cellIds[index];
+            List<Element> row = Global.CloudStorage.GetRowToDatabaseServer(
+                Global.CloudStorage.GetServerIdByCellId(cellId[0]),
+                new GetRowMessageWriter(cellId)).row;
+            return FieldType.getValues(row, columnTypes);
         }
 
-      
-        public void print()
+        /// <summary>
+        /// 获得某一列
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public List<Object> getColumn(string name)
         {
-            for(int i = 0; i<tableNames.Count; i++)
+            int index = 0;
+            if (columnNames.Contains(name))  //直接能识别出该字段
             {
-                for (int j = 0; j < columnNames[i].Count; j++)
+                index = columnNames.IndexOf(name);
+            }
+            else  //说明要么该字段不存在，要么没有使用表名直接使用字段名
+            {
+                int count = 0;
+                for (int i = 0; i < columnNames.Count; i++)
                 {
-                    Console.Write("{0, -16}", tableNames[i]+"."+columnNames[i][j]);
+                    if (columnNames.Contains("." + name))  //统计是否重复了
+                    {
+                        count++;
+                        index = i;
+                    }
+                }
+                if (count == 0)
+                {
+                    throw new Exception(String.Format("字段{0}不存在", name));
+                }
+                else if (count > 1)
+                {
+                    throw new Exception(String.Format("字段{0}重复，需要指明表名", name));
                 }
             }
-            Console.WriteLine();
-            for(int index = 0; index<cellIds[0].Count;index++)
+            List<Object> result = new List<object>();
+            foreach (List<long> rowId in cellIds)
             {
+                result.Add(FieldType.getValue(
+                    Global.CloudStorage.GetElementToDatabaseServer(
+                        Global.CloudStorage.GetServerIdByCellId(rowId[index]),
+                        new GetElementMessageWriter(rowId[index])).ele, columnTypes[index]));
+            }
+            return result;
+        }
 
-                List<List<Object>> row = getRow(index);
-                for (int i = 0; i < tableNames.Count; i++)
+        public List<List<long>> getCellIds()
+        {
+            return this.cellIds;
+        }
+
+        public List<string> getColumnNames()
+        {
+            return columnNames;
+        }
+
+        public List<int> getColumnTypes()
+        {
+            return columnTypes;
+        }
+
+        public void printTable()
+        {
+            foreach(string name in columnNames)
+            {
+                Console.Write("{0, -15}", name);
+            }
+            Console.WriteLine();
+            for(int i = 0; i < cellIds.Count; i++)
+            {
+                List<Object> row = getRow(i);
+                foreach(Object ele in row)
                 {
-                    for (int j = 0; j < columnNames[i].Count; j++)
-                    {
-                        Console.Write("{0, -16}", row[i][j]);
-                    }
+                    Console.Write("{0, -15}", ele);
                 }
                 Console.WriteLine();
             }
         }
-        public List<List<Object>> getRow(int index)
-        {
-            List<List<Object>> row = new List<List<object>>();
-            for(int i = 0; i < cellIds.Count; i++)
-            {
-                long cellId = cellIds[i][index];
-                Console.WriteLine(Global.CloudStorage.GetServerIdByCellId(cellId));
-                List<Element> value = Global.CloudStorage.GetRowToDatabaseServer(
-                        Global.CloudStorage.GetServerIdByCellId(cellId),
-                        new GetRowMessageWriter(cellId)).row;
-                row.Add(FieldType.getValues(value, columnTypes[i]));
-            }
-            return row;
-        }
     }
+
 }

@@ -35,6 +35,11 @@ namespace TriSQLApp {
         /// </summary>
         public const int LONG = 5;
 
+        public const int NORMAL = 0;
+        public const int SUM = 1;
+        public const int MAX = 2;
+        public const int MIN = 3;
+
         /// <summary>
         /// 根据Element对象以及其类型，提取其值
         /// </summary>
@@ -135,6 +140,49 @@ namespace TriSQLApp {
         {
             Element ele = new Element(ec.stringField, ec.intField, ec.doubleField,
                 ec.dateField, ec.longField);
+            return ele;
+        }
+
+        public static ElementCell setValueCell(object value, int type)
+        {
+            ElementCell ele = new ElementCell(stringField:null);
+            if (value == null)  //无默认值
+            {
+                if (type < STRING || type > LONG)
+                {
+                    throw new Exception(String.Format("不存在的字段类型:{0}", type));
+                }
+
+            }
+            else
+            {
+                switch (type)
+                {
+                    case INTEGER:
+                        ele.intField = Convert.ToInt32(value);
+                        break;
+                    case STRING:
+                        ele.stringField = Convert.ToString(value);
+                        break;
+                    case LONG:
+                        ele.longField = Convert.ToInt64(value);
+                        break;
+                    case DATETIME:
+                        ele.dateField = Convert.ToDateTime(value);
+                        break;
+                    case DOUBLE:
+                        ele.doubleField = Convert.ToDouble(value);
+                        break;
+                    default:
+                        throw new Exception(String.Format("不存在的字段类型:{0}", type));
+                }
+            }
+            return ele;
+        }
+
+        public static ElementCell getElementCell(Element ec)
+        {
+            ElementCell ele = new ElementCell(ec.stringField, ec.intField, ec.doubleField, ec.dateField, ec.longField);
             return ele;
         }
     }
