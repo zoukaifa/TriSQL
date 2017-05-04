@@ -24,7 +24,8 @@ namespace TriSQLApp
                 Table ne = graph.innerJoin(label, con);
                 ne.printTable();
                 Console.ReadKey();
-            }else
+            }
+            else
             if (args.Length > 0 && args[0].Equals("-s"))
             {
                 TrinityConfig.CurrentRunningMode = RunningMode.Server;
