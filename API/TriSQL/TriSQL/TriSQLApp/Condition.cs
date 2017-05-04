@@ -98,7 +98,7 @@ namespace TriSQLApp
     {
         private Table table;
         private List<ConditionPair> conditions;
-        private Dictionary<string, int> columnName;
+        //private Dictionary<string, int> columnName;
         private string[] strs;
         private int isDefault = -1;
 
@@ -113,11 +113,11 @@ namespace TriSQLApp
             {
                 this.isDefault = 1;
                 this.conditions = new List<ConditionPair>();
-                this.columnName = new Dictionary<string, int>();
+                //this.columnName = new Dictionary<string, int>();
 
                 this.table = table;
                 this.strs = condition.Split(' ');
-                int columnIndex = 0;
+                //int columnIndex = 0;
                 int nestedIndex = 0;
 
                 for (int i = 0; i < strs.Length; i++)
@@ -136,10 +136,10 @@ namespace TriSQLApp
                         {
                             this.conditions.Add(new ConditionPair(param1, opt, type, nestedTable[nestedIndex]));
                             nestedIndex++;
-                            if (!this.columnName.ContainsKey(param1))
-                            {
-                                this.columnName.Add(param1, columnIndex++);
-                            }
+                            //if (!this.columnName.ContainsKey(param1))
+                            //{
+                            //    this.columnName.Add(param1, columnIndex++);
+                            //}
                         }
                         else
                         {
@@ -161,16 +161,16 @@ namespace TriSQLApp
                         RightOptType type = Condition.getType(param3, opt);
 
                         this.conditions.Add(new ConditionPair(param1, opt, type, type == RightOptType.CONSTANT ? convertType(param1, param3) : param3));
-                        if (!this.columnName.ContainsKey(param1))
-                        {
-                            this.columnName.Add(param1, columnIndex++);
-                        }
+                        //if (!this.columnName.ContainsKey(param1))
+                        //{
+                        //    this.columnName.Add(param1, columnIndex++);
+                        //}
 
-                        Console.WriteLine(type);
-                        if (type.Equals(RightOptType.FIELD))
-                        {
-                            this.columnName.Add(param3, columnIndex++);
-                        }
+                        //Console.WriteLine(type);
+                        //if (type.Equals(RightOptType.FIELD))
+                        //{
+                        //    this.columnName.Add(param3, columnIndex++);
+                        //}
 
                         strs[i - 1] = " ";
                         strs[i] = "?";
@@ -218,7 +218,9 @@ namespace TriSQLApp
             {
                 isMatch = false;
                 cp = curConditon[i];
-                object leftValue = rowData[this.columnName[cp.left]];
+                // 修改左值获取方式（2017/5/4）
+                object leftValue = rowData[table.getColumnName().IndexOf(cp.left)];
+                //object leftValue = rowData[this.columnName[cp.left]];
                 Console.WriteLine(leftValue);
 
                 //处理嵌套的情况
@@ -243,7 +245,9 @@ namespace TriSQLApp
                 }
                 else if (cp.rightValType == RightOptType.FIELD)
                 {
-                    rightValue = rowData[this.columnName[cp.rightValue.ToString()]];
+                    //rightValue = rowData[this.columnName[cp.rightValue.ToString()]];
+                    //修改右值获取方式
+                    rightValue = rowData[table.getColumnName().IndexOf(cp.rightValue.ToString())];
                 }
                 else
                 {
