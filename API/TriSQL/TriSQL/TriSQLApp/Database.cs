@@ -211,5 +211,11 @@ namespace TriSQLApp
         {
             return this.name;
         }
+
+        public static bool exists(String databaseName)
+        {
+            long id = HashHelper.HashString2Int64(databaseName);
+            return Global.CloudStorage.Contains(id);
+        }
     }
 }

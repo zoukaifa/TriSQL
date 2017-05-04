@@ -41,6 +41,15 @@ namespace TriSQLApp
             public Condition con;
             public List<int> typeList;
         }
+        public struct UpdateFields
+        {
+            public string[] fildNames;
+            public int Value1;
+            public double Value2;
+            public List<int> typeList;
+            public List<long> cellId;
+            public Condition con;
+        }
         #endregion
         #region 构造
         public Table(List<List<long>> cellIds)
@@ -85,26 +94,26 @@ namespace TriSQLApp
                 throw new Exception(String.Format("当前数据库不存在"));
             }
 
-          
-                isSingle = true;
-                if (!Database.getCurrentDatabase().tableExists(tableName))
+
+            isSingle = true;
+            if (!Database.getCurrentDatabase().tableExists(tableName))
+            {
+                throw new Exception(String.Format("当前表{0}不存在!", tableName[0]));
+            }
+            this.tableNames.Add(tableName);
+            tableIds.Add(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableName)));
+            using (var request = new GetTableMessageWriter(tableIds[0]))
+            {
+                int serverId = Global.CloudStorage.GetServerIdByCellId(tableIds[0]);
+                using (var res = Global.CloudStorage.GetTableToDatabaseServer(serverId, request))
                 {
-                    throw new Exception(String.Format("当前表{0}不存在!", tableName[0]));
+                    this.cellIds = res.cellIds;
+                    this.columnNames = res.columnNameList;
+                    this.columnTypes = res.columnTypeList;
+                    this.defaultValues = res.defaultValue;
+                    this.primaryIndexs = res.primaryIndex;
                 }
-                this.tableNames.Add(tableName);
-                tableIds.Add(Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableName)));
-                using (var request = new GetTableMessageWriter(tableIds[0]))
-                {
-                    int serverId = Global.CloudStorage.GetServerIdByCellId(tableIds[0]);
-                    using (var res = Global.CloudStorage.GetTableToDatabaseServer(serverId, request))
-                    {
-                        this.cellIds = res.cellIds;
-                        this.columnNames = res.columnNameList;
-                        this.columnTypes = res.columnTypeList;
-                        this.defaultValues = res.defaultValue;
-                        this.primaryIndexs = res.primaryIndex;
-                    }
-                }
+            }
         }
         public Table MultiTable(params string[] tableName)
         {
@@ -115,7 +124,7 @@ namespace TriSQLApp
             for (int i = 2; i < tableName.Length; i++)
             {
                 Table temp = new Table(tableName[i]);
-                 M = M.innerJoinOnCluster(temp,new List<dint>());
+                M = M.innerJoinOnCluster(temp, new List<dint>());
             }
             return M;
         }
@@ -148,7 +157,7 @@ namespace TriSQLApp
             TruncateMessageWriter tmw = new TruncateMessageWriter(cellIds);
             Global.CloudStorage.TruncateFromClientToDatabaseProxy(0, tmw);
 
-            this.cellIds = null;
+            //this.cellIds = null;
             TableHeadCell thc = new TableHeadCell(this.tableNames[0], this.columnNames, this.columnTypes, this.primaryIndexs, this.defaultValues, this.cellIds);
             long thcId = Database.getCurrentDatabase().getTableIdList().ElementAt(Database.getCurrentDatabase().getTableNameList().IndexOf(tableNames
                    [0]));
@@ -156,7 +165,7 @@ namespace TriSQLApp
         }
         public void update(string fieldName, int flag, char op, int opNum, string con)
         {
-            Table table = new Table(this.cellIds);
+            Table table = new Table(this.columnNames, this.columnTypes);
             Condition contemp = new Condition(table, con);
             List<Thread> threads = new List<Thread> { };
             foreach (List<long> Id in this.cellIds)
@@ -188,7 +197,7 @@ namespace TriSQLApp
             List<Object> values = FieldType.getValues(row, um.typeList);
             int index = this.columnNames.IndexOf(um.fieldname);
             int serverID;
-            if (um.con.getResult(values))//um.con.getResult(values)
+            if (um.con.getResult(values))
             {
                 Element ele = new Element { };
                 using (var req = new GetElementMessageWriter(um.cellId[index]))
@@ -243,7 +252,68 @@ namespace TriSQLApp
                 Global.CloudStorage.SaveElementCell(um.cellId[index], eleCell);
             }
         }
+        public void update(string[] fieldNames, int val1, double val2, string con)
+        {
+            Table table = new Table(this.columnNames, this.columnTypes);
+            Condition contemp = new Condition(table, con);
+            List<Thread> threads = new List<Thread> { };
+            foreach (List<long> Id in this.cellIds)
+            {
+                UpdateFields uf = new UpdateFields();
+                uf.fildNames = fieldNames;
+                uf.Value1 = val1;
+                uf.Value2 = val2;
+                uf.cellId = Id;
+                uf.con = contemp;
+                uf.typeList = this.columnTypes;
+                Thread thread = new Thread(new ParameterizedThreadStart(UpdateField));
+                threads.Add(thread);
+                thread.Start(uf);
+            }
+            foreach (Thread thr in threads)
+            {
+                thr.Join();
+            }
+        }
+        private void UpdateField(Object Message)
+        {
+            UpdateFields uf = (UpdateFields)Message;
+            List<Element> row = Global.CloudStorage.GetRowToDatabaseServer(
+                Global.CloudStorage.GetServerIdByCellId(uf.cellId[0]),
+                new GetRowMessageWriter(uf.cellId)).row;
+            List<Object> values = FieldType.getValues(row, uf.typeList);
+            int index1 = this.columnNames.IndexOf(uf.fildNames[0]);
+            int index2 = this.columnNames.IndexOf(uf.fildNames[1]);
+            int serverID;
+            if (uf.con.getResult(values))
+            {
+                Element ele1 = new Element { };
+                using (var req = new GetElementMessageWriter(uf.cellId[index1]))
+                {
+                    serverID = Global.CloudStorage.GetServerIdByCellId(uf.cellId[index1]);
+                    using (var responce = Global.CloudStorage.GetElementToDatabaseServer(serverID, req))
+                    {
+                        ele1 = responce.ele;
+                        ele1.intField = uf.Value1;
+                    }
+                }
+                Element ele2 = new Element { };
+                using (var req = new GetElementMessageWriter(uf.cellId[index2]))
+                {
+                    serverID = Global.CloudStorage.GetServerIdByCellId(uf.cellId[index2]);
+                    using (var responce = Global.CloudStorage.GetElementToDatabaseServer(serverID, req))
+                    {
+                        ele2 = responce.ele;
+                        ele2.doubleField = uf.Value2;
+                    }
+                }
+                ElementCell eleCell1 = FieldType.getElementCell(ele1);
+                Global.CloudStorage.SaveElementCell(uf.cellId[index1], eleCell1);
 
+                ElementCell eleCell2 = FieldType.getElementCell(ele2);
+                Global.CloudStorage.SaveElementCell(uf.cellId[index2], eleCell1);
+            }
+        }
         public void insert(string[] fieldNames, object[] values)
         {
             if (!isSingle)
@@ -1011,11 +1081,11 @@ namespace TriSQLApp
         {
             return primaryIndexs;
         }
-		
-		public List<string> getTableNames() {
-			return tableNames;
-		}
 
+        public List<string> getTableNames()
+        {
+            return tableNames;
+        }
 
         public List<Element> getDefaultValues()
         {

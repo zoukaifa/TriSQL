@@ -58,8 +58,28 @@ namespace TriSQLApp
             
             Console.ReadLine();
         }
+        static void Main(String[] args) {
+            if (args.Length > 0 && args[0].Equals("-s"))
+            {
+                TrinityConfig.CurrentRunningMode = RunningMode.Server;
+                DatabaseServer ds = new DatabaseServer();
+                ds.Start();
+            }
+            else if (args.Length > 0 && args[0].Equals("-p"))
+            {
+                TrinityConfig.CurrentRunningMode = RunningMode.Proxy;
+                DatabaseProxy dp = new DatabaseProxy();
+                dp.Start();
+            }
+            else
+            {
+                TrinityConfig.CurrentRunningMode = RunningMode.Client;
+                LPA lpa = new LPA();
+                lpa.start();
+            }
+        }
 
-        static void Main(string[] args)
+        static void Main2(string[] args)
         {
             if (args.Length > 0 && args[0].Equals("-k"))
             {
