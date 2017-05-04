@@ -332,7 +332,8 @@ namespace TriSQLApp
                 List<int> conda = new List<int>();
                 List<List<long>> cellids = request.cellidsA;
                 List<List<long>> cellidsb = request.cellidsB;
-                for (int i = 0; i < request.cellidsA[0].Count; i++) 
+
+                for (int i = 0; i < cellids[0].Count; i++) 
                 {
                     conda.Add(i);
                 }

@@ -438,6 +438,7 @@ namespace TriSQLApp
                     for (int j = s; j <= e; j++)
                         res.Add(new dint(s, e));
                     s = i;
+                    if (i < correspond.Count) ele = correspond[s];
                     e = i;
                 }
             }
@@ -452,11 +453,12 @@ namespace TriSQLApp
         {
             for (int i = 0; i < columnNames.Count; i++)
             {
-                if (!columnNames[i].Equals(anotherTable.columnNames)) throw new Exception("两表无并相容性");
+                if (!columnNames[i].Equals(anotherTable.columnNames[i])) throw new Exception("两表无并相容性");
             }
-
+            if (anotherTable.cellIds.Count == 0) throw new Exception("anotherTable不能为空");
             UnionMessageWriter msg = new UnionMessageWriter(this.cellIds, anotherTable.cellIds);
-            this.cellIds = Global.CloudStorage.UnionFromClientToDatabaseProxy(0, msg).cellids;
+            List<List<long>> temp =  Global.CloudStorage.UnionFromClientToDatabaseProxy(0, msg).cellids;
+            this.cellIds.AddRange(temp);
             return this;
         }
         /// <summary>
@@ -468,7 +470,7 @@ namespace TriSQLApp
         {
             for (int i = 0; i < columnNames.Count; i++)
             {
-                if (!columnNames[i].Equals(anotherTable.columnNames)) throw new Exception("两表无并相容性");
+                if (!columnNames[i].Equals(anotherTable.columnNames[i])) throw new Exception("两表无并相容性");
             }
             cellIds.AddRange(anotherTable.cellIds);
             return this;
@@ -492,6 +494,7 @@ namespace TriSQLApp
         /// </summary>
         public List<List<long>> topK(int k, string[] names)
         {
+            if (k==0) throw new Exception("k不能为0");
             List<int> pos = new List<int>();
             foreach (var name in names)
             {
@@ -503,6 +506,7 @@ namespace TriSQLApp
         }
         public List<List<long>> topKOnLocal(int k, string name)
         {
+            if (k == 0) throw new Exception("k不能为0");
             int pos = nametopos(name);
             List<int> cond = new List<int>();
             cond.Add(pos);
@@ -727,7 +731,7 @@ namespace TriSQLApp
         /// equal only intfield
         /// </summary>
         /// <returns></returns>
-        private int Equal(List<Element> A, List<Element> B)
+        private static int Equal(List<Element> A, List<Element> B)
         {
             for (int i = 0; i < A.Count; i++)
             {

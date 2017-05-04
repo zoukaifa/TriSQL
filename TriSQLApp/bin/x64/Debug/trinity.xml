@@ -18,7 +18,7 @@
     <entry name="Server" WorkingDirectory="C:\Users\lining\Desktop\Debug\" LoggingLevel="Info">192.168.199.144:5304</entry>
   </section>
   <section name="Proxies">
-  	<entry name="Proxy" WorkingDirectory="C:\Users\lining\Desktop\Debug\" LoggingLevel="Info">192.168.199.162:5304</entry>
+  	<entry name="Proxy" WorkingDirectory="C:\Users\wang\Desktop\Debug\" LoggingLevel="Info">192.168.199.239:5304</entry>
   </section>
   <section name="Storage">
     <entry name="LargeObjectThreshold">10485760</entry>
