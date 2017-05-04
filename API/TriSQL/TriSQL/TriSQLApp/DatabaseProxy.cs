@@ -136,7 +136,7 @@ namespace TriSQLApp
             }
         }
         /// <summary>
-        /// 分类器 把行按照服务器分类 
+        /// 分类器 把行按照服务器分类 多线程
         /// </summary>
         /// <param name="CELLIDS"></param>
         /// <param name="cond">条件表达式表示用到的行</param>
@@ -228,6 +228,32 @@ namespace TriSQLApp
         {
             idDict.Add(request.serverid, request.celllids);
             values.Add(request.serverid, request.values);
+            if (idDict.Count == Global.ServerCount)
+            {
+                sem.Release();
+            }
+        }
+        #endregion
+        #region union
+        public override void UnionFromClientHandler(UnionMessageReader request, UnionResponseWriter response)
+        {
+            idDict.Clear();
+            List<List<List<long>>> classify = Classify(request.cellidsB, null);
+            for (int i = 0; i < Global.ServerCount; i++)
+            {
+                UnionMessageWriter msg = new UnionMessageWriter(request.cellidsA, classify[i]);
+                Global.CloudStorage.UnionFromProxyToDatabaseServer(i, msg);
+            }
+            sem.WaitOne();
+            for (int i = 0; i < Global.ServerCount; i++)
+            {
+                response.cellids.AddRange(idDict[i]);
+            }
+        }
+
+        public override void UnionFromServerHandler(UnionServerResponseReader request)
+        {
+            idDict.Add(request.serverid, request.cellids);
             if (idDict.Count == Global.ServerCount)
             {
                 sem.Release();

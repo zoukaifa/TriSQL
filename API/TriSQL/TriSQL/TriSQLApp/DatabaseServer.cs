@@ -131,8 +131,7 @@ namespace TriSQLApp
                 Global.CloudStorage.GetServerIdByCellId(rm.cellId[0]),
                 new GetRowMessageWriter(rm.cellId)).row;
             List<Object> values = FieldType.getValues(row, rm.types);
-            //if (rm.con.getResult(values))
-            if (true)
+            if (rm.con.getResult(values))
             {
                 List<long> cellId = new List<long>();
                 foreach (int index in rm.usedIndex)
@@ -318,6 +317,39 @@ namespace TriSQLApp
             }
             TopKServerResponceWriter msg = new TopKServerResponceWriter(res, cmp, Global.MyServerId);
             Global.CloudStorage.TopKFromServerToDatabaseProxy(0, msg);
+        }
+
+        public override void UnionFromProxyHandler(UnionMessageReader request)
+        {
+            
+            if (request.cellidsA.Count == 0)
+            {
+                UnionServerResponseWriter msg = new UnionServerResponseWriter(request.cellidsB, Global.MyServerId);
+                Global.CloudStorage.UnionFromServerToDatabaseProxy(0, msg);
+            } else
+            {
+                List<List<long>> res = new List<List<long>>();
+                List<int> conda = new List<int>();
+                List<List<long>> cellids = request.cellidsA;
+                List<List<long>> cellidsb = request.cellidsB;
+
+                for (int i = 0; i < cellids[0].Count; i++) 
+                {
+                    conda.Add(i);
+                }
+                List<List<Element>> correspondA = Table.getCorrespon(conda, cellids);
+                List<List<Element>> correspondB = Table.getCorrespon(conda, cellidsb);
+                Table.QuickSort(correspondA, 0, correspondA.Count - 1, cellids);
+                for (int i = 0; i<correspondB.Count; i++)
+                {
+                    if (Table.BinSearch(correspondA,correspondB[i],0) < 0)//don't match
+                    {
+                        res.Add(cellidsb[i]);
+                    }
+                }
+                UnionServerResponseWriter msg = new UnionServerResponseWriter(res, Global.MyServerId);
+                Global.CloudStorage.UnionFromServerToDatabaseProxy(0, msg);
+            }
         }
     }
 }

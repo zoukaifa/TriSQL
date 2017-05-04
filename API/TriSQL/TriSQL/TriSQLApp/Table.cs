@@ -157,12 +157,12 @@ namespace TriSQLApp
         public void update(string fieldName, int flag, char op, int opNum, string con)
         {
             Table table = new Table(this.cellIds);
-            //Condition contemp = new Condition(table, con);
+            Condition contemp = new Condition(table, con);
             List<Thread> threads = new List<Thread> { };
             foreach (List<long> Id in this.cellIds)
             {
                 UpdateMessage um = new UpdateMessage();
-                //um.con = contemp;
+                um.con = contemp;
                 um.fieldname = fieldName;
                 um.flag = flag;
                 um.op = op;
@@ -188,8 +188,7 @@ namespace TriSQLApp
             List<Object> values = FieldType.getValues(row, um.typeList);
             int index = this.columnNames.IndexOf(um.fieldname);
             int serverID;
-            //if (um.con.getResult(values))//um.con.getResult(values)
-            if (true)
+            if (um.con.getResult(values))//um.con.getResult(values)
             {
                 Element ele = new Element { };
                 using (var req = new GetElementMessageWriter(um.cellId[index]))
@@ -439,24 +438,27 @@ namespace TriSQLApp
                     for (int j = s; j <= e; j++)
                         res.Add(new dint(s, e));
                     s = i;
+                    if (i < correspond.Count) ele = correspond[s];
                     e = i;
                 }
             }
             return res;
         }
         /// <summary>
-        /// union distinct 猜测效率很低
+        /// union distinct 假设重复是由两表合并引起的
         /// </summary>
         /// <param name="anotherTable"></param>
+        /// <returns>this</returns>
         public Table union_distinct(Table anotherTable)
         {
             for (int i = 0; i < columnNames.Count; i++)
             {
-                if (!columnNames[i].Equals(anotherTable.columnNames)) throw new Exception("两表无并相容性");
+                if (!columnNames[i].Equals(anotherTable.columnNames[i])) throw new Exception("两表无并相容性");
             }
-            cellIds.AddRange(anotherTable.cellIds);
-
-
+            if (anotherTable.cellIds.Count == 0) throw new Exception("anotherTable不能为空");
+            UnionMessageWriter msg = new UnionMessageWriter(this.cellIds, anotherTable.cellIds);
+            List<List<long>> temp =  Global.CloudStorage.UnionFromClientToDatabaseProxy(0, msg).cellids;
+            this.cellIds.AddRange(temp);
             return this;
         }
         /// <summary>
@@ -468,7 +470,7 @@ namespace TriSQLApp
         {
             for (int i = 0; i < columnNames.Count; i++)
             {
-                if (!columnNames[i].Equals(anotherTable.columnNames)) throw new Exception("两表无并相容性");
+                if (!columnNames[i].Equals(anotherTable.columnNames[i])) throw new Exception("两表无并相容性");
             }
             cellIds.AddRange(anotherTable.cellIds);
             return this;
@@ -492,6 +494,7 @@ namespace TriSQLApp
         /// </summary>
         public List<List<long>> topK(int k, string[] names)
         {
+            if (k==0) throw new Exception("k不能为0");
             List<int> pos = new List<int>();
             foreach (var name in names)
             {
@@ -503,6 +506,7 @@ namespace TriSQLApp
         }
         public List<List<long>> topKOnLocal(int k, string name)
         {
+            if (k == 0) throw new Exception("k不能为0");
             int pos = nametopos(name);
             List<int> cond = new List<int>();
             cond.Add(pos);
@@ -727,7 +731,7 @@ namespace TriSQLApp
         /// equal only intfield
         /// </summary>
         /// <returns></returns>
-        private int Equal(List<Element> A, List<Element> B)
+        private static int Equal(List<Element> A, List<Element> B)
         {
             for (int i = 0; i < A.Count; i++)
             {
@@ -736,10 +740,10 @@ namespace TriSQLApp
             }
             return 1;
         }
-        int BinSearch(List<List<Element>> correspondA, List<Element> key)
+        public static int BinSearch(List<List<Element>> correspondA, List<Element> key, int low)
         {
             int array_size = correspondA.Count;
-            int low = 0, high = array_size - 1, mid;
+            int high = array_size - 1, mid;
 
             while (low <= high)
             {
@@ -799,6 +803,7 @@ namespace TriSQLApp
                 end = c - 1;
             }
             int i = start;
+            int low = 0;
             while (i <= end)
             {
                 int s, e;
@@ -808,7 +813,7 @@ namespace TriSQLApp
                 {
                     e++;
                 }
-                int pos = BinSearch(correspondA, correspondB[i]);
+                int pos = BinSearch(correspondA, correspondB[i], low);
                 if (pos == -1)//no match
                 {
                     i = e + 1;
@@ -830,6 +835,7 @@ namespace TriSQLApp
                         }
                     }
                     i = e + 1;
+                    low = e1 + 1;
                 }
             }
         }
@@ -1012,6 +1018,10 @@ namespace TriSQLApp
         {
             return primaryIndexs;
         }
+		
+		public List<string> getTableNames() {
+			return tableNames;
+		}
 
 
         public List<Element> getDefaultValues()
