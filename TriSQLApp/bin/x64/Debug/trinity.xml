@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Trinity>
+  <section name="Application">
+    <entry name="ConfigOutputOn">true</entry>
+    <entry name="CurrentRunningMode">Undefined</entry>
+    <entry name="ExperimentalFeatureOn">false</entry>
+  </section>
+  <section name="Network">
+    <entry name="ClientBufferSize">1048576</entry>
+    <entry name="ClientMaxBufferSize">134217728</entry>
+    <entry name="ServerSocketBufferSize">8192</entry>
+    <entry name="ClientSocketBufferSize">8192</entry>
+    <entry name="ServerMaxConn">512</entry>
+    <entry name="ServerMaxAcceptOps">512</entry>
+    <entry name="PreferedNetworkMask"></entry>
+  </section>
+  <section name="Servers">
+    <entry name="Server" ServerId="0" WorkingDirectory="C:\Users\lining\Desktop\Debug" LoggingLevel="Info">192.168.1.160:5304</entry>
+    <entry name="Server" WorkingDirectory="D:\TriSQL\Debug" LoggingLevel="Info">192.168.1.173:5304</entry>
+  </section>
+  <section name="Proxies">
+    <entry name="Proxy" ProxyId="0" WorkingDirectory="C:\Users\fxion\Desktop\Debug" LoggingLevel="Info">192.168.1.135:5304</entry>
+  </section>
+  <section name="Storage">
+    <entry name="LargeObjectThreshold">10485760</entry>
+    <entry name="MaxLargeObjectCount">128</entry>
+  </section>
+  <section name="Internal">
+    <entry name="GraphBufferSize">134217728</entry>
+    <entry name="XHashSetGroupSize">4</entry>
+  </section>
+  <section name="Logging">
+    <entry name="LoggingLevel">Info</entry>
+  </section>
+</Trinity>

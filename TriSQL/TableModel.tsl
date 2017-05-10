@@ -1,0 +1,320 @@
+//数据库
+cell struct DatabaseCell {
+	string name;  //库名
+	List<string> tableNameList;
+	List<CellId> tableIdList;  //所属的表
+}
+//表头
+cell struct TableHeadCell {		
+	string tableName;  //表名
+	List<string> columnNameList;  //列名
+	List<int> columnTypeList;  //列类型
+	List<int> primaryIndex;  //主键索引
+	List<Element> defaultValue;  //默认值
+	List<List<CellId>> cellIds;  //单元格的cellid的集合
+}
+
+//每个元素,用于存储
+cell struct ElementCell {
+	string stringField;	
+	int intField;
+	double doubleField;
+	DateTime dateField;
+	long longField;
+}
+//用于传输
+struct Element {
+	string stringField;	
+	int intField;
+	double doubleField;
+	DateTime dateField;
+	long longField;
+}
+
+
+//数据库
+struct GetDatabaseMessage {  //查询数据库是否存在
+	long databaseId;  //数据库名字
+}
+struct GetDatabaseResponse {
+	List<CellId> tableIdList;  //所包含的table列表
+	List<string> tableNameList;
+}
+protocol GetDatabase {
+	Type: Syn;
+	Request: GetDatabaseMessage;
+	Response: GetDatabaseResponse;
+}
+
+
+//表
+struct GetTableMessage {  //查询表的信息
+	CellId tableId;
+}
+struct GetTableResponse {  //返回表信息
+	string tableName;  //表名
+	List<string> columnNameList;  //列名
+	List<int> columnTypeList;  //列类型
+	List<int> primaryIndex;  //主键索引
+	List<Element> defaultValue;  //默认值
+	List<List<long>> cellIds;  //单元格的cellid的集合
+}
+protocol GetTable {
+	Type: Syn;
+	Request: GetTableMessage;
+	Response: GetTableResponse;	
+}
+
+
+//该信息可以由client向proxy发送，也可以由proxy向server发送
+struct SelectMessage {
+	//为了在server端构造Table，将Table的信息发送到服务器
+	List<string> columnNameList;  //列名
+	List<int> columnTypeList;  //列类型
+	List<List<long>> cellIds;  //单元格的cellid的集合
+	List<int> usedIndex;
+	string condition;
+	List<int> nestedColumns;
+}
+//proxy向client回复结果
+struct SelectResponse {
+	List<List<long>> cellIds;
+}
+//server向proxy回复结果
+struct SelectResultResponse {
+	int serverId;	
+	List<List<long>> cellIds;
+}
+protocol SelectFromClient {  //client向proxy发送
+	Type: Syn;
+	Request: SelectMessage;
+	Response: SelectResponse;	
+}
+protocol SelectFromProxy {  //proxy向server发送
+	Type: Asyn;
+	Request: SelectMessage;
+	Response: void;
+}
+protocol SelectFromServer {  //server向proxy发送
+	Type: Asyn;
+	Request: SelectResultResponse;
+	Response: void;
+}
+//获取某一行的信息
+struct GetRowMessage {
+	List<long> cellIds;
+}
+struct GetRowResponse {
+	List<Element> row;
+}
+protocol GetRow {
+	Type:Syn;
+	Request:GetRowMessage;
+	Response:GetRowResponse;
+}
+//获取某一单元格
+struct GetElementMessage {
+	long cellId;	
+}
+struct GetElementResponse {
+	Element ele;
+}
+protocol GetElement {
+	Type: Syn;	
+	Request: GetElementMessage;
+	Response: GetElementResponse;
+}
+
+struct UpdateTableMessage{
+	string tableName;  //表名
+	CellId tableId;
+	List<string> columnNameList;  //列名
+	List<int> columnTypeList;  //列类型
+	List<int> primaryIndex;  //主键索引
+	List<Element> defaultValue;  //默认值
+	List<List<CellId>> cellIds;  //单元格的cellid的集合
+}
+protocol UpdateTable {
+	Type: Syn;
+	Request: UpdateTableMessage;
+	Response: void;	
+}
+
+struct  DeleteMessage{
+	List<List<long>>cellIds;
+	List<int> columnTypeList;
+	string con;
+}
+struct DeleteResponce{
+    List<List<long>>cellIds;
+}
+struct DeleteResultResponce{
+	int serverId;
+	List<List<long>>cellIds;
+}
+protocol DeleteFromClient{
+	Type:Syn;
+	Request:DeleteMessage;
+	Response:DeleteResponce;
+}
+protocol DeleteFromProxy{
+	Type:Asyn;
+	Request:DeleteMessage;
+	Response:void;
+}
+protocol DeleteFromServer{
+	Type:Asyn;
+	Request:DeleteResultResponce;
+	Response:void;
+}
+
+struct  TruncateMessage{
+	List<List<long>>cellIds;
+}
+struct TruncateResponce{
+	int serverId;	
+}
+protocol TruncateFromClient{
+	Type:Syn;
+	Request:TruncateMessage;
+	Response:void;
+}
+protocol TruncateFromProxy{
+	Type:Asyn;
+	Request:TruncateMessage;
+	Response:void;
+}
+protocol TruncateFromServer{
+	Type:Asyn;
+	Request:TruncateResponce;
+	Response:void;
+}
+
+struct InsertMessage{
+	List<Element>ele;
+}
+struct InsertResponce{
+	int serverId;	
+	List<CellId>cellIds;	
+}
+protocol InsertElement{
+	Type:Syn;
+	Request:InsertMessage;
+	Response:InsertResponce;
+}
+
+protocol SaveStorage {
+	Type:Syn;
+	Request:void;
+	Response:void;	
+}
+
+//join
+struct JoinMessage{
+	List<List<long>> cellidsA;
+	List<List<long>> cellidsB;
+	List<int> conda;
+	List<int> condb;
+}
+struct JoinResponce{
+	int serverid;	
+	List<List<long>> celllids;
+}
+protocol DoJoinFromProxy{
+	Type:Asyn;
+	Request:JoinMessage;
+	Response:void;	
+}
+protocol REdoJoinFromServer{
+	Type:Asyn;
+	Request:JoinResponce;
+	Response:void;	
+}
+protocol JoinFromClient{
+	Type:Syn;
+	Request:JoinMessage;
+	Response:JoinResponce;	
+}
+//topK
+struct TopKMessage{
+	int k;	
+	List<int> cond;	
+	List<List<long>> celllids;
+}
+struct TopKResponce{
+	List<List<long>> celllids;
+}
+protocol TopKFromClient{
+	Type:Syn;
+	Request:TopKMessage;
+	Response:TopKResponce;
+}
+protocol TopKFromProxy{
+	Type:Asyn;
+	Request:TopKMessage;
+	Response:void;	
+}
+struct TopKServerResponce{
+	List<List<long>> celllids;
+	List<int> values;
+	int serverid;
+}
+protocol TopKFromServer{
+	Type:Asyn;
+	Request:TopKServerResponce;
+	Response:void;	
+}
+//union distinct
+struct UnionMessage{
+	List<List<long>> cellidsA;
+	List<List<long>> cellidsB;
+}
+struct UnionResponse{
+	List<List<long>> cellids;
+}
+struct UnionServerResponse{
+	List<List<long>> cellids;
+	int serverid;
+}
+protocol UnionFromClient{
+	Type:Syn;
+	Request:UnionMessage;
+	Response:UnionResponse;	
+}
+protocol UnionFromProxy{
+	Type:Asyn;
+	Request:UnionMessage;
+	Response:void;	
+}
+protocol UnionFromServer{
+	Type:Asyn;
+	Request:UnionServerResponse;
+	Response:void;	
+}
+proxy DatabaseProxy {
+	protocol SelectFromClient;
+	protocol SelectFromServer;	
+	protocol DeleteFromClient;
+	protocol DeleteFromServer;
+	protocol REdoJoinFromServer;
+	protocol JoinFromClient;
+	protocol TopKFromClient;
+	protocol TopKFromServer;
+	protocol UnionFromClient;
+	protocol UnionFromServer;
+}
+
+server DatabaseServer {
+	protocol SelectFromProxy;	
+	protocol DeleteFromProxy;
+	protocol InsertElement;
+	protocol GetDatabase;
+	protocol GetTable;
+	protocol GetRow;
+	protocol GetElement;
+	protocol UpdateTable;
+	protocol SaveStorage;
+	protocol DoJoinFromProxy;
+	protocol TopKFromProxy;
+	protocol UnionFromProxy;
+}
